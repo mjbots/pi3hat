@@ -1,0 +1,17 @@
+build --compiler=compiler
+test --compiler=compiler
+
+build --cpu=stm32f0
+test --cpu=stm32f0
+
+build --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
+test --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
+
+build --auto_cpu_environment_group=@com_github_mjbots_rules_mbed//tools:cpus
+test --auto_cpu_environment_group=@com_github_mjbots_rules_mbed//tools:cpus
+
+build --nostart_end_lib
+test --nostart_end_lib
+
+build -c opt
+test -c opt
