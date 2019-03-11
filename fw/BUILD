@@ -19,7 +19,10 @@ load("@com_github_ARMmbed_mbed-os//:rules.bzl", "mbed_binary")
 mbed_binary(
     name = "pi3_hat",
     srcs = [
+        "millisecond_timer.h",
         "pi3_hat.cc",
+        "stm32_serial.cc",
+        "stm32_serial.h",
     ],
 )
 
