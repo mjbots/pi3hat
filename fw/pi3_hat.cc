@@ -32,7 +32,6 @@ int main(void) {
 
   master_uart->CR1 &= ~USART_CR1_UE;
   master_uart->CR1 |= USART_CR1_TE | USART_CR1_RE;
-  // master_uart->CR3 |= USART_CR3_OVRDIS;
   master_uart->CR1 |= USART_CR1_UE;
 
   fw::Stm32Serial slave_serial{[]() {
@@ -46,7 +45,6 @@ int main(void) {
 
   slave_uart->CR1 &= ~USART_CR1_UE;
   slave_uart->CR3 |= USART_CR3_DEM;
-  // slave_uart->CR3 |= USART_CR3_OVRDIS;
   slave_uart->CR1 |= USART_CR1_TE | USART_CR1_RE;
   slave_uart->CR1 =
       (slave_uart->CR1 & ~USART_CR1_DEAT) | (6 << USART_CR1_DEAT_Pos);
@@ -63,6 +61,17 @@ int main(void) {
     // loop runs at about 1us per iteration, and any glitches can
     // cause a receiver overrun.
   __disable_irq();
+
+  // Our strategy here is just to poll in a tight loop looking for
+  // single characters that need to go either way.  Profiling this
+  // loop, it takes about 1us with no characters to transfer, which
+  // means it can probably keep up with baud rates nearly at 10mbit.
+  // We're just doing 3mbit for now, so that should be plenty.
+  //
+  // This approach results in approximately 1 character additional
+  // latency in either direction, as opposed to using a block DMA
+  // transfer which would be less sensitive to local interrupts, but
+  // also would add more latency.
 
   while (true) {
     if (master_uart->ISR & USART_ISR_RXNE) {
