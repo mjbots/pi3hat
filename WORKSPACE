@@ -16,8 +16,8 @@
 
 workspace(name = "com_github_jpieper_mjmech_pi3_hat")
 
-BAZEL_VERSION = "0.19.0"
-BAZEL_VERSION_SHA = "001371df816005e907670f483f810ee935176bdc811a5ffa2314c59766b68ec4"
+BAZEL_VERSION = "0.25.2"
+BAZEL_VERSION_SHA = "c6b9f3a3350419521461c6d9bdbfd09b4f745af564e1728e2fbf9d4d343f93b6"
 
 load("//tools/workspace:default.bzl", "add_default_repositories")
 
