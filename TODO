@@ -1,0 +1,15 @@
+Need 2x of the XH connectors so that power can be daisy chained
+
+Need to break out SPI and I2C on pin headers or something, perhaps a
+dedicated port for radio receiver.
+
+
+r3 DONE
+ * Added pullup to RT8299 EN
+
+r2 ERRATA
+ * RT8299 EN needs a 100k pullup to VIN
+
+# r1 #
+
+* R1 is 10.5k instead of 105k
