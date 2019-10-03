@@ -1,7 +1,11 @@
-Need 2x of the XH connectors so that power can be daisy chained
-
-Need to break out SPI and I2C on pin headers or something, perhaps a
-dedicated port for radio receiver.
+TODO
+ * Figure out form factor for RF
+ * Put rpi EEPROM on for DT autoconfigure
+ * rough fix silks
+ * route planes
+ * route power
+ * route everything else
+ * fine fix silks
 
 
 r3 DONE
