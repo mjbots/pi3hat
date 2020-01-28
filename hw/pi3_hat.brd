@@ -161,9 +161,9 @@
 <wire x1="0" y1="61.5" x2="0" y2="3.5" width="0" layer="20"/>
 <wire x1="3.5" y1="0" x2="0" y2="3.5" width="0" layer="20" curve="-90"/>
 <wire x1="53" y1="0" x2="56.5" y2="3.5" width="0" layer="20" curve="90"/>
-<text x="81" y="11.1" size="1" layer="21" ratio="10" rot="R180">jjp@pobox.com</text>
-<text x="81" y="9.6" size="1" layer="21" ratio="10" rot="R180">(c) 2020</text>
-<text x="81" y="8.1" size="1" layer="21" ratio="10" rot="R180">mjmech pi3hat r4</text>
+<text x="53.9" y="9" size="1" layer="21" ratio="10" rot="R90">jjp@pobox.com</text>
+<text x="55.6" y="9" size="1" layer="21" ratio="10" rot="R90">(c) 2020</text>
+<text x="52.3" y="9" size="1" layer="21" ratio="10" rot="R90">mjmech pi3hat r4</text>
 <wire x1="51" y1="20" x2="50" y2="19" width="0" layer="20" curve="-90"/>
 <wire x1="50" y1="19" x2="35" y2="19" width="0" layer="20"/>
 <wire x1="35" y1="19" x2="34" y2="20" width="0" layer="20" curve="-90"/>
@@ -783,6 +783,18 @@
 <package name="24AWG_PAD">
 <pad name="P$1" x="0" y="0" drill="0.7"/>
 </package>
+<package name="SMF">
+<smd name="C" x="-1.45" y="0" dx="1.3" dy="1.4" layer="1"/>
+<smd name="A" x="1.45" y="0" dx="1.3" dy="1.4" layer="1"/>
+<wire x1="-2.4" y1="0.9" x2="-2.2" y2="0.9" width="0.127" layer="21"/>
+<wire x1="-2.2" y1="0.9" x2="2.4" y2="0.9" width="0.127" layer="21"/>
+<wire x1="2.4" y1="0.9" x2="2.4" y2="-0.9" width="0.127" layer="21"/>
+<wire x1="2.4" y1="-0.9" x2="-2.2" y2="-0.9" width="0.127" layer="21"/>
+<wire x1="-2.2" y1="-0.9" x2="-2.4" y2="-0.9" width="0.127" layer="21"/>
+<wire x1="-2.4" y1="-0.9" x2="-2.4" y2="0.9" width="0.127" layer="21"/>
+<wire x1="-2.2" y1="0.9" x2="-2.2" y2="-0.9" width="0.127" layer="21"/>
+<text x="-2.54" y="1.27" size="0.8" layer="21" font="vector">&gt;NAME</text>
+</package>
 </packages>
 </library>
 <library name="mfpassives">
@@ -1073,26 +1085,26 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="MF" value="Didoes Incorporated" x="9.56" y="8.34" size="1.778" layer="27" display="off"/>
 <attribute name="POPULATE" value="1" x="9.56" y="8.34" size="1.778" layer="27" display="off"/>
 </element>
-<element name="F1" library="pi3_hat" package="FUS_VISHAY_MFU0603" value="MFU0603FF04000P100" x="30.3" y="9.2" smashed="yes" rot="R180">
-<attribute name="VENDOR" value="VISHAY" x="30.3" y="9.2" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="MANUFACTURER_PART_NUMBER" value="" x="30.3" y="9.2" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="NAME" x="30.3766" y="8.535" size="0.6" layer="25" font="vector" ratio="10" rot="SR180"/>
-<attribute name="DPN" value="MFU06034.00CT-ND" x="30.3" y="9.2" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="MPN" value="MFU0603FF04000P100" x="30.3" y="9.2" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="POPULATE" value="1" x="30.3" y="9.2" size="1.778" layer="27" rot="R180" display="off"/>
+<element name="F1" library="pi3_hat" package="FUS_VISHAY_MFU0603" value="MFU0603FF04000P100" x="30.3" y="9.9" smashed="yes" rot="R180">
+<attribute name="VENDOR" value="VISHAY" x="30.3" y="9.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="" x="30.3" y="9.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="NAME" x="30.3766" y="9.235" size="0.6" layer="25" font="vector" ratio="10" rot="SR180"/>
+<attribute name="DPN" value="MFU06034.00CT-ND" x="30.3" y="9.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MFU0603FF04000P100" x="30.3" y="9.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="30.3" y="9.9" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C6" library="mfpassives" package="C1206" value="10uF 50V" x="29.2" y="2.8" smashed="yes">
-<attribute name="HOUSEPART" value="" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="CGA5L1X7R1H106K160AC" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="TDK" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="29.2" y="2.8" size="1.778" layer="27" display="off"/>
-<attribute name="NAME" x="31.6" y="1.7" size="0.6" layer="25" font="vector" ratio="10" rot="R270"/>
+<element name="C2" library="mfpassives" package="C1206" value="10uF 50V" x="29.2" y="3.5" smashed="yes">
+<attribute name="HOUSEPART" value="" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="CGA5L1X7R1H106K160AC" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="TDK" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="29.2" y="3.5" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="31.6" y="2.4" size="0.6" layer="25" font="vector" ratio="10" rot="R270"/>
 </element>
-<element name="C5" library="mfpassives" package="C1210" value="22uF 16V" x="13.4" y="11" smashed="yes" rot="R90">
+<element name="C7" library="mfpassives" package="C1210" value="22uF 16V" x="13.4" y="11" smashed="yes" rot="R90">
 <attribute name="HOUSEPART" value="" x="13.4" y="11" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="13.4" y="11" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="CL32A226KOJNNNE" x="13.4" y="11" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1122,7 +1134,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="HOUSEPART" value="0" x="15.8" y="4.5" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="11.6" y="3.2" size="0.6" layer="25" font="vector" ratio="10" rot="R90"/>
 </element>
-<element name="R3" library="mfpassives" package="R0603" value="10k 1%" x="10.5" y="11.6" smashed="yes" rot="R90">
+<element name="R5" library="mfpassives" package="R0603" value="10k 1%" x="10.5" y="11.6" smashed="yes" rot="R90">
 <attribute name="HOUSEPART" value="" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="ERJ-3EKF1002V" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1133,7 +1145,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="NAME" x="11.1" y="13.2" size="0.6" layer="25" font="vector" ratio="10"/>
 <attribute name="MF" value="Panasonic" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="R4" library="mfpassives" package="R0603" value="53.6k 1%" x="7.1" y="8.4" smashed="yes" rot="R90">
+<element name="F6" library="mfpassives" package="R0603" value="53.6k 1%" x="7.1" y="8.4" smashed="yes" rot="R90">
 <attribute name="HOUSEPART" value="" x="7.1" y="8.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="7.1" y="8.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="ERJ-3EKF5362V" x="7.1" y="8.4" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1145,31 +1157,31 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="NAME" x="7.6" y="6.8" size="0.6" layer="25" font="vector" ratio="10" rot="R180"/>
 </element>
 <element name="J2" library="pi3_hat" package="XT30P" value="XT30P" x="35.4" y="5.3" rot="R90"/>
-<element name="C14" library="mfpassives" package="C0805" value=".1uF 50V" x="29.6" y="7.6">
-<attribute name="HOUSEPART" value="1" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0805-0.1uF" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="29.6" y="7.6" size="1.778" layer="27" display="off"/>
+<element name="C1" library="mfpassives" package="C0805" value=".1uF 50V" x="29.6" y="8.2">
+<attribute name="HOUSEPART" value="1" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-0805-0.1uF" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="29.6" y="8.2" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C2" library="mfpassives" package="C1206" value="10uF 50V" x="29.2" y="5.3">
-<attribute name="HOUSEPART" value="" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="CGA5L1X7R1H106K160AC" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="MF" value="TDK" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="29.2" y="5.3" size="1.778" layer="27" display="off"/>
+<element name="C3" library="mfpassives" package="C1206" value="10uF 50V" x="29.2" y="5.9">
+<attribute name="HOUSEPART" value="" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="CGA5L1X7R1H106K160AC" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="TDK" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="29.2" y="5.9" size="1.778" layer="27" display="off"/>
 </element>
 <element name="U1" library="pi3_hat" package="SO-8EP" value="AP64351SO8EP" x="23.5" y="5.9" rot="R90">
 <attribute name="MPN" value="AP64350SP-13" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="POPULATE" value="1" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MF" value="DIODES INC" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="C15" library="mfpassives" package="C0603" value="0.01uF" x="23.5" y="9.5" rot="R180">
+<element name="C4" library="mfpassives" package="C0603" value="0.01uF" x="23.5" y="9.5" rot="R180">
 <attribute name="HOUSEPART" value="" x="23.5" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="TOLERANCE" value="" x="23.5" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MPN" value="MF-CAP-0603-0.01uF" x="23.5" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
@@ -1178,7 +1190,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="VOLTAGE" value="" x="23.5" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="URL" value="" x="23.5" y="9.5" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C16" library="mfpassives" package="C0805" value=".1uF 50V" x="24.8" y="2.2" rot="R180">
+<element name="C5" library="mfpassives" package="C0805" value=".1uF 50V" x="24.8" y="2.2" rot="R180">
 <attribute name="HOUSEPART" value="1" x="24.8" y="2.2" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="TOLERANCE" value="" x="24.8" y="2.2" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MPN" value="MF-CAP-0805-0.1uF" x="24.8" y="2.2" size="1.778" layer="27" rot="R180" display="off"/>
@@ -1187,7 +1199,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="VOLTAGE" value="" x="24.8" y="2.2" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="URL" value="" x="24.8" y="2.2" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="R11" library="mfpassives" package="R0402" value="14k" x="19.4" y="11.3" rot="R90">
+<element name="R1" library="mfpassives" package="R0402" value="14k" x="19.4" y="11.3" rot="R90">
 <attribute name="HOUSEPART" value="" x="19.4" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="19.4" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="" x="19.4" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1196,7 +1208,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="URL" value="" x="19.4" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="WATTAGE" value="" x="19.4" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="C17" library="mfpassives" package="C0402" value="3.3nF" x="19.9" y="13.2">
+<element name="C6" library="mfpassives" package="C0402" value="3.3nF" x="19.9" y="13.2">
 <attribute name="HOUSEPART" value="" x="19.9" y="13.2" size="1.778" layer="27" display="off"/>
 <attribute name="TOLERANCE" value="" x="19.9" y="13.2" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="" x="19.9" y="13.2" size="1.778" layer="27" display="off"/>
@@ -1205,7 +1217,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="VOLTAGE" value="" x="19.9" y="13.2" size="1.778" layer="27" display="off"/>
 <attribute name="URL" value="" x="19.9" y="13.2" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R12" library="mfpassives" package="R0402" value="115k" x="19.8" y="9.4">
+<element name="R2" library="mfpassives" package="R0402" value="115k" x="19.8" y="9.4">
 <attribute name="HOUSEPART" value="" x="19.8" y="9.4" size="1.778" layer="27" display="off"/>
 <attribute name="TOLERANCE" value="" x="19.8" y="9.4" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="" x="19.8" y="9.4" size="1.778" layer="27" display="off"/>
@@ -1214,7 +1226,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="URL" value="" x="19.8" y="9.4" size="1.778" layer="27" display="off"/>
 <attribute name="WATTAGE" value="" x="19.8" y="9.4" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R13" library="mfpassives" package="R0402" value="22.1k" x="20.7" y="11.3" rot="R90">
+<element name="R3" library="mfpassives" package="R0402" value="22.1k" x="20.7" y="11.3" rot="R90">
 <attribute name="HOUSEPART" value="" x="20.7" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="20.7" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="" x="20.7" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
@@ -1224,19 +1236,24 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="WATTAGE" value="" x="20.7" y="11.3" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="J4" library="pinhead" package="2X20" value="" x="3.5" y="32.5" rot="R90"/>
-<element name="U4" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="23.9" y="54.1">
-<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
-<attribute name="HEIGHT" value="0.6mm" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="23.9" y="54.1" size="1.778" layer="27" display="off"/>
+<element name="U4" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="25.3" y="54.1" smashed="yes">
+<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="0.6mm" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="25.3" y="54.1" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="25.4" y="58.9" size="1.27" layer="25" align="center"/>
 </element>
 <element name="U5" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="34.6" y="57.8" rot="R180"/>
 <element name="U6" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="45.5" y="57.8" rot="R180"/>
-<element name="JC1" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="41.1" y="53" rot="R270"/>
-<element name="JC2" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="53" rot="R270"/>
-<element name="R1" library="mfpassives" package="R0402" value="120" x="34.8" y="54.1" rot="R270">
+<element name="JC1" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="41.1" y="53" smashed="yes" rot="R270">
+<attribute name="NAME" x="38.0590125" y="58.767259375" size="1.2725" layer="25"/>
+</element>
+<element name="JC2" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="53" smashed="yes" rot="R270">
+<attribute name="NAME" x="50.2590125" y="58.767259375" size="1.2725" layer="25"/>
+</element>
+<element name="R9" library="mfpassives" package="R0402" value="120" x="34.8" y="54.1" rot="R270">
 <attribute name="HOUSEPART" value="" x="34.8" y="54.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="34.8" y="54.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="" x="34.8" y="54.1" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1245,299 +1262,311 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="URL" value="" x="34.8" y="54.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="WATTAGE" value="" x="34.8" y="54.1" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="R2" library="mfpassives" package="R0402" value="120" x="45" y="53.8" rot="R270">
-<attribute name="HOUSEPART" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="TOLERANCE" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="POPULATE" value="1" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="VOLTAGE" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="URL" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="WATTAGE" value="" x="45" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<element name="R10" library="mfpassives" package="R0402" value="120" x="46.1" y="53.8" rot="R270">
+<attribute name="HOUSEPART" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="WATTAGE" value="" x="46.1" y="53.8" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C1" library="mfpassives" package="C0402" value="0.1uF" x="17.5" y="54.2" rot="R270">
-<attribute name="HOUSEPART" value="YES" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="TOLERANCE" value="" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="POPULATE" value="1" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="DIELECTRIC" value="" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="VOLTAGE" value="" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="URL" value="" x="17.5" y="54.2" size="1.778" layer="27" rot="R270" display="off"/>
+<element name="C9" library="mfpassives" package="C0402" value="0.1uF" x="17.6" y="54.3" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="17.6" y="54.3" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C10" library="mfpassives" package="C1206" value="10uF" x="-30.1" y="45.4">
-<attribute name="HOUSEPART" value="YES" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-30.1" y="45.4" size="1.778" layer="27" display="off"/>
+<element name="C14" library="mfpassives" package="C1206" value="10uF" x="32.6" y="50.9">
+<attribute name="HOUSEPART" value="YES" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="32.6" y="50.9" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C3" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="41.7">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="41.7" size="1.778" layer="27" display="off"/>
+<element name="C10" library="mfpassives" package="C0402" value="0.1uF" x="21.8" y="58.8" rot="R180">
+<attribute name="HOUSEPART" value="YES" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="21.8" y="58.8" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C4" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="38.1">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="38.1" size="1.778" layer="27" display="off"/>
+<element name="C15" library="mfpassives" package="C0402" value="0.1uF" x="31.2" y="56.4">
+<attribute name="HOUSEPART" value="YES" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="31.2" y="56.4" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C7" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="34.5">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="34.5" size="1.778" layer="27" display="off"/>
+<element name="C13" library="mfpassives" package="C0402" value="0.1uF" x="25" y="48.6" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="25" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C9" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="30.9">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="30.9" size="1.778" layer="27" display="off"/>
+<element name="C12" library="mfpassives" package="C0402" value="0.1uF" x="26.2" y="48.6" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="26.2" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C11" library="mfpassives" package="C0402" value="1uF" x="-31.2" y="27.3">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-1uF" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="27.3" size="1.778" layer="27" display="off"/>
+<element name="C11" library="mfpassives" package="C0402" value="1uF" x="27.5" y="48.6" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-1uF" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="27.5" y="48.6" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="JD1" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="12" y="57.3" rot="R90"/>
-<element name="C12" library="mfpassives" package="C1206" value="10uF" x="-30.1" y="14.8">
-<attribute name="HOUSEPART" value="YES" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-30.1" y="14.8" size="1.778" layer="27" display="off"/>
+<element name="JD1" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="12" y="57.3" smashed="yes" rot="R90">
+<attribute name="NAME" x="15.5590125" y="62.567259375" size="1.2725" layer="25"/>
 </element>
-<element name="C13" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="11.1">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="11.1" size="1.778" layer="27" display="off"/>
+<element name="C29" library="mfpassives" package="C1206" value="10uF" x="9.2" y="16.9" rot="R180">
+<attribute name="HOUSEPART" value="YES" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="9.2" y="16.9" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="D1" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="-30.6" y="7.5">
-<attribute name="HOUSEPART" value="YES" x="-30.6" y="7.5" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="-30.6" y="7.5" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-30.6" y="7.5" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-30.6" y="7.5" size="1.778" layer="27" display="off"/>
+<element name="C30" library="mfpassives" package="C0402" value="0.1uF" x="8.2" y="18.8" rot="R180">
+<attribute name="HOUSEPART" value="YES" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="8.2" y="18.8" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="R5" library="mfpassives" package="R0402" value="" x="-31.2" y="3.9">
-<attribute name="HOUSEPART" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="-31.2" y="3.9" size="1.778" layer="27" display="off"/>
+<element name="D3" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="17.8" y="49.9" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="17.8" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="17.8" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="17.8" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="17.8" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="D2" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="-30.6" y="0.3">
-<attribute name="HOUSEPART" value="YES" x="-30.6" y="0.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="-30.6" y="0.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-30.6" y="0.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-30.6" y="0.3" size="1.778" layer="27" display="off"/>
+<element name="R8" library="mfpassives" package="R0402" value="220" x="15.7" y="49">
+<attribute name="HOUSEPART" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
+<attribute name="WATTAGE" value="" x="15.7" y="49" size="1.778" layer="27" display="off"/>
 </element>
-<element name="R6" library="mfpassives" package="R0402" value="" x="-31.2" y="-3.3">
-<attribute name="HOUSEPART" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="-31.2" y="-3.3" size="1.778" layer="27" display="off"/>
+<element name="D2" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="19.6" y="49.9" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="19.6" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="19.6" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="19.6" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="19.6" y="49.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C18" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="-6.9">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-6.9" size="1.778" layer="27" display="off"/>
+<element name="R7" library="mfpassives" package="R0402" value="220" x="21.6" y="49" rot="R180">
+<attribute name="HOUSEPART" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="WATTAGE" value="" x="21.6" y="49" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C19" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="-10.5">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-10.5" size="1.778" layer="27" display="off"/>
+<element name="C17" library="mfpassives" package="C0402" value="0.1uF" x="47.9" y="57.8" rot="R90">
+<attribute name="HOUSEPART" value="YES" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="DIELECTRIC" value="" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="47.9" y="57.8" size="1.778" layer="27" rot="R90" display="off"/>
+</element>
+<element name="C16" library="mfpassives" package="C0402" value="0.1uF" x="36.8" y="57.8" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="36.8" y="57.8" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="J1" library="pi3_hat" package="XT30P" value="XT30P" x="41.1" y="5.3" rot="R90"/>
-<element name="U11" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="23.8" y="42.8">
-<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
-<attribute name="HEIGHT" value="0.6mm" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="2.5" y="63.4" size="1.778" layer="27" display="off"/>
+<element name="U11" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="25.1" y="43.1" smashed="yes">
+<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="0.6mm" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="3.8" y="63.7" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="30" y="47.1" size="1.27" layer="25" align="center"/>
 </element>
 <element name="U12" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="45.8" y="47.5" rot="R180"/>
-<element name="U13" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="35.1" y="47.2" rot="R180"/>
-<element name="JC4" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="41.7" rot="R270"/>
-<element name="JC5" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="41.1" y="41.7" rot="R270"/>
-<element name="R7" library="mfpassives" package="R0402" value="120" x="45.3" y="40.6" rot="R270">
-<attribute name="HOUSEPART" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="TOLERANCE" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="POPULATE" value="1" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="VOLTAGE" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="URL" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="WATTAGE" value="" x="62" y="70.1" size="1.778" layer="27" rot="R270" display="off"/>
+<element name="U13" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="34.5" y="47.4" rot="R180"/>
+<element name="JC4" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="41.7" smashed="yes" rot="R270">
+<attribute name="NAME" x="50.2590125" y="47.467259375" size="1.2725" layer="25"/>
 </element>
-<element name="R8" library="mfpassives" package="R0402" value="120" x="113" y="30.9">
-<attribute name="HOUSEPART" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="80.7" y="44" size="1.778" layer="27" display="off"/>
+<element name="JC5" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="41.1" y="41.7" smashed="yes" rot="R270">
+<attribute name="NAME" x="38.0590125" y="47.467259375" size="1.2725" layer="25"/>
 </element>
-<element name="C20" library="mfpassives" package="C0402" value="0.1uF" x="111.3" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="40.4" size="1.778" layer="27" display="off"/>
+<element name="R19" library="mfpassives" package="R0402" value="120" x="46.9" y="42.9" rot="R270">
+<attribute name="HOUSEPART" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="WATTAGE" value="" x="63.6" y="72.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C21" library="mfpassives" package="C1206" value="10uF" x="99.8" y="35.4">
-<attribute name="HOUSEPART" value="YES" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="81.8" y="36.6" size="1.778" layer="27" display="off"/>
+<element name="R20" library="mfpassives" package="R0402" value="120" x="34.7" y="42.8" rot="R270">
+<attribute name="HOUSEPART" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="WATTAGE" value="" x="47.8" y="75.1" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C22" library="mfpassives" package="C0402" value="0.1uF" x="115" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="32.9" size="1.778" layer="27" display="off"/>
+<element name="C32" library="mfpassives" package="C0402" value="0.1uF" x="17.6" y="41.4" rot="R90">
+<attribute name="HOUSEPART" value="YES" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="DIELECTRIC" value="" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="12.8" y="10.8" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="C23" library="mfpassives" package="C0402" value="0.1uF" x="118.7" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="29.3" size="1.778" layer="27" display="off"/>
+<element name="C37" library="mfpassives" package="C1206" value="10uF" x="32.5" y="39.6">
+<attribute name="HOUSEPART" value="YES" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="14.5" y="40.8" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C24" library="mfpassives" package="C0402" value="0.1uF" x="122.4" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="25.7" size="1.778" layer="27" display="off"/>
+<element name="C33" library="mfpassives" package="C0402" value="0.1uF" x="21.7" y="47.7" rot="R180">
+<attribute name="HOUSEPART" value="YES" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="56" y="50.4" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C25" library="mfpassives" package="C0402" value="0.1uF" x="91.7" y="30.9">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="22.1" size="1.778" layer="27" display="off"/>
+<element name="C38" library="mfpassives" package="C0402" value="0.1uF" x="31.1" y="45.1">
+<attribute name="HOUSEPART" value="YES" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="-6.9" y="38.8" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C26" library="mfpassives" package="C0402" value="1uF" x="95.4" y="30.9">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-1uF" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="18.5" size="1.778" layer="27" display="off"/>
+<element name="C36" library="mfpassives" package="C0402" value="0.1uF" x="25.5" y="37.7" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="15.6" y="79.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="JD3" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="11.9" y="42.5" rot="R90"/>
-<element name="D3" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="104.3" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="81.3" y="6.2" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="81.3" y="6.2" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.3" y="6.2" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="81.3" y="6.2" size="1.778" layer="27" display="off"/>
+<element name="C35" library="mfpassives" package="C0402" value="0.1uF" x="26.8" y="37.7" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="18" y="48.7" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="R9" library="mfpassives" package="R0402" value="" x="115.8" y="30.9">
-<attribute name="HOUSEPART" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="80.7" y="2.6" size="1.778" layer="27" display="off"/>
+<element name="C34" library="mfpassives" package="C0402" value="1uF" x="28.1" y="37.7" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-1uF" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="15.7" y="52.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="D4" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="108.1" y="35.6">
-<attribute name="HOUSEPART" value="YES" x="81.3" y="-1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="81.3" y="-1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.3" y="-1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="81.3" y="-1" size="1.778" layer="27" display="off"/>
+<element name="JD3" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="11.9" y="42.5" smashed="yes" rot="R90">
+<attribute name="NAME" x="13.9590125" y="35.267259375" size="1.2725" layer="25"/>
 </element>
-<element name="R10" library="mfpassives" package="R0402" value="" x="106.5" y="30.9">
-<attribute name="HOUSEPART" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="80.7" y="-4.6" size="1.778" layer="27" display="off"/>
+<element name="D7" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="18" y="38.4" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="-11.4" y="61.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="-11.4" y="61.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="-11.4" y="61.4" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-11.4" y="61.4" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C27" library="mfpassives" package="C0402" value="0.1uF" x="99.1" y="30.9">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-8.2" size="1.778" layer="27" display="off"/>
+<element name="R18" library="mfpassives" package="R0402" value="220" x="17.4" y="35.6">
+<attribute name="HOUSEPART" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
+<attribute name="WATTAGE" value="" x="-17.7" y="7.3" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C28" library="mfpassives" package="C0402" value="0.1uF" x="102.8" y="30.9">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-11.8" size="1.778" layer="27" display="off"/>
+<element name="D6" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="19.7" y="38.4" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="-16.9" y="65.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="-16.9" y="65.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="-16.9" y="65.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-16.9" y="65.2" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="U7" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="23.8" y="30.9">
-<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
-<attribute name="HEIGHT" value="0.6mm" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
-<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
-<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="2.5" y="51.4" size="1.778" layer="27" display="off"/>
+<element name="R17" library="mfpassives" package="R0402" value="220" x="21.7" y="38.2" rot="R180">
+<attribute name="HOUSEPART" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="WATTAGE" value="" x="47.5" y="73.7" size="1.778" layer="27" rot="R180" display="off"/>
+</element>
+<element name="C40" library="mfpassives" package="C0402" value="0.1uF" x="36.8" y="47.4" rot="R90">
+<attribute name="HOUSEPART" value="YES" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="DIELECTRIC" value="" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="75.9" y="29" size="1.778" layer="27" rot="R90" display="off"/>
+</element>
+<element name="C39" library="mfpassives" package="C0402" value="0.1uF" x="48.2" y="47.4" rot="R90">
+<attribute name="HOUSEPART" value="YES" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="DIELECTRIC" value="" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="90.9" y="25.3" size="1.778" layer="27" rot="R90" display="off"/>
+</element>
+<element name="U7" library="pi3_hat" package="QFN50P700X700X60-49N" value="STM32G474CEU6" x="25.2" y="32.4" smashed="yes">
+<attribute name="DESCRIPTION" value="STMICROELECTRONICS - STM32G474CEU6 - MCU, 32BIT, 170MHZ, UFQFPN-48" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="HEIGHT" value="0.6mm" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PART_NUMBER" value="511-STM32G474CEU6" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="MOUSER_PRICE-STOCK" value="https://www.mouser.com/Search/Refine.aspx?Keyword=511-STM32G474CEU6" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_NAME" value="STMicroelectronics" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="MANUFACTURER_PART_NUMBER" value="STM32G474CEU6" x="3.9" y="52.9" size="1.778" layer="27" display="off"/>
+<attribute name="NAME" x="30.1" y="36.2" size="1.27" layer="25" align="center"/>
 </element>
 <element name="U9" library="pi3_hat" package="SOT23-8" value="TCAN334GSOT23" x="46" y="35.5" rot="R180"/>
-<element name="JC3" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="30.2" rot="R270"/>
-<element name="R15" library="mfpassives" package="R0402" value="120" x="45.1" y="28.2" rot="R270">
+<element name="JC3" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="30.2" smashed="yes" rot="R270">
+<attribute name="NAME" x="50.2590125" y="35.967259375" size="1.2725" layer="25"/>
+</element>
+<element name="R13" library="mfpassives" package="R0402" value="120" x="45.1" y="28.2" rot="R270">
 <attribute name="HOUSEPART" value="" x="58.1" y="57.7" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="58.1" y="57.7" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="" x="58.1" y="57.7" size="1.778" layer="27" rot="R270" display="off"/>
@@ -1546,111 +1575,113 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="URL" value="" x="58.1" y="57.7" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="WATTAGE" value="" x="58.1" y="57.7" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C29" library="mfpassives" package="C0402" value="0.1uF" x="111.3" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-7.8" size="1.778" layer="27" display="off"/>
+<element name="C18" library="mfpassives" package="C0402" value="0.1uF" x="16.8" y="25.9" rot="R90">
+<attribute name="HOUSEPART" value="YES" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="DIELECTRIC" value="" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="12.1" y="-4.7" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="C30" library="mfpassives" package="C1206" value="10uF" x="99.8" y="-12.7">
-<attribute name="HOUSEPART" value="YES" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="81.8" y="-11.6" size="1.778" layer="27" display="off"/>
+<element name="C23" library="mfpassives" package="C1206" value="10uF" x="32.5" y="35.3">
+<attribute name="HOUSEPART" value="YES" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="14.5" y="36.4" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C31" library="mfpassives" package="C0402" value="0.1uF" x="115" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-15.3" size="1.778" layer="27" display="off"/>
+<element name="C19" library="mfpassives" package="C0402" value="0.1uF" x="21.7" y="36.9" rot="R180">
+<attribute name="HOUSEPART" value="YES" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="56" y="39.7" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
-<element name="C32" library="mfpassives" package="C0402" value="0.1uF" x="118.7" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-18.9" size="1.778" layer="27" display="off"/>
+<element name="C24" library="mfpassives" package="C0402" value="0.1uF" x="30.9" y="33.3">
+<attribute name="HOUSEPART" value="YES" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="-7.1" y="26.9" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C33" library="mfpassives" package="C0402" value="0.1uF" x="122.4" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-22.5" size="1.778" layer="27" display="off"/>
+<element name="C22" library="mfpassives" package="C0402" value="0.1uF" x="25.5" y="27.2" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="15.5" y="68.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C34" library="mfpassives" package="C0402" value="0.1uF" x="91.7" y="-17.2">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-26.1" size="1.778" layer="27" display="off"/>
+<element name="C21" library="mfpassives" package="C0402" value="0.1uF" x="26.8" y="27.2" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="17.9" y="38.2" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C35" library="mfpassives" package="C0402" value="1uF" x="95.4" y="-17.2">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-1uF" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-29.7" size="1.778" layer="27" display="off"/>
+<element name="C20" library="mfpassives" package="C0402" value="1uF" x="28.1" y="27.2" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-1uF" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="15.6" y="41.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="JD2" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="11.8" y="27.2" rot="R90"/>
-<element name="D5" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="104.3" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="81.3" y="-42" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="81.3" y="-42" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.3" y="-42" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="81.3" y="-42" size="1.778" layer="27" display="off"/>
+<element name="JD2" library="pi3_hat" package="JST_B6B-ZR-SM4-TF(LF)(SN)" value="JST-ZH6SMT_VERT" x="11.8" y="27.2" smashed="yes" rot="R90">
+<attribute name="NAME" x="13.8590125" y="19.867259375" size="1.2725" layer="25"/>
 </element>
-<element name="R16" library="mfpassives" package="R0402" value="" x="113.9" y="-17.2">
-<attribute name="HOUSEPART" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="80.7" y="-45.6" size="1.778" layer="27" display="off"/>
+<element name="D5" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="18.4" y="26" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="-11.1" y="49" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="-11.1" y="49" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="-11.1" y="49" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-11.1" y="49" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="D6" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="108.1" y="-12.5">
-<attribute name="HOUSEPART" value="YES" x="81.3" y="-49.2" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-LED-0603-RED" x="81.3" y="-49.2" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="81.3" y="-49.2" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="81.3" y="-49.2" size="1.778" layer="27" display="off"/>
+<element name="R12" library="mfpassives" package="R0402" value="220" x="18.5" y="23.2" rot="R90">
+<attribute name="HOUSEPART" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="WATTAGE" value="" x="46.9" y="-10" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
-<element name="R17" library="mfpassives" package="R0402" value="" x="117.6" y="-17.2">
-<attribute name="HOUSEPART" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="80.7" y="-52.8" size="1.778" layer="27" display="off"/>
+<element name="D4" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="20.2" y="26" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="-16.5" y="52.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="-16.5" y="52.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="-16.5" y="52.8" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="-16.5" y="52.8" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
-<element name="C36" library="mfpassives" package="C0402" value="0.1uF" x="99.1" y="-17.2">
-<attribute name="HOUSEPART" value="YES" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="80.7" y="-56.4" size="1.778" layer="27" display="off"/>
+<element name="R11" library="mfpassives" package="R0402" value="220" x="20.1" y="23.2" rot="R90">
+<attribute name="HOUSEPART" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="TOLERANCE" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="POPULATE" value="1" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="VOLTAGE" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="URL" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="WATTAGE" value="" x="55.7" y="-13.7" size="1.778" layer="27" rot="R90" display="off"/>
+</element>
+<element name="C25" library="mfpassives" package="C0402" value="0.1uF" x="48.4" y="35.5" rot="R270">
+<attribute name="HOUSEPART" value="YES" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="TOLERANCE" value="" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="POPULATE" value="1" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="DIELECTRIC" value="" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="VOLTAGE" value="" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="URL" value="" x="9.2" y="53.9" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="U8" library="pi3_hat" package="LGA16" value="BMI088LGA16" x="36" y="30.2" rot="R270"/>
-<element name="C38" library="mfpassives" package="C0402" value="0.1uF" x="36" y="27.1">
+<element name="C27" library="mfpassives" package="C0402" value="0.1uF" x="36" y="27.1">
 <attribute name="HOUSEPART" value="YES" x="36" y="27.1" size="1.778" layer="27" display="off"/>
 <attribute name="TOLERANCE" value="" x="36" y="27.1" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-0.1uF" x="36" y="27.1" size="1.778" layer="27" display="off"/>
@@ -1659,7 +1690,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="VOLTAGE" value="" x="36" y="27.1" size="1.778" layer="27" display="off"/>
 <attribute name="URL" value="" x="36" y="27.1" size="1.778" layer="27" display="off"/>
 </element>
-<element name="C39" library="mfpassives" package="C0402" value="0.1uF" x="35.9" y="33.2">
+<element name="C28" library="mfpassives" package="C0402" value="0.1uF" x="35.9" y="33.2">
 <attribute name="HOUSEPART" value="YES" x="35.9" y="33.2" size="1.778" layer="27" display="off"/>
 <attribute name="TOLERANCE" value="" x="35.9" y="33.2" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-0.1uF" x="35.9" y="33.2" size="1.778" layer="27" display="off"/>
@@ -1669,56 +1700,56 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="URL" value="" x="35.9" y="33.2" size="1.778" layer="27" display="off"/>
 </element>
 <element name="J3" library="pinhead" package="2X04" value="" x="24.7" y="20.5" rot="R90"/>
-<element name="C37" library="mfpassives" package="C1206" value="10uF" x="-30.1" y="-21">
-<attribute name="HOUSEPART" value="YES" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-30.1" y="-21" size="1.778" layer="27" display="off"/>
+<element name="C26" library="mfpassives" package="C1206" value="10uF" x="29.9" y="24.2">
+<attribute name="HOUSEPART" value="YES" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="TOLERANCE" value="" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="DIELECTRIC" value="" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="VOLTAGE" value="" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="" x="29.9" y="24.2" size="1.778" layer="27" display="off"/>
 </element>
-<element name="U10" library="pi3_hat" package="SOIC8" value="CAT24C32SOIC8" x="11.9" y="43.6" rot="MR0">
-<attribute name="POPULATE" value="1" x="11.9" y="43.6" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="MPN" value="CAT24C32WI-GT3" x="11.9" y="43.6" size="1.778" layer="28" rot="MR0" display="off"/>
-<attribute name="MF" value="ON Semiconductor" x="11.9" y="43.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<element name="U10" library="pi3_hat" package="SOIC8" value="CAT24C32SOIC8" x="12.1" y="43.2" rot="MR0">
+<attribute name="POPULATE" value="1" x="12.1" y="43.2" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="MPN" value="CAT24C32WI-GT3" x="12.1" y="43.2" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="MF" value="ON Semiconductor" x="12.1" y="43.2" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="C40" library="mfpassives" package="C0402" value="0.1uF" x="-31.2" y="-30.3">
-<attribute name="HOUSEPART" value="YES" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="DIELECTRIC" value="" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-30.3" size="1.778" layer="27" display="off"/>
+<element name="C31" library="mfpassives" package="C0402" value="0.1uF" x="11.8" y="47.3" rot="MR180">
+<attribute name="HOUSEPART" value="YES" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="TOLERANCE" value="" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="POPULATE" value="1" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="DIELECTRIC" value="" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="VOLTAGE" value="" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
+<attribute name="URL" value="" x="11.8" y="47.3" size="1.778" layer="28" rot="MR180" display="off"/>
 </element>
-<element name="R14" library="mfpassives" package="R0402" value="1k" x="-31.2" y="-33.9">
-<attribute name="HOUSEPART" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="-31.2" y="-33.9" size="1.778" layer="27" display="off"/>
+<element name="R14" library="mfpassives" package="R0402" value="1k" x="11" y="48.6" rot="MR0">
+<attribute name="HOUSEPART" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="TOLERANCE" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="MPN" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="POPULATE" value="1" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="VOLTAGE" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="URL" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
+<attribute name="WATTAGE" value="" x="11" y="48.6" size="1.778" layer="28" rot="MR0" display="off"/>
 </element>
-<element name="JP1" library="pinhead" package="1X02" value="" x="-29.6" y="-38.5"/>
-<element name="R18" library="mfpassives" package="R0402" value="3.9k 1%" x="-31.2" y="-43.1">
-<attribute name="HOUSEPART" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="-31.2" y="-43.1" size="1.778" layer="27" display="off"/>
+<element name="JP1" library="pinhead" package="1X02" value="" x="8.1" y="49.1" rot="R270"/>
+<element name="R15" library="mfpassives" package="R0402" value="3.9k 1%" x="7.2" y="40.6" rot="MR90">
+<attribute name="HOUSEPART" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="TOLERANCE" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="MPN" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="POPULATE" value="1" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="VOLTAGE" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="URL" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
+<attribute name="WATTAGE" value="" x="7.2" y="40.6" size="1.778" layer="28" rot="MR90" display="off"/>
 </element>
-<element name="R19" library="mfpassives" package="R0402" value="3.9k 1%" x="-31.2" y="-46.7">
-<attribute name="HOUSEPART" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="TOLERANCE" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="MPN" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="POPULATE" value="1" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="VOLTAGE" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="URL" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
-<attribute name="WATTAGE" value="" x="-31.2" y="-46.7" size="1.778" layer="27" display="off"/>
+<element name="R16" library="mfpassives" package="R0402" value="3.9k 1%" x="7.2" y="43.1" rot="MR270">
+<attribute name="HOUSEPART" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="TOLERANCE" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="MPN" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="POPULATE" value="1" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="VOLTAGE" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="URL" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
+<attribute name="WATTAGE" value="" x="7.2" y="43.1" size="1.778" layer="28" rot="MR270" display="off"/>
 </element>
 <element name="REGOUT" library="pi3_hat" package="24AWG_PAD" value="PAD24AWG_PAD" x="-31.7" y="-48.8"/>
 <element name="V+" library="pi3_hat" package="24AWG_PAD" value="PAD24AWG_PAD" x="-31.7" y="-50.9"/>
@@ -1733,6 +1764,27 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <element name="SPI0_SCLK" library="pi3_hat" package="24AWG_PAD" value="PAD24AWG_PAD" x="-31.7" y="-69.8"/>
 <element name="SPI0_MISO" library="pi3_hat" package="24AWG_PAD" value="PAD24AWG_PAD" x="-31.7" y="-71.9"/>
 <element name="SPI0_MOSI" library="pi3_hat" package="24AWG_PAD" value="PAD24AWG_PAD" x="-31.7" y="-74"/>
+<element name="D1" library="mfleds" package="LED0603" value="MF-LED-0603-RED" x="7.5" y="1.1">
+<attribute name="HOUSEPART" value="YES" x="7.5" y="1.1" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="MF-LED-0603-RED" x="7.5" y="1.1" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="7.5" y="1.1" size="1.778" layer="27" display="off"/>
+<attribute name="URL" value="https://factory.macrofab.com/part/MF-LED-0603-RED" x="7.5" y="1.1" size="1.778" layer="27" display="off"/>
+</element>
+<element name="R4" library="mfpassives" package="R0402" value="~700" x="10.3" y="0.9" rot="R180">
+<attribute name="HOUSEPART" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="TOLERANCE" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="POPULATE" value="1" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VOLTAGE" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="URL" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="WATTAGE" value="" x="10.3" y="0.9" size="1.778" layer="27" rot="R180" display="off"/>
+</element>
+<element name="D8" library="pi3_hat" package="SMF" value="36V" x="29.2" y="1.2">
+<attribute name="VALUE" value="" x="29.2" y="1.2" size="1.778" layer="27" display="off"/>
+<attribute name="POPULATE" value="1" x="29.2" y="1.2" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="SMF36A-E3-08" x="29.2" y="1.2" size="1.778" layer="27" display="off"/>
+<attribute name="MF" value="Vishay" x="29.2" y="1.2" size="1.778" layer="27" display="off"/>
+</element>
 </elements>
 <signals>
 <signal name="+5V">
@@ -1741,27 +1793,29 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="J4" pad="2"/>
 <contactref element="J4" pad="4"/>
 <contactref element="+5V" pad="P$1"/>
-<wire x1="2.23" y1="8.37" x2="-31.7" y2="-53" width="0" layer="19" extent="1-1"/>
+<contactref element="R4" pad="P$1"/>
+<wire x1="10.85" y1="0.9" x2="-31.7" y2="-53" width="0" layer="19" extent="1-1"/>
+<wire x1="8.8" y1="4.3" x2="10.85" y2="0.9" width="0" layer="19" extent="1-1"/>
+<wire x1="8.61" y1="9.54" x2="8.8" y2="4.3" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="8.37" x2="8.61" y2="9.54" width="0" layer="19" extent="1-1"/>
 <wire x1="2.23" y1="10.91" x2="2.23" y2="8.37" width="0" layer="19" extent="1-1"/>
-<wire x1="8.61" y1="9.54" x2="2.23" y2="8.37" width="0" layer="19" extent="1-1"/>
-<wire x1="8.8" y1="4.3" x2="8.61" y2="9.54" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="GND">
-<contactref element="R3" pad="P$2"/>
-<contactref element="R4" pad="P$2"/>
+<contactref element="R5" pad="P$2"/>
+<contactref element="F6" pad="P$2"/>
 <contactref element="J2" pad="1"/>
-<contactref element="C14" pad="P$2"/>
-<contactref element="C6" pad="P$2"/>
+<contactref element="C1" pad="P$2"/>
 <contactref element="C2" pad="P$2"/>
+<contactref element="C3" pad="P$2"/>
 <contactref element="U1" pad="7"/>
 <contactref element="U1" pad="P2"/>
 <contactref element="U1" pad="P1"/>
 <contactref element="U1" pad="PAD"/>
 <contactref element="U1" pad="P3"/>
-<contactref element="C15" pad="P$2"/>
-<contactref element="C17" pad="P$2"/>
-<contactref element="R13" pad="P$2"/>
-<contactref element="C5" pad="P$2"/>
+<contactref element="C4" pad="P$2"/>
+<contactref element="C6" pad="P$2"/>
+<contactref element="R3" pad="P$2"/>
+<contactref element="C7" pad="P$2"/>
 <contactref element="C8" pad="P$2"/>
 <contactref element="J4" pad="6"/>
 <contactref element="J4" pad="14"/>
@@ -1775,21 +1829,21 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U6" pad="2"/>
 <contactref element="JC1" pad="3"/>
 <contactref element="JC2" pad="3"/>
-<contactref element="C1" pad="P$2"/>
-<contactref element="JD1" pad="4"/>
-<contactref element="C12" pad="P$2"/>
-<contactref element="C13" pad="P$2"/>
-<contactref element="U4" pad="49"/>
-<contactref element="C3" pad="P$2"/>
-<contactref element="C4" pad="P$2"/>
-<contactref element="C11" pad="P$2"/>
-<contactref element="C10" pad="P$2"/>
-<contactref element="C7" pad="P$2"/>
 <contactref element="C9" pad="P$2"/>
+<contactref element="JD1" pad="4"/>
+<contactref element="C29" pad="P$2"/>
+<contactref element="C30" pad="P$2"/>
+<contactref element="U4" pad="49"/>
+<contactref element="C10" pad="P$2"/>
+<contactref element="C15" pad="P$2"/>
+<contactref element="C11" pad="P$2"/>
+<contactref element="C14" pad="P$2"/>
+<contactref element="C13" pad="P$2"/>
+<contactref element="C12" pad="P$2"/>
 <contactref element="U5" pad="2"/>
 <contactref element="U6" pad="2"/>
-<contactref element="C19" pad="P$2"/>
-<contactref element="C18" pad="P$2"/>
+<contactref element="C16" pad="P$2"/>
+<contactref element="C17" pad="P$2"/>
 <contactref element="U5" pad="5"/>
 <contactref element="U5" pad="8"/>
 <contactref element="U6" pad="5"/>
@@ -1799,46 +1853,46 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U13" pad="2"/>
 <contactref element="JC4" pad="3"/>
 <contactref element="JC5" pad="3"/>
-<contactref element="C20" pad="P$2"/>
+<contactref element="C32" pad="P$2"/>
 <contactref element="JD3" pad="4"/>
 <contactref element="U11" pad="49"/>
-<contactref element="C22" pad="P$2"/>
-<contactref element="C23" pad="P$2"/>
-<contactref element="C26" pad="P$2"/>
-<contactref element="C21" pad="P$2"/>
-<contactref element="C24" pad="P$2"/>
-<contactref element="C25" pad="P$2"/>
+<contactref element="C33" pad="P$2"/>
+<contactref element="C38" pad="P$2"/>
+<contactref element="C34" pad="P$2"/>
+<contactref element="C37" pad="P$2"/>
+<contactref element="C36" pad="P$2"/>
+<contactref element="C35" pad="P$2"/>
 <contactref element="U12" pad="2"/>
 <contactref element="U13" pad="2"/>
-<contactref element="C28" pad="P$2"/>
-<contactref element="C27" pad="P$2"/>
+<contactref element="C39" pad="P$2"/>
+<contactref element="C40" pad="P$2"/>
 <contactref element="U12" pad="5"/>
 <contactref element="U12" pad="8"/>
 <contactref element="U13" pad="5"/>
 <contactref element="U13" pad="8"/>
 <contactref element="U9" pad="2"/>
 <contactref element="JC3" pad="3"/>
-<contactref element="C29" pad="P$2"/>
+<contactref element="C18" pad="P$2"/>
 <contactref element="JD2" pad="4"/>
 <contactref element="U7" pad="49"/>
-<contactref element="C31" pad="P$2"/>
-<contactref element="C32" pad="P$2"/>
-<contactref element="C35" pad="P$2"/>
-<contactref element="C30" pad="P$2"/>
-<contactref element="C33" pad="P$2"/>
-<contactref element="C34" pad="P$2"/>
+<contactref element="C19" pad="P$2"/>
+<contactref element="C24" pad="P$2"/>
+<contactref element="C20" pad="P$2"/>
+<contactref element="C23" pad="P$2"/>
+<contactref element="C22" pad="P$2"/>
+<contactref element="C21" pad="P$2"/>
 <contactref element="U9" pad="2"/>
-<contactref element="C36" pad="P$2"/>
+<contactref element="C25" pad="P$2"/>
 <contactref element="U9" pad="5"/>
 <contactref element="U9" pad="8"/>
 <contactref element="U8" pad="7"/>
-<contactref element="C38" pad="P$2"/>
-<contactref element="C39" pad="P$2"/>
+<contactref element="C27" pad="P$2"/>
+<contactref element="C28" pad="P$2"/>
 <contactref element="U8" pad="6"/>
 <contactref element="U8" pad="4"/>
 <contactref element="J3" pad="8"/>
-<contactref element="C37" pad="P$2"/>
-<contactref element="C40" pad="P$2"/>
+<contactref element="C26" pad="P$2"/>
+<contactref element="C31" pad="P$2"/>
 <contactref element="U10" pad="4"/>
 <contactref element="U10" pad="3"/>
 <contactref element="U10" pad="2"/>
@@ -1849,61 +1903,89 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U11" pad="3"/>
 <contactref element="U7" pad="4"/>
 <contactref element="GND" pad="P$1"/>
-<wire x1="119.25" y1="35.6" x2="122.95" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="115.55" y1="35.6" x2="119.25" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="111.85" y1="35.6" x2="115.55" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="103.35" y1="30.9" x2="111.85" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="99.65" y1="30.9" x2="103.35" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="95.95" y1="30.9" x2="99.65" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="92.25" y1="30.9" x2="95.95" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="101.25" y1="35.4" x2="99.65" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="28.2" x2="92.25" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="46.975" y1="34.2" x2="50.76" y2="28.2" width="0" layer="19" extent="1-1"/>
-<wire x1="45.025" y1="34.2" x2="46.975" y2="34.2" width="0" layer="19" extent="1-1"/>
-<wire x1="46.325" y1="36.8" x2="46.975" y2="34.2" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="39.7" x2="46.325" y2="36.8" width="0" layer="19" extent="1-1"/>
-<wire x1="46.775" y1="46.2" x2="50.76" y2="39.7" width="0" layer="19" extent="1-1"/>
-<wire x1="44.825" y1="46.2" x2="46.775" y2="46.2" width="0" layer="19" extent="1-1"/>
-<wire x1="46.125" y1="48.8" x2="46.775" y2="46.2" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="51" x2="46.125" y2="48.8" width="0" layer="19" extent="1-1"/>
-<wire x1="46.475" y1="56.5" x2="50.76" y2="51" width="0" layer="19" extent="1-1"/>
+<contactref element="D1" pad="CATHODE"/>
+<contactref element="D8" pad="A"/>
+<via x="25.3" y="54.1" extent="1-16" drill="0.6"/>
+<via x="25.1" y="43.1" extent="1-16" drill="0.6"/>
+<via x="25.2" y="32.4" extent="1-16" drill="0.6"/>
+<wire x1="47.9" y1="58.35" x2="45.825" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="46.475" y1="56.5" x2="47.9" y2="58.35" width="0" layer="19" extent="1-1"/>
 <wire x1="44.525" y1="56.5" x2="46.475" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="45.825" y1="59.1" x2="46.475" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="38.56" y1="51" x2="46.125" y2="48.8" width="0" layer="19" extent="1-1"/>
-<wire x1="35.425" y1="48.5" x2="38.56" y2="51" width="0" layer="19" extent="1-1"/>
-<wire x1="36.075" y1="45.9" x2="35.425" y2="48.5" width="0" layer="19" extent="1-1"/>
-<wire x1="34.125" y1="45.9" x2="36.075" y2="45.9" width="0" layer="19" extent="1-1"/>
-<wire x1="35.575" y1="56.5" x2="38.56" y2="51" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="51" x2="46.475" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="48.2" y1="47.95" x2="50.76" y2="51" width="0" layer="19" extent="1-1"/>
+<wire x1="46.125" y1="48.8" x2="48.2" y2="47.95" width="0" layer="19" extent="1-1"/>
+<wire x1="46.775" y1="46.2" x2="48.2" y2="47.95" width="0" layer="19" extent="1-1"/>
+<wire x1="44.825" y1="46.2" x2="46.775" y2="46.2" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="39.7" x2="46.775" y2="46.2" width="0" layer="19" extent="1-1"/>
+<wire x1="46.325" y1="36.8" x2="50.76" y2="39.7" width="0" layer="19" extent="1-1"/>
+<wire x1="46.975" y1="34.2" x2="46.325" y2="36.8" width="0" layer="19" extent="1-1"/>
+<wire x1="48.4" y1="34.95" x2="46.975" y2="34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="45.025" y1="34.2" x2="46.975" y2="34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="28.2" x2="46.975" y2="34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="36.8" y1="57.25" x2="44.525" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="35.575" y1="56.5" x2="36.8" y2="57.25" width="0" layer="19" extent="1-1"/>
 <wire x1="33.625" y1="56.5" x2="35.575" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="34.925" y1="59.1" x2="35.575" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="38.56" y1="39.7" x2="36.075" y2="45.9" width="0" layer="19" extent="1-1"/>
-<wire x1="36.45" y1="33.2" x2="38.56" y2="39.7" width="0" layer="19" extent="1-1"/>
+<wire x1="31.75" y1="56.4" x2="33.625" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="34.925" y1="59.1" x2="36.8" y2="57.25" width="0" layer="19" extent="1-1"/>
+<wire x1="34.05" y1="50.9" x2="33.625" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="34.825" y1="48.7" x2="34.05" y2="50.9" width="0" layer="19" extent="1-1"/>
+<wire x1="36.8" y1="47.95" x2="34.825" y2="48.7" width="0" layer="19" extent="1-1"/>
+<wire x1="35.475" y1="46.1" x2="36.8" y2="47.95" width="0" layer="19" extent="1-1"/>
+<wire x1="33.525" y1="46.1" x2="35.475" y2="46.1" width="0" layer="19" extent="1-1"/>
+<wire x1="31.65" y1="45.1" x2="33.525" y2="46.1" width="0" layer="19" extent="1-1"/>
+<wire x1="38.56" y1="51" x2="36.8" y2="47.95" width="0" layer="19" extent="1-1"/>
+<wire x1="27.5" y1="48.05" x2="31.65" y2="45.1" width="0" layer="19" extent="1-1"/>
+<wire x1="26.2" y1="48.05" x2="27.5" y2="48.05" width="0" layer="19" extent="1-1"/>
+<wire x1="25" y1="48.05" x2="26.2" y2="48.05" width="0" layer="19" extent="1-1"/>
+<wire x1="21.15" y1="47.7" x2="25" y2="48.05" width="0" layer="19" extent="1-1"/>
+<wire x1="21.65" y1="44.85" x2="21.15" y2="47.7" width="0" layer="19" extent="1-1"/>
+<wire x1="25.1" y1="43.1" x2="21.65" y2="44.85" width="0" layer="19" extent="1-1"/>
+<wire x1="17.6" y1="41.95" x2="21.65" y2="44.85" width="0" layer="19" extent="1-1"/>
+<wire x1="14.8" y1="42.565" x2="17.6" y2="41.95" width="0" layer="19" extent="1-16"/>
+<wire x1="13.9" y1="43.25" x2="14.8" y2="42.565" width="0" layer="19" extent="1-16"/>
+<wire x1="14.8" y1="43.835" x2="13.9" y2="43.25" width="0" layer="19" extent="1-16"/>
+<wire x1="14.8" y1="45.105" x2="14.8" y2="43.835" width="0" layer="19" extent="16-16"/>
+<wire x1="14.8" y1="41.295" x2="14.8" y2="42.565" width="0" layer="19" extent="16-16"/>
+<wire x1="12.35" y1="47.3" x2="14.8" y2="45.105" width="0" layer="19" extent="16-16"/>
+<wire x1="8.1" y1="50.37" x2="12.35" y2="47.3" width="0" layer="19" extent="16-16"/>
+<wire x1="33.95" y1="39.6" x2="31.65" y2="45.1" width="0" layer="19" extent="1-1"/>
+<wire x1="33.95" y1="35.3" x2="33.95" y2="39.6" width="0" layer="19" extent="1-1"/>
+<wire x1="31.45" y1="33.3" x2="33.95" y2="35.3" width="0" layer="19" extent="1-1"/>
+<wire x1="36.45" y1="33.2" x2="33.95" y2="35.3" width="0" layer="19" extent="1-1"/>
 <wire x1="37.16" y1="30.2" x2="36.45" y2="33.2" width="0" layer="19" extent="1-1"/>
 <wire x1="37.16" y1="29.2" x2="37.16" y2="30.2" width="0" layer="19" extent="1-1"/>
 <wire x1="37.16" y1="28.7" x2="37.16" y2="29.2" width="0" layer="19" extent="1-1"/>
 <wire x1="36.55" y1="27.1" x2="37.16" y2="28.7" width="0" layer="19" extent="1-1"/>
-<wire x1="23.9" y1="54.1" x2="33.625" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="20.45" y1="55.35" x2="23.9" y2="54.1" width="0" layer="19" extent="1-1"/>
-<wire x1="20.45" y1="55.85" x2="20.45" y2="55.35" width="0" layer="19" extent="1-1"/>
-<wire x1="17.5" y1="53.65" x2="20.45" y2="55.35" width="0" layer="19" extent="1-1"/>
-<wire x1="14" y1="58.05" x2="17.5" y2="53.65" width="0" layer="19" extent="1-1"/>
-<wire x1="14.6" y1="45.505" x2="17.5" y2="53.65" width="0" layer="19" extent="1-16"/>
-<wire x1="14.6" y1="44.235" x2="14.6" y2="45.505" width="0" layer="19" extent="16-16"/>
-<wire x1="13.9" y1="43.25" x2="14.6" y2="44.235" width="0" layer="19" extent="1-16"/>
-<wire x1="14.6" y1="42.965" x2="13.9" y2="43.25" width="0" layer="19" extent="1-16"/>
-<wire x1="14.6" y1="41.695" x2="14.6" y2="42.965" width="0" layer="19" extent="16-16"/>
-<wire x1="20.35" y1="44.55" x2="14.6" y2="44.235" width="0" layer="19" extent="1-16"/>
-<wire x1="23.8" y1="42.8" x2="20.35" y2="44.55" width="0" layer="19" extent="1-1"/>
-<wire x1="4.77" y1="56.63" x2="14" y2="58.05" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="49.01" x2="4.77" y2="56.63" width="0" layer="19" extent="1-1"/>
+<wire x1="38.56" y1="39.7" x2="33.95" y2="39.6" width="0" layer="19" extent="1-1"/>
+<wire x1="28.1" y1="37.15" x2="31.45" y2="33.3" width="0" layer="19" extent="1-1"/>
+<wire x1="26.8" y1="37.15" x2="28.1" y2="37.15" width="0" layer="19" extent="1-1"/>
+<wire x1="25.5" y1="37.15" x2="26.8" y2="37.15" width="0" layer="19" extent="1-1"/>
+<wire x1="21.15" y1="36.9" x2="25.5" y2="37.15" width="0" layer="19" extent="1-1"/>
+<wire x1="21.75" y1="33.65" x2="21.15" y2="36.9" width="0" layer="19" extent="1-1"/>
+<wire x1="25.2" y1="32.4" x2="21.75" y2="33.65" width="0" layer="19" extent="1-1"/>
+<wire x1="25.5" y1="26.65" x2="25.2" y2="32.4" width="0" layer="19" extent="1-1"/>
+<wire x1="26.8" y1="26.65" x2="25.5" y2="26.65" width="0" layer="19" extent="1-1"/>
+<wire x1="28.1" y1="26.65" x2="26.8" y2="26.65" width="0" layer="19" extent="1-1"/>
+<wire x1="23.43" y1="24.31" x2="25.5" y2="26.65" width="0" layer="19" extent="1-1"/>
+<wire x1="31.35" y1="24.2" x2="28.1" y2="26.65" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="49.01" x2="8.1" y2="50.37" width="0" layer="19" extent="1-1"/>
 <wire x1="2.23" y1="43.93" x2="2.23" y2="49.01" width="0" layer="19" extent="1-1"/>
 <wire x1="4.77" y1="38.85" x2="2.23" y2="43.93" width="0" layer="19" extent="1-1"/>
+<wire x1="25.3" y1="54.1" x2="25" y2="48.05" width="0" layer="19" extent="1-1"/>
+<wire x1="21.85" y1="55.35" x2="25.3" y2="54.1" width="0" layer="19" extent="1-1"/>
+<wire x1="21.85" y1="55.85" x2="21.85" y2="55.35" width="0" layer="19" extent="1-1"/>
+<wire x1="21.25" y1="58.8" x2="21.85" y2="55.85" width="0" layer="19" extent="1-1"/>
+<wire x1="17.6" y1="53.75" x2="21.85" y2="55.35" width="0" layer="19" extent="1-1"/>
+<wire x1="14" y1="58.05" x2="17.6" y2="53.75" width="0" layer="19" extent="1-1"/>
+<wire x1="16.8" y1="26.45" x2="23.43" y2="24.31" width="0" layer="19" extent="1-1"/>
+<wire x1="13.8" y1="27.95" x2="16.8" y2="26.45" width="0" layer="19" extent="1-1"/>
+<wire x1="4.77" y1="56.63" x2="8.1" y2="50.37" width="0" layer="19" extent="1-1"/>
 <wire x1="2.23" y1="31.23" x2="4.77" y2="38.85" width="0" layer="19" extent="1-1"/>
 <wire x1="2.23" y1="23.61" x2="2.23" y2="31.23" width="0" layer="19" extent="1-1"/>
 <wire x1="4.77" y1="18.53" x2="2.23" y2="23.61" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="13.45" x2="4.77" y2="18.53" width="0" layer="19" extent="1-1"/>
-<wire x1="7.1" y1="9.15" x2="2.23" y2="13.45" width="0" layer="19" extent="1-1"/>
-<wire x1="10.5" y1="12.35" x2="7.1" y2="9.15" width="0" layer="19" extent="1-1"/>
+<wire x1="7.65" y1="18.8" x2="4.77" y2="18.53" width="0" layer="19" extent="1-1"/>
+<wire x1="7.75" y1="16.9" x2="7.65" y2="18.8" width="0" layer="19" extent="1-1"/>
+<wire x1="10.5" y1="12.35" x2="7.75" y2="16.9" width="0" layer="19" extent="1-1"/>
 <wire x1="13.4" y1="12.45" x2="10.5" y2="12.35" width="0" layer="19" extent="1-1"/>
 <wire x1="16.9" y1="12.45" x2="13.4" y2="12.45" width="0" layer="19" extent="1-1"/>
 <wire x1="20.45" y1="13.2" x2="16.9" y2="12.45" width="0" layer="19" extent="1-1"/>
@@ -1913,43 +1995,22 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <wire x1="23.5" y1="5.9" x2="23.5" y2="6.9" width="0" layer="19" extent="1-1"/>
 <wire x1="23.5" y1="4.9" x2="23.5" y2="5.9" width="0" layer="19" extent="1-1"/>
 <wire x1="21" y1="5.265" x2="23.5" y2="4.9" width="0" layer="19" extent="1-1"/>
-<wire x1="30.55" y1="7.6" x2="23.5" y2="6.9" width="0" layer="19" extent="1-1"/>
-<wire x1="30.65" y1="5.3" x2="30.55" y2="7.6" width="0" layer="19" extent="1-1"/>
-<wire x1="30.65" y1="2.8" x2="30.65" y2="5.3" width="0" layer="19" extent="1-1"/>
-<wire x1="35.4" y1="2.8" x2="30.65" y2="2.8" width="0" layer="19" extent="1-1"/>
+<wire x1="7.1" y1="9.15" x2="10.5" y2="12.35" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="13.45" x2="4.77" y2="18.53" width="0" layer="19" extent="1-1"/>
+<wire x1="30.65" y1="5.9" x2="23.5" y2="5.9" width="0" layer="19" extent="1-1"/>
+<wire x1="30.55" y1="8.2" x2="30.65" y2="5.9" width="0" layer="19" extent="1-1"/>
+<wire x1="30.65" y1="3.5" x2="30.65" y2="5.9" width="0" layer="19" extent="1-1"/>
+<wire x1="30.65" y1="1.2" x2="30.65" y2="3.5" width="0" layer="19" extent="1-1"/>
+<wire x1="35.4" y1="2.8" x2="30.65" y2="3.5" width="0" layer="19" extent="1-1"/>
 <wire x1="41.1" y1="2.8" x2="35.4" y2="2.8" width="0" layer="19" extent="1-1"/>
-<wire x1="20.35" y1="32.15" x2="14.6" y2="41.695" width="0" layer="19" extent="1-16"/>
-<wire x1="23.8" y1="30.9" x2="20.35" y2="32.15" width="0" layer="19" extent="1-1"/>
-<wire x1="23.43" y1="24.31" x2="23.8" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="13.8" y1="27.95" x2="20.35" y2="32.15" width="0" layer="19" extent="1-1"/>
-<wire x1="-28.65" y1="14.8" x2="2.23" y2="13.45" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="11.1" x2="-28.65" y2="14.8" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="27.3" x2="-28.65" y2="14.8" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="30.9" x2="-30.65" y2="27.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="34.5" x2="-30.65" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="38.1" x2="-30.65" y2="34.5" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="41.7" x2="-30.65" y2="38.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-28.65" y1="45.4" x2="-30.65" y2="41.7" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="-6.9" x2="-30.65" y2="11.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="-10.5" x2="-30.65" y2="-6.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-28.65" y1="-21" x2="-30.65" y2="-10.5" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.65" y1="-30.3" x2="-28.65" y2="-21" width="0" layer="19" extent="1-1"/>
-<wire x1="-30.87" y1="-38.5" x2="-30.65" y2="-30.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.7" y1="-55.1" x2="-30.87" y2="-38.5" width="0" layer="19" extent="1-1"/>
-<wire x1="101.25" y1="-12.7" x2="99.65" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="99.65" y1="-17.2" x2="101.25" y2="-12.7" width="0" layer="19" extent="1-1"/>
-<wire x1="95.95" y1="-17.2" x2="99.65" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="92.25" y1="-17.2" x2="95.95" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="111.85" y1="-12.5" x2="101.25" y2="-12.7" width="0" layer="19" extent="1-1"/>
-<wire x1="115.55" y1="-12.5" x2="111.85" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="119.25" y1="-12.5" x2="115.55" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="122.95" y1="-12.5" x2="119.25" y2="-12.5" width="0" layer="19" extent="1-1"/>
+<wire x1="6.75" y1="1.1" x2="7.1" y2="9.15" width="0" layer="19" extent="1-1"/>
+<wire x1="-31.7" y1="-55.1" x2="6.75" y2="1.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$1">
 <contactref element="U2" pad="4"/>
 <contactref element="U2" pad="3"/>
 <contactref element="U2" pad="2"/>
-<contactref element="R3" pad="P$1"/>
+<contactref element="R5" pad="P$1"/>
 <wire x1="10.51" y1="9.54" x2="10.5" y2="10.85" width="0" layer="19" extent="1-1"/>
 <wire x1="10.51" y1="7.14" x2="10.51" y2="9.54" width="0" layer="19" extent="1-1"/>
 <wire x1="9.56" y1="7.14" x2="10.51" y2="7.14" width="0" layer="19" extent="1-1"/>
@@ -1957,14 +2018,14 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <signal name="N$5">
 <contactref element="U3" pad="1"/>
 <contactref element="U2" pad="1"/>
-<contactref element="R4" pad="P$1"/>
+<contactref element="F6" pad="P$1"/>
 <wire x1="8.61" y1="7.14" x2="10.8" y2="3.35" width="0" layer="19" extent="1-1"/>
 <wire x1="7.1" y1="7.65" x2="8.61" y2="7.14" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="REGOUT">
 <contactref element="L1" pad="2"/>
-<contactref element="R12" pad="P$1"/>
-<contactref element="C5" pad="P$1"/>
+<contactref element="R2" pad="P$1"/>
+<contactref element="C7" pad="P$1"/>
 <contactref element="C8" pad="P$1"/>
 <contactref element="U2" pad="5"/>
 <contactref element="U3" pad="2"/>
@@ -1989,60 +2050,60 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <signal name="+3V3">
 <contactref element="J4" pad="1"/>
 <contactref element="J4" pad="17"/>
+<contactref element="C29" pad="P$1"/>
+<contactref element="C30" pad="P$1"/>
+<contactref element="JD1" pad="6"/>
+<contactref element="C10" pad="P$1"/>
+<contactref element="U4" pad="48"/>
+<contactref element="C15" pad="P$1"/>
+<contactref element="C11" pad="P$1"/>
 <contactref element="C12" pad="P$1"/>
 <contactref element="C13" pad="P$1"/>
-<contactref element="JD1" pad="6"/>
-<contactref element="C3" pad="P$1"/>
-<contactref element="U4" pad="48"/>
-<contactref element="C4" pad="P$1"/>
-<contactref element="C11" pad="P$1"/>
-<contactref element="C9" pad="P$1"/>
-<contactref element="C7" pad="P$1"/>
-<contactref element="C10" pad="P$1"/>
+<contactref element="C14" pad="P$1"/>
 <contactref element="U4" pad="21"/>
 <contactref element="U4" pad="20"/>
-<contactref element="R5" pad="P$1"/>
-<contactref element="R6" pad="P$1"/>
+<contactref element="R8" pad="P$1"/>
+<contactref element="R7" pad="P$1"/>
 <contactref element="U5" pad="3"/>
 <contactref element="U6" pad="3"/>
-<contactref element="C19" pad="P$1"/>
-<contactref element="C18" pad="P$1"/>
+<contactref element="C16" pad="P$1"/>
+<contactref element="C17" pad="P$1"/>
 <contactref element="JD3" pad="6"/>
-<contactref element="C22" pad="P$1"/>
+<contactref element="C33" pad="P$1"/>
 <contactref element="U11" pad="48"/>
-<contactref element="C23" pad="P$1"/>
-<contactref element="C26" pad="P$1"/>
-<contactref element="C25" pad="P$1"/>
-<contactref element="C24" pad="P$1"/>
-<contactref element="C21" pad="P$1"/>
+<contactref element="C38" pad="P$1"/>
+<contactref element="C34" pad="P$1"/>
+<contactref element="C35" pad="P$1"/>
+<contactref element="C36" pad="P$1"/>
+<contactref element="C37" pad="P$1"/>
 <contactref element="U11" pad="21"/>
 <contactref element="U11" pad="20"/>
-<contactref element="R9" pad="P$1"/>
-<contactref element="R10" pad="P$1"/>
+<contactref element="R18" pad="P$1"/>
+<contactref element="R17" pad="P$1"/>
 <contactref element="U12" pad="3"/>
-<contactref element="C28" pad="P$1"/>
+<contactref element="C39" pad="P$1"/>
 <contactref element="U13" pad="3"/>
-<contactref element="C27" pad="P$1"/>
+<contactref element="C40" pad="P$1"/>
 <contactref element="JD2" pad="6"/>
-<contactref element="C31" pad="P$1"/>
+<contactref element="C19" pad="P$1"/>
 <contactref element="U7" pad="48"/>
-<contactref element="C32" pad="P$1"/>
-<contactref element="C35" pad="P$1"/>
-<contactref element="C34" pad="P$1"/>
-<contactref element="C33" pad="P$1"/>
-<contactref element="C30" pad="P$1"/>
+<contactref element="C24" pad="P$1"/>
+<contactref element="C20" pad="P$1"/>
+<contactref element="C21" pad="P$1"/>
+<contactref element="C22" pad="P$1"/>
+<contactref element="C23" pad="P$1"/>
 <contactref element="U7" pad="21"/>
 <contactref element="U7" pad="20"/>
-<contactref element="R16" pad="P$1"/>
-<contactref element="R17" pad="P$1"/>
+<contactref element="R12" pad="P$1"/>
+<contactref element="R11" pad="P$1"/>
 <contactref element="U9" pad="3"/>
-<contactref element="C36" pad="P$1"/>
-<contactref element="C38" pad="P$1"/>
-<contactref element="C39" pad="P$1"/>
+<contactref element="C25" pad="P$1"/>
+<contactref element="C27" pad="P$1"/>
+<contactref element="C28" pad="P$1"/>
 <contactref element="U8" pad="11"/>
 <contactref element="U8" pad="3"/>
 <contactref element="J3" pad="7"/>
-<contactref element="C37" pad="P$1"/>
+<contactref element="C26" pad="P$1"/>
 <contactref element="U4" pad="1"/>
 <contactref element="U4" pad="35"/>
 <contactref element="U11" pad="35"/>
@@ -2051,81 +2112,85 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U7" pad="35"/>
 <contactref element="U7" pad="23"/>
 <contactref element="U10" pad="8"/>
-<contactref element="C40" pad="P$1"/>
+<contactref element="C31" pad="P$1"/>
 <contactref element="R14" pad="P$1"/>
-<contactref element="R18" pad="P$1"/>
-<contactref element="R19" pad="P$1"/>
+<contactref element="R15" pad="P$1"/>
+<contactref element="R16" pad="P$1"/>
 <contactref element="U11" pad="4"/>
 <contactref element="U7" pad="3"/>
-<wire x1="118.15" y1="35.6" x2="121.85" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="114.45" y1="35.6" x2="118.15" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="115.25" y1="30.9" x2="114.45" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="105.95" y1="30.9" x2="115.25" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="102.25" y1="30.9" x2="105.95" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="98.55" y1="30.9" x2="102.25" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="94.85" y1="30.9" x2="98.55" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="91.15" y1="30.9" x2="94.85" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="98.35" y1="35.4" x2="98.55" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="114.45" y1="-12.5" x2="115.25" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="118.15" y1="-12.5" x2="114.45" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="121.85" y1="-12.5" x2="118.15" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="117.05" y1="-17.2" x2="118.15" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="113.35" y1="-17.2" x2="117.05" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="98.55" y1="-17.2" x2="113.35" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="94.85" y1="-17.2" x2="98.55" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="91.15" y1="-17.2" x2="94.85" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="98.35" y1="-12.7" x2="98.55" y2="-17.2" width="0" layer="19" extent="1-1"/>
-<wire x1="45.675" y1="36.8" x2="91.15" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="37.16" y1="30.7" x2="45.675" y2="36.8" width="0" layer="19" extent="1-1"/>
+<contactref element="U7" pad="1"/>
+<contactref element="U11" pad="1"/>
+<wire x1="47.9" y1="57.25" x2="45.175" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="36.8" y1="58.35" x2="45.175" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="34.275" y1="59.1" x2="36.8" y2="58.35" width="0" layer="19" extent="1-1"/>
+<wire x1="30.65" y1="56.4" x2="34.275" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="28.75" y1="56.35" x2="30.65" y2="56.4" width="0" layer="19" extent="1-1"/>
+<wire x1="31.15" y1="50.9" x2="30.65" y2="56.4" width="0" layer="19" extent="1-1"/>
+<wire x1="27.55" y1="50.65" x2="31.15" y2="50.9" width="0" layer="19" extent="1-1"/>
+<wire x1="26.55" y1="50.65" x2="27.55" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="26.05" y1="50.65" x2="26.55" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="27.5" y1="49.15" x2="27.55" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="26.2" y1="49.15" x2="27.5" y2="49.15" width="0" layer="19" extent="1-1"/>
+<wire x1="25" y1="49.15" x2="26.2" y2="49.15" width="0" layer="19" extent="1-1"/>
+<wire x1="22.15" y1="49" x2="25" y2="49.15" width="0" layer="19" extent="1-1"/>
+<wire x1="22.25" y1="47.7" x2="22.15" y2="49" width="0" layer="19" extent="1-1"/>
+<wire x1="22.35" y1="46.55" x2="22.25" y2="47.7" width="0" layer="19" extent="1-1"/>
+<wire x1="21.65" y1="45.85" x2="22.35" y2="46.55" width="0" layer="19" extent="1-1"/>
+<wire x1="21.65" y1="44.35" x2="21.65" y2="45.85" width="0" layer="19" extent="1-1"/>
+<wire x1="34.175" y1="48.7" x2="31.15" y2="50.9" width="0" layer="19" extent="1-1"/>
+<wire x1="36.8" y1="46.85" x2="34.175" y2="48.7" width="0" layer="19" extent="1-1"/>
+<wire x1="28.55" y1="45.35" x2="27.5" y2="49.15" width="0" layer="19" extent="1-1"/>
+<wire x1="30.55" y1="45.1" x2="28.55" y2="45.35" width="0" layer="19" extent="1-1"/>
+<wire x1="31.05" y1="39.6" x2="30.55" y2="45.1" width="0" layer="19" extent="1-1"/>
+<wire x1="28.1" y1="38.25" x2="31.05" y2="39.6" width="0" layer="19" extent="1-1"/>
+<wire x1="26.8" y1="38.25" x2="28.1" y2="38.25" width="0" layer="19" extent="1-1"/>
+<wire x1="25.5" y1="38.25" x2="26.8" y2="38.25" width="0" layer="19" extent="1-1"/>
+<wire x1="25.85" y1="39.65" x2="25.5" y2="38.25" width="0" layer="19" extent="1-1"/>
+<wire x1="26.35" y1="39.65" x2="25.85" y2="39.65" width="0" layer="19" extent="1-1"/>
+<wire x1="27.35" y1="39.65" x2="26.35" y2="39.65" width="0" layer="19" extent="1-1"/>
+<wire x1="22.25" y1="38.2" x2="25.5" y2="38.25" width="0" layer="19" extent="1-1"/>
+<wire x1="22.25" y1="36.9" x2="22.25" y2="38.2" width="0" layer="19" extent="1-1"/>
+<wire x1="22.45" y1="35.85" x2="22.25" y2="36.9" width="0" layer="19" extent="1-1"/>
+<wire x1="21.75" y1="35.15" x2="22.45" y2="35.85" width="0" layer="19" extent="1-1"/>
+<wire x1="21.75" y1="34.15" x2="21.75" y2="35.15" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="34.65" x2="28.1" y2="38.25" width="0" layer="19" extent="1-1"/>
+<wire x1="30.35" y1="33.3" x2="28.65" y2="34.65" width="0" layer="19" extent="1-1"/>
+<wire x1="31.05" y1="35.3" x2="30.35" y2="33.3" width="0" layer="19" extent="1-1"/>
+<wire x1="35.35" y1="33.2" x2="31.05" y2="35.3" width="0" layer="19" extent="1-1"/>
+<wire x1="37.16" y1="30.7" x2="35.35" y2="33.2" width="0" layer="19" extent="1-1"/>
 <wire x1="34.84" y1="29.7" x2="37.16" y2="30.7" width="0" layer="19" extent="1-1"/>
 <wire x1="35.45" y1="27.1" x2="34.84" y2="29.7" width="0" layer="19" extent="1-1"/>
-<wire x1="35.35" y1="33.2" x2="37.16" y2="30.7" width="0" layer="19" extent="1-1"/>
-<wire x1="27.25" y1="33.15" x2="35.35" y2="33.2" width="0" layer="19" extent="1-1"/>
-<wire x1="26.05" y1="27.45" x2="27.25" y2="33.15" width="0" layer="19" extent="1-1"/>
-<wire x1="25.05" y1="27.45" x2="26.05" y2="27.45" width="0" layer="19" extent="1-1"/>
-<wire x1="24.55" y1="27.45" x2="25.05" y2="27.45" width="0" layer="19" extent="1-1"/>
-<wire x1="25.97" y1="24.31" x2="26.05" y2="27.45" width="0" layer="19" extent="1-1"/>
-<wire x1="26.05" y1="39.35" x2="27.25" y2="33.15" width="0" layer="19" extent="1-1"/>
-<wire x1="25.05" y1="39.35" x2="26.05" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="24.55" y1="39.35" x2="25.05" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="27.25" y1="45.05" x2="26.05" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="26.15" y1="50.65" x2="27.25" y2="45.05" width="0" layer="19" extent="1-1"/>
-<wire x1="25.15" y1="50.65" x2="26.15" y2="50.65" width="0" layer="19" extent="1-1"/>
-<wire x1="24.65" y1="50.65" x2="25.15" y2="50.65" width="0" layer="19" extent="1-1"/>
-<wire x1="21.05" y1="46.25" x2="24.65" y2="50.65" width="0" layer="19" extent="1-1"/>
-<wire x1="20.35" y1="44.05" x2="21.05" y2="46.25" width="0" layer="19" extent="1-1"/>
-<wire x1="27.35" y1="56.35" x2="26.15" y2="50.65" width="0" layer="19" extent="1-1"/>
-<wire x1="21.05" y1="34.35" x2="24.55" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="20.35" y1="32.65" x2="21.05" y2="34.35" width="0" layer="19" extent="1-1"/>
-<wire x1="21.15" y1="57.55" x2="27.35" y2="56.35" width="0" layer="19" extent="1-1"/>
-<wire x1="20.45" y1="56.85" x2="21.15" y2="57.55" width="0" layer="19" extent="1-1"/>
-<wire x1="13.8" y1="30.95" x2="20.35" y2="32.65" width="0" layer="19" extent="1-1"/>
-<wire x1="13.9" y1="46.25" x2="20.35" y2="44.05" width="0" layer="19" extent="1-1"/>
-<wire x1="34.275" y1="59.1" x2="27.35" y2="56.35" width="0" layer="19" extent="1-1"/>
-<wire x1="14" y1="61.05" x2="20.45" y2="56.85" width="0" layer="19" extent="1-1"/>
-<wire x1="34.775" y1="48.5" x2="27.25" y2="45.05" width="0" layer="19" extent="1-1"/>
+<wire x1="16.85" y1="35.6" x2="21.75" y2="35.15" width="0" layer="19" extent="1-1"/>
+<wire x1="27.45" y1="28.95" x2="30.35" y2="33.3" width="0" layer="19" extent="1-1"/>
+<wire x1="26.45" y1="28.95" x2="27.45" y2="28.95" width="0" layer="19" extent="1-1"/>
+<wire x1="25.95" y1="28.95" x2="26.45" y2="28.95" width="0" layer="19" extent="1-1"/>
+<wire x1="26.8" y1="27.75" x2="26.45" y2="28.95" width="0" layer="19" extent="1-1"/>
+<wire x1="28.1" y1="27.75" x2="26.8" y2="27.75" width="0" layer="19" extent="1-1"/>
+<wire x1="25.5" y1="27.75" x2="25.95" y2="28.95" width="0" layer="19" extent="1-1"/>
+<wire x1="25.97" y1="24.31" x2="25.5" y2="27.75" width="0" layer="19" extent="1-1"/>
+<wire x1="28.45" y1="24.2" x2="25.97" y2="24.31" width="0" layer="19" extent="1-1"/>
+<wire x1="13.8" y1="30.95" x2="16.85" y2="35.6" width="0" layer="19" extent="1-1"/>
+<wire x1="20.1" y1="22.65" x2="25.97" y2="24.31" width="0" layer="19" extent="1-1"/>
+<wire x1="18.5" y1="22.65" x2="20.1" y2="22.65" width="0" layer="19" extent="1-1"/>
+<wire x1="22.55" y1="57.55" x2="28.75" y2="56.35" width="0" layer="19" extent="1-1"/>
+<wire x1="21.85" y1="56.85" x2="22.55" y2="57.55" width="0" layer="19" extent="1-1"/>
+<wire x1="22.35" y1="58.8" x2="22.55" y2="57.55" width="0" layer="19" extent="1-1"/>
+<wire x1="15.15" y1="49" x2="22.15" y2="49" width="0" layer="19" extent="1-1"/>
+<wire x1="13.9" y1="46.25" x2="15.15" y2="49" width="0" layer="19" extent="1-1"/>
+<wire x1="11.25" y1="47.3" x2="13.9" y2="46.25" width="0" layer="19" extent="1-16"/>
+<wire x1="11.55" y1="48.6" x2="11.25" y2="47.3" width="0" layer="19" extent="16-16"/>
+<wire x1="9.4" y1="45.105" x2="11.25" y2="47.3" width="0" layer="19" extent="16-16"/>
+<wire x1="7.2" y1="43.65" x2="9.4" y2="45.105" width="0" layer="19" extent="16-16"/>
+<wire x1="7.2" y1="40.05" x2="7.2" y2="43.65" width="0" layer="19" extent="16-16"/>
+<wire x1="14" y1="61.05" x2="22.35" y2="58.8" width="0" layer="19" extent="1-1"/>
+<wire x1="45.475" y1="48.8" x2="47.9" y2="57.25" width="0" layer="19" extent="1-1"/>
+<wire x1="48.2" y1="46.85" x2="45.475" y2="48.8" width="0" layer="19" extent="1-1"/>
 <wire x1="4.77" y1="28.69" x2="13.8" y2="30.95" width="0" layer="19" extent="1-1"/>
-<wire x1="45.475" y1="48.8" x2="34.775" y2="48.5" width="0" layer="19" extent="1-1"/>
-<wire x1="45.175" y1="59.1" x2="45.475" y2="48.8" width="0" layer="19" extent="1-1"/>
-<wire x1="4.77" y1="8.37" x2="4.77" y2="28.69" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="27.3" x2="4.77" y2="28.69" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="30.9" x2="-31.75" y2="27.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="34.5" x2="-31.75" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="38.1" x2="-31.75" y2="34.5" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="41.7" x2="-31.75" y2="38.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.55" y1="45.4" x2="-31.75" y2="41.7" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.55" y1="14.8" x2="-31.75" y2="27.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="11.1" x2="-31.55" y2="14.8" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="3.9" x2="-31.75" y2="11.1" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-3.3" x2="-31.75" y2="3.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-6.9" x2="-31.75" y2="-3.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-10.5" x2="-31.75" y2="-6.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.55" y1="-21" x2="-31.75" y2="-10.5" width="0" layer="19" extent="1-1"/>
-<wire x1="9.2" y1="45.505" x2="-31.55" y2="-21" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-30.3" x2="9.2" y2="45.505" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-33.9" x2="-31.75" y2="-30.3" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-43.1" x2="-31.75" y2="-33.9" width="0" layer="19" extent="1-1"/>
-<wire x1="-31.75" y1="-46.7" x2="-31.75" y2="-43.1" width="0" layer="19" extent="1-1"/>
+<wire x1="10.65" y1="16.9" x2="18.5" y2="22.65" width="0" layer="19" extent="1-1"/>
+<wire x1="8.75" y1="18.8" x2="10.65" y2="16.9" width="0" layer="19" extent="1-1"/>
+<wire x1="45.675" y1="36.8" x2="48.2" y2="46.85" width="0" layer="19" extent="1-1"/>
+<wire x1="48.4" y1="36.05" x2="45.675" y2="36.8" width="0" layer="19" extent="1-1"/>
+<wire x1="4.77" y1="8.37" x2="10.65" y2="16.9" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="PI_TX_3V">
 <contactref element="J4" pad="8"/>
@@ -2135,53 +2200,55 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="F1" pad="1"/>
 <contactref element="J1" pad="2"/>
 <contactref element="V+" pad="P$1"/>
-<wire x1="30.97945" y1="9.2" x2="-31.7" y2="-50.9" width="0" layer="19" extent="1-1"/>
-<wire x1="35.4" y1="7.8" x2="30.97945" y2="9.2" width="0" layer="19" extent="1-1"/>
+<wire x1="30.97945" y1="9.9" x2="-31.7" y2="-50.9" width="0" layer="19" extent="1-1"/>
+<wire x1="35.4" y1="7.8" x2="30.97945" y2="9.9" width="0" layer="19" extent="1-1"/>
 <wire x1="41.1" y1="7.8" x2="35.4" y2="7.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$10">
 <contactref element="F1" pad="2"/>
-<contactref element="C14" pad="P$1"/>
-<contactref element="C6" pad="P$1"/>
+<contactref element="C1" pad="P$1"/>
 <contactref element="C2" pad="P$1"/>
+<contactref element="C3" pad="P$1"/>
 <contactref element="U1" pad="2"/>
 <contactref element="U1" pad="3"/>
-<wire x1="28.65" y1="7.6" x2="29.62055" y2="9.2" width="0" layer="19" extent="1-1"/>
-<wire x1="27.75" y1="5.3" x2="28.65" y2="7.6" width="0" layer="19" extent="1-1"/>
-<wire x1="26" y1="5.265" x2="27.75" y2="5.3" width="0" layer="19" extent="1-1"/>
+<contactref element="D8" pad="C"/>
+<wire x1="28.65" y1="8.2" x2="29.62055" y2="9.9" width="0" layer="19" extent="1-1"/>
+<wire x1="27.75" y1="5.9" x2="28.65" y2="8.2" width="0" layer="19" extent="1-1"/>
+<wire x1="26" y1="5.265" x2="27.75" y2="5.9" width="0" layer="19" extent="1-1"/>
 <wire x1="26" y1="6.535" x2="26" y2="5.265" width="0" layer="19" extent="1-1"/>
-<wire x1="27.75" y1="2.8" x2="27.75" y2="5.3" width="0" layer="19" extent="1-1"/>
+<wire x1="27.75" y1="3.5" x2="27.75" y2="5.9" width="0" layer="19" extent="1-1"/>
+<wire x1="27.75" y1="1.2" x2="27.75" y2="3.5" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$19">
-<contactref element="C15" pad="P$1"/>
+<contactref element="C4" pad="P$1"/>
 <contactref element="U1" pad="4"/>
 <wire x1="24.25" y1="9.5" x2="26" y2="7.805" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$20">
-<contactref element="C16" pad="P$2"/>
+<contactref element="C5" pad="P$2"/>
 <contactref element="U1" pad="8"/>
 <contactref element="L1" pad="1"/>
 <wire x1="21" y1="3.995" x2="23.85" y2="2.2" width="0" layer="19" extent="1-1"/>
 <wire x1="15.8" y1="1.7" x2="21" y2="3.995" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$14">
-<contactref element="C16" pad="P$1"/>
+<contactref element="C5" pad="P$1"/>
 <contactref element="U1" pad="1"/>
 <wire x1="25.75" y1="2.2" x2="26" y2="3.995" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$21">
-<contactref element="C17" pad="P$1"/>
-<contactref element="R11" pad="P$2"/>
+<contactref element="C6" pad="P$1"/>
+<contactref element="R1" pad="P$2"/>
 <wire x1="19.4" y1="11.85" x2="19.35" y2="13.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$22">
 <contactref element="U1" pad="6"/>
-<contactref element="R11" pad="P$1"/>
+<contactref element="R1" pad="P$1"/>
 <wire x1="21" y1="6.535" x2="19.4" y2="10.75" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$24">
-<contactref element="R12" pad="P$2"/>
-<contactref element="R13" pad="P$1"/>
+<contactref element="R2" pad="P$2"/>
+<contactref element="R3" pad="P$1"/>
 <contactref element="U1" pad="5"/>
 <wire x1="20.35" y1="9.4" x2="20.7" y2="10.75" width="0" layer="19" extent="1-1"/>
 <wire x1="21" y1="7.805" x2="20.35" y2="9.4" width="0" layer="19" extent="1-1"/>
@@ -2197,28 +2264,28 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U7" pad="15"/>
 <contactref element="SPI0_MOSI" pad="P$1"/>
 <wire x1="4.77" y1="31.23" x2="-31.7" y2="-74" width="0" layer="19" extent="1-1"/>
-<wire x1="22.05" y1="27.45" x2="4.77" y2="31.23" width="0" layer="19" extent="1-1"/>
+<wire x1="23.45" y1="28.95" x2="4.77" y2="31.23" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI0_MISO">
 <contactref element="J4" pad="21"/>
 <contactref element="U7" pad="14"/>
 <contactref element="SPI0_MISO" pad="P$1"/>
 <wire x1="4.77" y1="33.77" x2="-31.7" y2="-71.9" width="0" layer="19" extent="1-1"/>
-<wire x1="21.55" y1="27.45" x2="4.77" y2="33.77" width="0" layer="19" extent="1-1"/>
+<wire x1="22.95" y1="28.95" x2="4.77" y2="33.77" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI0_SCLK">
 <contactref element="J4" pad="23"/>
 <contactref element="U7" pad="13"/>
 <contactref element="SPI0_SCLK" pad="P$1"/>
-<wire x1="21.05" y1="27.45" x2="-31.7" y2="-69.8" width="0" layer="19" extent="1-1"/>
-<wire x1="4.77" y1="36.31" x2="21.05" y2="27.45" width="0" layer="19" extent="1-1"/>
+<wire x1="4.77" y1="36.31" x2="-31.7" y2="-69.8" width="0" layer="19" extent="1-1"/>
+<wire x1="22.45" y1="28.95" x2="4.77" y2="36.31" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI0_CS0">
 <contactref element="J4" pad="24"/>
 <contactref element="U7" pad="12"/>
 <contactref element="SPI0_CS0" pad="P$1"/>
-<wire x1="20.35" y1="28.15" x2="-31.7" y2="-67.7" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="36.31" x2="20.35" y2="28.15" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="36.31" x2="-31.7" y2="-67.7" width="0" layer="19" extent="1-1"/>
+<wire x1="21.75" y1="29.65" x2="2.23" y2="36.31" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI0_CS1">
 <contactref element="J4" pad="26"/>
@@ -2228,23 +2295,23 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U4" pad="14"/>
 <contactref element="U11" pad="14"/>
 <contactref element="SPI1_MISO" pad="P$1"/>
-<wire x1="21.55" y1="39.35" x2="-31.7" y2="-63.5" width="0" layer="19" extent="1-1"/>
-<wire x1="21.65" y1="50.65" x2="21.55" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="4.77" y1="51.55" x2="21.65" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="22.85" y1="39.65" x2="-31.7" y2="-63.5" width="0" layer="19" extent="1-1"/>
+<wire x1="23.05" y1="50.65" x2="22.85" y2="39.65" width="0" layer="19" extent="1-1"/>
+<wire x1="4.77" y1="51.55" x2="23.05" y2="50.65" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI1_CS1">
 <contactref element="J4" pad="11"/>
 <contactref element="U11" pad="12"/>
 <contactref element="SPI1_CS1" pad="P$1"/>
 <wire x1="4.77" y1="21.07" x2="-31.7" y2="-59.3" width="0" layer="19" extent="1-1"/>
-<wire x1="20.35" y1="40.05" x2="4.77" y2="21.07" width="0" layer="19" extent="1-1"/>
+<wire x1="21.65" y1="40.35" x2="4.77" y2="21.07" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI1_CS0">
 <contactref element="J4" pad="12"/>
 <contactref element="U4" pad="12"/>
 <contactref element="SPI1_CS0" pad="P$1"/>
 <wire x1="2.23" y1="21.07" x2="-31.7" y2="-57.2" width="0" layer="19" extent="1-1"/>
-<wire x1="20.45" y1="51.35" x2="2.23" y2="21.07" width="0" layer="19" extent="1-1"/>
+<wire x1="21.85" y1="51.35" x2="2.23" y2="21.07" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI1_CS2">
 <contactref element="J4" pad="36"/>
@@ -2254,337 +2321,342 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <contactref element="U4" pad="15"/>
 <contactref element="U11" pad="15"/>
 <contactref element="SPI1_MOSI" pad="P$1"/>
-<wire x1="22.05" y1="39.35" x2="-31.7" y2="-65.6" width="0" layer="19" extent="1-1"/>
-<wire x1="22.15" y1="50.65" x2="22.05" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="54.09" x2="22.15" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="23.35" y1="39.65" x2="-31.7" y2="-65.6" width="0" layer="19" extent="1-1"/>
+<wire x1="23.55" y1="50.65" x2="23.35" y2="39.65" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="54.09" x2="23.55" y2="50.65" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="SPI1_SCLK">
 <contactref element="J4" pad="40"/>
 <contactref element="U4" pad="13"/>
 <contactref element="U11" pad="13"/>
 <contactref element="SPI1_SCLK" pad="P$1"/>
-<wire x1="21.05" y1="39.35" x2="-31.7" y2="-61.4" width="0" layer="19" extent="1-1"/>
-<wire x1="21.15" y1="50.65" x2="21.05" y2="39.35" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="56.63" x2="21.15" y2="50.65" width="0" layer="19" extent="1-1"/>
+<wire x1="22.35" y1="39.65" x2="-31.7" y2="-61.4" width="0" layer="19" extent="1-1"/>
+<wire x1="22.55" y1="50.65" x2="22.35" y2="39.65" width="0" layer="19" extent="1-1"/>
+<wire x1="2.23" y1="56.63" x2="22.55" y2="50.65" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$2">
 <contactref element="U5" pad="7"/>
-<contactref element="R1" pad="P$1"/>
+<contactref element="R9" pad="P$1"/>
 <contactref element="JC1" pad="1"/>
 <wire x1="34.8" y1="54.65" x2="38.56" y2="55" width="0" layer="19" extent="1-1"/>
 <wire x1="34.925" y1="56.5" x2="34.8" y2="54.65" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$4">
 <contactref element="U5" pad="6"/>
-<contactref element="R1" pad="P$2"/>
+<contactref element="R9" pad="P$2"/>
 <contactref element="JC1" pad="2"/>
 <wire x1="34.8" y1="53.55" x2="34.275" y2="56.5" width="0" layer="19" extent="1-1"/>
 <wire x1="38.56" y1="53" x2="34.8" y2="53.55" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$7">
 <contactref element="U6" pad="7"/>
-<contactref element="R2" pad="P$1"/>
+<contactref element="R10" pad="P$1"/>
 <contactref element="JC2" pad="1"/>
-<wire x1="45" y1="54.35" x2="45.825" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="55" x2="45.825" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="46.1" y1="54.35" x2="45.825" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="55" x2="46.1" y2="54.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$8">
 <contactref element="U6" pad="6"/>
-<contactref element="R2" pad="P$2"/>
+<contactref element="R10" pad="P$2"/>
 <contactref element="JC2" pad="2"/>
-<wire x1="45" y1="53.25" x2="45.175" y2="56.5" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="53" x2="45" y2="53.25" width="0" layer="19" extent="1-1"/>
+<wire x1="46.1" y1="53.25" x2="45.175" y2="56.5" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="53" x2="46.1" y2="53.25" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$13">
 <contactref element="JD1" pad="2"/>
-<contactref element="C1" pad="P$1"/>
+<contactref element="C9" pad="P$1"/>
 <contactref element="U4" pad="7"/>
-<wire x1="17.5" y1="54.75" x2="20.45" y2="53.85" width="0" layer="19" extent="1-1"/>
-<wire x1="14" y1="55.05" x2="17.5" y2="54.75" width="0" layer="19" extent="1-1"/>
+<wire x1="17.6" y1="54.85" x2="21.85" y2="53.85" width="0" layer="19" extent="1-1"/>
+<wire x1="14" y1="55.05" x2="17.6" y2="54.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$15">
 <contactref element="JD1" pad="3"/>
 <contactref element="U4" pad="36"/>
-<wire x1="14" y1="56.55" x2="27.35" y2="56.85" width="0" layer="19" extent="1-1"/>
+<wire x1="14" y1="56.55" x2="28.75" y2="56.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$16">
 <contactref element="JD1" pad="5"/>
 <contactref element="U4" pad="37"/>
-<wire x1="14" y1="59.55" x2="26.65" y2="57.55" width="0" layer="19" extent="1-1"/>
+<wire x1="14" y1="59.55" x2="28.05" y2="57.55" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$28">
-<contactref element="R5" pad="P$2"/>
-<contactref element="D1" pad="ANODE"/>
-<wire x1="-29.85" y1="7.5" x2="-30.65" y2="3.9" width="0" layer="19" extent="1-1"/>
+<contactref element="R8" pad="P$2"/>
+<contactref element="D3" pad="ANODE"/>
+<wire x1="16.25" y1="49" x2="17.8" y2="49.15" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$29">
-<contactref element="D1" pad="CATHODE"/>
+<contactref element="D3" pad="CATHODE"/>
 <contactref element="U4" pad="5"/>
-<wire x1="-31.35" y1="7.5" x2="20.45" y2="54.85" width="0" layer="19" extent="1-1"/>
+<wire x1="17.8" y1="50.65" x2="21.85" y2="54.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$30">
-<contactref element="R6" pad="P$2"/>
+<contactref element="R7" pad="P$2"/>
 <contactref element="D2" pad="ANODE"/>
-<wire x1="-29.85" y1="0.3" x2="-30.65" y2="-3.3" width="0" layer="19" extent="1-1"/>
+<wire x1="19.6" y1="49.15" x2="21.05" y2="49" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$31">
 <contactref element="D2" pad="CATHODE"/>
 <contactref element="U4" pad="6"/>
-<wire x1="-31.35" y1="0.3" x2="20.45" y2="54.35" width="0" layer="19" extent="1-1"/>
+<wire x1="19.6" y1="50.65" x2="21.85" y2="54.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$11">
 <contactref element="U4" pad="33"/>
 <contactref element="U6" pad="4"/>
-<wire x1="27.35" y1="55.35" x2="44.525" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="28.75" y1="55.35" x2="44.525" y2="59.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$100">
 <contactref element="U4" pad="34"/>
 <contactref element="U6" pad="1"/>
-<wire x1="27.35" y1="55.85" x2="46.475" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="28.75" y1="55.85" x2="46.475" y2="59.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$17">
 <contactref element="U5" pad="4"/>
 <contactref element="U4" pad="41"/>
-<wire x1="24.65" y1="57.55" x2="33.625" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="26.05" y1="57.55" x2="33.625" y2="59.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$18">
 <contactref element="U5" pad="1"/>
 <contactref element="U4" pad="42"/>
-<wire x1="24.15" y1="57.55" x2="35.575" y2="59.1" width="0" layer="19" extent="1-1"/>
+<wire x1="25.55" y1="57.55" x2="35.575" y2="59.1" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$23">
 <contactref element="U12" pad="7"/>
-<contactref element="R7" pad="P$1"/>
+<contactref element="R19" pad="P$1"/>
 <contactref element="JC4" pad="1"/>
-<wire x1="45.3" y1="41.15" x2="46.125" y2="46.2" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="43.7" x2="46.125" y2="46.2" width="0" layer="19" extent="1-1"/>
+<wire x1="46.9" y1="43.45" x2="46.125" y2="46.2" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="43.7" x2="46.9" y2="43.45" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$25">
 <contactref element="U12" pad="6"/>
-<contactref element="R7" pad="P$2"/>
+<contactref element="R19" pad="P$2"/>
 <contactref element="JC4" pad="2"/>
-<wire x1="45.3" y1="40.05" x2="45.475" y2="46.2" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="41.7" x2="45.3" y2="40.05" width="0" layer="19" extent="1-1"/>
+<wire x1="46.9" y1="42.35" x2="45.475" y2="46.2" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="41.7" x2="46.9" y2="42.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$26">
 <contactref element="U13" pad="7"/>
-<contactref element="R8" pad="P$1"/>
+<contactref element="R20" pad="P$1"/>
 <contactref element="JC5" pad="1"/>
-<wire x1="38.56" y1="43.7" x2="112.45" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="35.425" y1="45.9" x2="38.56" y2="43.7" width="0" layer="19" extent="1-1"/>
+<wire x1="34.7" y1="43.35" x2="38.56" y2="43.7" width="0" layer="19" extent="1-1"/>
+<wire x1="34.825" y1="46.1" x2="34.7" y2="43.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$27">
 <contactref element="U13" pad="6"/>
-<contactref element="R8" pad="P$2"/>
+<contactref element="R20" pad="P$2"/>
 <contactref element="JC5" pad="2"/>
-<wire x1="38.56" y1="41.7" x2="113.55" y2="30.9" width="0" layer="19" extent="1-1"/>
-<wire x1="34.775" y1="45.9" x2="38.56" y2="41.7" width="0" layer="19" extent="1-1"/>
+<wire x1="34.7" y1="42.25" x2="34.175" y2="46.1" width="0" layer="19" extent="1-1"/>
+<wire x1="38.56" y1="41.7" x2="34.7" y2="42.25" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$32">
 <contactref element="JD3" pad="2"/>
-<contactref element="C20" pad="P$1"/>
+<contactref element="C32" pad="P$1"/>
 <contactref element="U11" pad="7"/>
-<wire x1="20.35" y1="42.55" x2="110.75" y2="35.6" width="0" layer="19" extent="1-1"/>
-<wire x1="13.9" y1="40.25" x2="20.35" y2="42.55" width="0" layer="19" extent="1-1"/>
+<wire x1="17.6" y1="40.85" x2="21.65" y2="42.85" width="0" layer="19" extent="1-1"/>
+<wire x1="13.9" y1="40.25" x2="17.6" y2="40.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$33">
 <contactref element="JD3" pad="3"/>
 <contactref element="U11" pad="36"/>
-<wire x1="13.9" y1="41.75" x2="27.25" y2="45.55" width="0" layer="19" extent="1-1"/>
+<wire x1="13.9" y1="41.75" x2="28.55" y2="45.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$34">
 <contactref element="JD3" pad="5"/>
 <contactref element="U11" pad="37"/>
-<wire x1="13.9" y1="44.75" x2="26.55" y2="46.25" width="0" layer="19" extent="1-1"/>
+<wire x1="13.9" y1="44.75" x2="27.85" y2="46.55" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$35">
-<contactref element="R9" pad="P$2"/>
-<contactref element="D3" pad="ANODE"/>
-<wire x1="105.05" y1="35.6" x2="116.35" y2="30.9" width="0" layer="19" extent="1-1"/>
+<contactref element="R18" pad="P$2"/>
+<contactref element="D7" pad="ANODE"/>
+<wire x1="18" y1="37.65" x2="17.95" y2="35.6" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$36">
-<contactref element="D3" pad="CATHODE"/>
+<contactref element="D7" pad="CATHODE"/>
 <contactref element="U11" pad="5"/>
-<wire x1="20.35" y1="43.55" x2="103.55" y2="35.6" width="0" layer="19" extent="1-1"/>
+<wire x1="18" y1="39.15" x2="21.65" y2="43.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$37">
-<contactref element="R10" pad="P$2"/>
-<contactref element="D4" pad="ANODE"/>
-<wire x1="107.05" y1="30.9" x2="108.85" y2="35.6" width="0" layer="19" extent="1-1"/>
+<contactref element="R17" pad="P$2"/>
+<contactref element="D6" pad="ANODE"/>
+<wire x1="19.7" y1="37.65" x2="21.15" y2="38.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$38">
-<contactref element="D4" pad="CATHODE"/>
+<contactref element="D6" pad="CATHODE"/>
 <contactref element="U11" pad="6"/>
-<wire x1="20.35" y1="43.05" x2="107.35" y2="35.6" width="0" layer="19" extent="1-1"/>
+<wire x1="19.7" y1="39.15" x2="21.65" y2="43.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$39">
 <contactref element="U11" pad="33"/>
 <contactref element="U13" pad="4"/>
-<wire x1="27.25" y1="44.05" x2="34.125" y2="48.5" width="0" layer="19" extent="1-1"/>
+<wire x1="28.55" y1="44.35" x2="33.525" y2="48.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$40">
 <contactref element="U11" pad="34"/>
 <contactref element="U13" pad="1"/>
-<wire x1="27.25" y1="44.55" x2="36.075" y2="48.5" width="0" layer="19" extent="1-1"/>
+<wire x1="28.55" y1="44.85" x2="35.475" y2="48.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$41">
 <contactref element="U12" pad="4"/>
 <contactref element="U11" pad="41"/>
-<wire x1="24.55" y1="46.25" x2="44.825" y2="48.8" width="0" layer="19" extent="1-1"/>
+<wire x1="25.85" y1="46.55" x2="44.825" y2="48.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$42">
 <contactref element="U12" pad="1"/>
 <contactref element="U11" pad="42"/>
-<wire x1="24.05" y1="46.25" x2="46.775" y2="48.8" width="0" layer="19" extent="1-1"/>
+<wire x1="25.35" y1="46.55" x2="46.775" y2="48.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$45">
 <contactref element="U9" pad="7"/>
-<contactref element="R15" pad="P$1"/>
+<contactref element="R13" pad="P$1"/>
 <contactref element="JC3" pad="1"/>
-<wire x1="45.1" y1="28.75" x2="46.325" y2="34.2" width="0" layer="19" extent="1-1"/>
 <wire x1="50.76" y1="32.2" x2="46.325" y2="34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="45.1" y1="28.75" x2="46.325" y2="34.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$46">
 <contactref element="U9" pad="6"/>
-<contactref element="R15" pad="P$2"/>
+<contactref element="R13" pad="P$2"/>
 <contactref element="JC3" pad="2"/>
-<wire x1="45.1" y1="27.65" x2="45.675" y2="34.2" width="0" layer="19" extent="1-1"/>
-<wire x1="50.76" y1="30.2" x2="45.1" y2="27.65" width="0" layer="19" extent="1-1"/>
+<wire x1="50.76" y1="30.2" x2="45.675" y2="34.2" width="0" layer="19" extent="1-1"/>
+<wire x1="45.1" y1="27.65" x2="50.76" y2="30.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$47">
 <contactref element="JD2" pad="2"/>
-<contactref element="C29" pad="P$1"/>
+<contactref element="C18" pad="P$1"/>
 <contactref element="U7" pad="7"/>
-<wire x1="20.35" y1="30.65" x2="110.75" y2="-12.5" width="0" layer="19" extent="1-1"/>
-<wire x1="13.8" y1="24.95" x2="20.35" y2="30.65" width="0" layer="19" extent="1-1"/>
+<wire x1="16.8" y1="25.35" x2="21.75" y2="32.15" width="0" layer="19" extent="1-1"/>
+<wire x1="13.8" y1="24.95" x2="16.8" y2="25.35" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$48">
 <contactref element="JD2" pad="3"/>
 <contactref element="U7" pad="36"/>
-<wire x1="13.8" y1="26.45" x2="27.25" y2="33.65" width="0" layer="19" extent="1-1"/>
+<wire x1="13.8" y1="26.45" x2="28.65" y2="35.15" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$49">
 <contactref element="JD2" pad="5"/>
 <contactref element="U7" pad="37"/>
-<wire x1="13.8" y1="29.45" x2="26.55" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="13.8" y1="29.45" x2="27.95" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$50">
-<contactref element="R16" pad="P$2"/>
+<contactref element="R12" pad="P$2"/>
 <contactref element="D5" pad="ANODE"/>
-<wire x1="105.05" y1="-12.5" x2="114.45" y2="-17.2" width="0" layer="19" extent="1-1"/>
+<wire x1="18.4" y1="25.25" x2="18.5" y2="23.75" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$51">
 <contactref element="D5" pad="CATHODE"/>
 <contactref element="U7" pad="5"/>
-<wire x1="20.35" y1="31.65" x2="103.55" y2="-12.5" width="0" layer="19" extent="1-1"/>
+<wire x1="18.4" y1="26.75" x2="21.75" y2="33.15" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$52">
-<contactref element="R17" pad="P$2"/>
-<contactref element="D6" pad="ANODE"/>
-<wire x1="108.85" y1="-12.5" x2="118.15" y2="-17.2" width="0" layer="19" extent="1-1"/>
+<contactref element="R11" pad="P$2"/>
+<contactref element="D4" pad="ANODE"/>
+<wire x1="20.2" y1="25.25" x2="20.1" y2="23.75" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$53">
-<contactref element="D6" pad="CATHODE"/>
+<contactref element="D4" pad="CATHODE"/>
 <contactref element="U7" pad="6"/>
-<wire x1="20.35" y1="31.15" x2="107.35" y2="-12.5" width="0" layer="19" extent="1-1"/>
+<wire x1="20.2" y1="26.75" x2="21.75" y2="32.65" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$54">
 <contactref element="U7" pad="33"/>
 <contactref element="U9" pad="4"/>
-<wire x1="27.25" y1="32.15" x2="45.025" y2="36.8" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="33.65" x2="45.025" y2="36.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="N$55">
 <contactref element="U7" pad="34"/>
 <contactref element="U9" pad="1"/>
-<wire x1="27.25" y1="32.65" x2="46.975" y2="36.8" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="34.15" x2="46.975" y2="36.8" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_MOSI">
 <contactref element="J3" pad="3"/>
 <contactref element="U7" pad="43"/>
-<wire x1="25.97" y1="19.23" x2="23.55" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="25.97" y1="19.23" x2="24.95" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_SCK">
 <contactref element="U8" pad="8"/>
 <contactref element="U7" pad="26"/>
-<wire x1="27.25" y1="28.65" x2="36" y2="28.285" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="30.15" x2="36" y2="28.285" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_MOSI">
 <contactref element="U8" pad="9"/>
 <contactref element="U7" pad="28"/>
-<wire x1="27.25" y1="29.65" x2="34.84" y2="28.7" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="31.15" x2="34.84" y2="28.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_MISO">
 <contactref element="U8" pad="15"/>
 <contactref element="U8" pad="10"/>
 <contactref element="U7" pad="27"/>
 <wire x1="34.84" y1="29.2" x2="34.84" y2="31.7" width="0" layer="19" extent="1-1"/>
-<wire x1="27.25" y1="29.15" x2="34.84" y2="29.2" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="30.65" x2="34.84" y2="31.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_CS1">
 <contactref element="U8" pad="14"/>
 <contactref element="U7" pad="25"/>
-<wire x1="27.25" y1="28.15" x2="34.84" y2="31.2" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="29.65" x2="34.84" y2="31.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_CS2">
 <contactref element="U8" pad="5"/>
 <contactref element="U7" pad="24"/>
-<wire x1="26.55" y1="27.45" x2="37.16" y2="29.7" width="0" layer="19" extent="1-1"/>
+<wire x1="27.95" y1="28.95" x2="37.16" y2="29.7" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_ACC_INT">
 <contactref element="U8" pad="16"/>
 <contactref element="U7" pad="30"/>
-<wire x1="27.25" y1="30.65" x2="36" y2="32.115" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="32.15" x2="36" y2="32.115" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="IMU_GYRO_INT">
 <contactref element="U8" pad="12"/>
 <contactref element="U7" pad="31"/>
-<wire x1="27.25" y1="31.15" x2="34.84" y2="30.2" width="0" layer="19" extent="1-1"/>
+<wire x1="28.65" y1="32.65" x2="34.84" y2="30.2" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_SCK">
 <contactref element="J3" pad="4"/>
 <contactref element="U7" pad="41"/>
-<wire x1="23.43" y1="19.23" x2="24.55" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="23.43" y1="19.23" x2="25.95" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_MISO">
 <contactref element="J3" pad="2"/>
 <contactref element="U7" pad="42"/>
-<wire x1="23.43" y1="16.69" x2="24.05" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="23.43" y1="16.69" x2="25.45" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_CS">
 <contactref element="J3" pad="5"/>
 <contactref element="U7" pad="38"/>
-<wire x1="25.97" y1="21.77" x2="26.05" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="25.97" y1="21.77" x2="27.45" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_IRQ">
 <contactref element="J3" pad="1"/>
 <contactref element="U7" pad="45"/>
-<wire x1="25.97" y1="16.69" x2="22.55" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="25.97" y1="16.69" x2="23.95" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="NRF_CE">
 <contactref element="J3" pad="6"/>
 <contactref element="U7" pad="44"/>
-<wire x1="23.43" y1="21.77" x2="23.05" y2="34.35" width="0" layer="19" extent="1-1"/>
+<wire x1="23.43" y1="21.77" x2="24.45" y2="35.85" width="0" layer="19" extent="1-1"/>
 </signal>
 <signal name="ID_SDA">
 <contactref element="J4" pad="27"/>
 <contactref element="U10" pad="5"/>
-<contactref element="R18" pad="P$2"/>
-<wire x1="9.2" y1="41.695" x2="-30.65" y2="-43.1" width="0" layer="19" extent="1-1"/>
-<wire x1="4.77" y1="41.39" x2="9.2" y2="41.695" width="0" layer="19" extent="1-1"/>
+<contactref element="R15" pad="P$2"/>
+<wire x1="7.2" y1="41.15" x2="9.4" y2="41.295" width="0" layer="19" extent="16-16"/>
+<wire x1="4.77" y1="41.39" x2="7.2" y2="41.15" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="ID_SCL">
 <contactref element="J4" pad="28"/>
 <contactref element="U10" pad="6"/>
-<contactref element="R19" pad="P$2"/>
-<wire x1="9.2" y1="42.965" x2="-30.65" y2="-46.7" width="0" layer="19" extent="1-1"/>
-<wire x1="2.23" y1="41.39" x2="9.2" y2="42.965" width="0" layer="19" extent="1-1"/>
+<contactref element="R16" pad="P$2"/>
+<wire x1="7.2" y1="42.55" x2="9.4" y2="42.565" width="0" layer="19" extent="16-16"/>
+<wire x1="2.23" y1="41.39" x2="7.2" y2="42.55" width="0" layer="19" extent="16-16"/>
 </signal>
 <signal name="N$44">
 <contactref element="U10" pad="7"/>
 <contactref element="R14" pad="P$2"/>
 <contactref element="JP1" pad="2"/>
-<wire x1="-30.65" y1="-33.9" x2="-28.33" y2="-38.5" width="0" layer="19" extent="1-1"/>
-<wire x1="9.2" y1="44.235" x2="-30.65" y2="-33.9" width="0" layer="19" extent="1-1"/>
+<wire x1="8.1" y1="47.83" x2="10.45" y2="48.6" width="0" layer="19" extent="16-16"/>
+<wire x1="9.4" y1="43.835" x2="8.1" y2="47.83" width="0" layer="19" extent="16-16"/>
+</signal>
+<signal name="N$9">
+<contactref element="D1" pad="ANODE"/>
+<contactref element="R4" pad="P$2"/>
+<wire x1="9.75" y1="0.9" x2="8.25" y2="1.1" width="0" layer="19" extent="1-1"/>
 </signal>
 </signals>
 </board>
