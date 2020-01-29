@@ -2847,7 +2847,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-1uF"/>
 </part>
 <part name="GND27" library="supply1" deviceset="GND" device=""/>
-<part name="JD3" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
+<part name="JD2" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
 <attribute name="MF" value="JST"/>
 <attribute name="MPN" value="B6B-ZR-SM4-TF(LF)(SN)"/>
 <attribute name="POPULATE" value="1"/>
@@ -2938,7 +2938,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-1uF"/>
 </part>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
-<part name="JD2" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
+<part name="JD3" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
 <attribute name="MF" value="JST"/>
 <attribute name="MPN" value="B6B-ZR-SM4-TF(LF)(SN)"/>
 <attribute name="POPULATE" value="1"/>
@@ -3324,7 +3324,7 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C35" gate="G$1" x="391.16" y="7.62"/>
 <instance part="C34" gate="G$1" x="383.54" y="7.62"/>
 <instance part="GND27" gate="1" x="337.82" y="45.72"/>
-<instance part="JD3" gate="A" x="294.64" y="121.92">
+<instance part="JD2" gate="A" x="294.64" y="121.92">
 <attribute name="POPULATE" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
 <attribute name="MPN" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
 <attribute name="MF" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
@@ -3377,7 +3377,7 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C21" gate="G$1" x="706.12" y="187.96"/>
 <instance part="C20" gate="G$1" x="698.5" y="187.96"/>
 <instance part="GND40" gate="1" x="652.78" y="226.06"/>
-<instance part="JD2" gate="A" x="609.6" y="302.26">
+<instance part="JD3" gate="A" x="609.6" y="302.26">
 <attribute name="POPULATE" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
 <attribute name="MPN" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
 <attribute name="MF" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
@@ -3761,7 +3761,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="337.82" y1="48.26" x2="337.82" y2="50.8" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JD3" gate="A" pin="4"/>
+<pinref part="JD2" gate="A" pin="4"/>
 <pinref part="GND28" gate="1" pin="GND"/>
 <wire x1="299.72" y1="121.92" x2="317.5" y2="121.92" width="0.1524" layer="91"/>
 <wire x1="317.5" y1="121.92" x2="317.5" y2="114.3" width="0.1524" layer="91"/>
@@ -3852,7 +3852,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="652.78" y1="228.6" x2="652.78" y2="231.14" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JD2" gate="A" pin="4"/>
+<pinref part="JD3" gate="A" pin="4"/>
 <pinref part="GND41" gate="1" pin="GND"/>
 <wire x1="614.68" y1="302.26" x2="632.46" y2="302.26" width="0.1524" layer="91"/>
 <wire x1="632.46" y1="302.26" x2="632.46" y2="294.64" width="0.1524" layer="91"/>
@@ -4180,7 +4180,7 @@ Licensed under the Apache 2.0 License</text>
 <junction x="459.74" y="238.76"/>
 </segment>
 <segment>
-<pinref part="JD3" gate="A" pin="6"/>
+<pinref part="JD2" gate="A" pin="6"/>
 <pinref part="+3V10" gate="G$1" pin="+3V3"/>
 <wire x1="299.72" y1="116.84" x2="307.34" y2="116.84" width="0.1524" layer="91"/>
 <wire x1="307.34" y1="116.84" x2="307.34" y2="137.16" width="0.1524" layer="91"/>
@@ -4262,7 +4262,7 @@ Licensed under the Apache 2.0 License</text>
 <junction x="457.2" y="58.42"/>
 </segment>
 <segment>
-<pinref part="JD2" gate="A" pin="6"/>
+<pinref part="JD3" gate="A" pin="6"/>
 <pinref part="+3V17" gate="G$1" pin="+3V3"/>
 <wire x1="614.68" y1="297.18" x2="622.3" y2="297.18" width="0.1524" layer="91"/>
 <wire x1="622.3" y1="297.18" x2="622.3" y2="317.5" width="0.1524" layer="91"/>
@@ -4433,8 +4433,9 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="PI_RX_3V" class="0">
 <segment>
-<wire x1="63.5" y1="111.76" x2="83.82" y2="111.76" width="0.1524" layer="91"/>
+<wire x1="60.96" y1="111.76" x2="83.82" y2="111.76" width="0.1524" layer="91"/>
 <label x="78.74" y="111.76" size="1.778" layer="95" font="vector"/>
+<pinref part="J4" gate="A" pin="10"/>
 </segment>
 </net>
 <net name="V+" class="0">
@@ -4929,7 +4930,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$32" class="0">
 <segment>
-<pinref part="JD3" gate="A" pin="2"/>
+<pinref part="JD2" gate="A" pin="2"/>
 <wire x1="299.72" y1="127" x2="337.82" y2="127" width="0.1524" layer="91"/>
 <pinref part="C32" gate="G$1" pin="P$1"/>
 <pinref part="U11" gate="G$1" pin="PG10-NRST"/>
@@ -4940,7 +4941,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$33" class="0">
 <segment>
-<pinref part="JD3" gate="A" pin="3"/>
+<pinref part="JD2" gate="A" pin="3"/>
 <wire x1="299.72" y1="124.46" x2="406.4" y2="124.46" width="0.1524" layer="91"/>
 <pinref part="U11" gate="G$1" pin="PA13"/>
 <wire x1="401.32" y1="71.12" x2="406.4" y2="71.12" width="0.1524" layer="91"/>
@@ -4949,7 +4950,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$34" class="0">
 <segment>
-<pinref part="JD3" gate="A" pin="5"/>
+<pinref part="JD2" gate="A" pin="5"/>
 <wire x1="299.72" y1="119.38" x2="393.7" y2="119.38" width="0.1524" layer="91"/>
 <pinref part="U11" gate="G$1" pin="PA14"/>
 <wire x1="393.7" y1="93.98" x2="393.7" y2="119.38" width="0.1524" layer="91"/>
@@ -5048,7 +5049,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$47" class="0">
 <segment>
-<pinref part="JD2" gate="A" pin="2"/>
+<pinref part="JD3" gate="A" pin="2"/>
 <wire x1="614.68" y1="307.34" x2="652.78" y2="307.34" width="0.1524" layer="91"/>
 <pinref part="C18" gate="G$1" pin="P$1"/>
 <pinref part="U7" gate="G$1" pin="PG10-NRST"/>
@@ -5059,7 +5060,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$48" class="0">
 <segment>
-<pinref part="JD2" gate="A" pin="3"/>
+<pinref part="JD3" gate="A" pin="3"/>
 <wire x1="614.68" y1="304.8" x2="716.28" y2="304.8" width="0.1524" layer="91"/>
 <pinref part="U7" gate="G$1" pin="PA13"/>
 <wire x1="716.28" y1="251.46" x2="716.28" y2="304.8" width="0.1524" layer="91"/>
@@ -5067,7 +5068,7 @@ Licensed under the Apache 2.0 License</text>
 </net>
 <net name="N$49" class="0">
 <segment>
-<pinref part="JD2" gate="A" pin="5"/>
+<pinref part="JD3" gate="A" pin="5"/>
 <wire x1="614.68" y1="299.72" x2="708.66" y2="299.72" width="0.1524" layer="91"/>
 <pinref part="U7" gate="G$1" pin="PA14"/>
 <wire x1="708.66" y1="274.32" x2="708.66" y2="299.72" width="0.1524" layer="91"/>
@@ -5337,11 +5338,34 @@ Licensed under the Apache 2.0 License</text>
 </sheet>
 </sheets>
 <errors>
-<approved hash="104,1,281.94,271.78,D1,ANODE,N$15,,,"/>
-<approved hash="104,1,276.86,271.78,D1,CATHODE,N$17,,,"/>
-<approved hash="104,1,281.94,261.62,D2,ANODE,N$16,,,"/>
-<approved hash="104,1,276.86,261.62,D2,CATHODE,N$18,,,"/>
-<approved hash="113,1,194.268,91.5712,JP1,,,,,"/>
+<approved hash="104,1,469.9,259.08,U5,VCC,+3V3,,,"/>
+<approved hash="104,1,469.9,220.98,U6,VCC,+3V3,,,"/>
+<approved hash="104,1,327.66,261.62,D3,ANODE,N$28,,,"/>
+<approved hash="104,1,327.66,256.54,D3,CATHODE,N$29,,,"/>
+<approved hash="104,1,320.04,261.62,D2,ANODE,N$30,,,"/>
+<approved hash="104,1,320.04,256.54,D2,CATHODE,N$31,,,"/>
+<approved hash="104,1,467.36,78.74,U12,VCC,+3V3,,,"/>
+<approved hash="104,1,467.36,40.64,U13,VCC,+3V3,,,"/>
+<approved hash="104,1,325.12,81.28,D7,ANODE,N$35,,,"/>
+<approved hash="104,1,325.12,76.2,D7,CATHODE,N$36,,,"/>
+<approved hash="104,1,317.5,81.28,D6,ANODE,N$37,,,"/>
+<approved hash="104,1,317.5,76.2,D6,CATHODE,N$38,,,"/>
+<approved hash="104,1,782.32,220.98,U9,VCC,+3V3,,,"/>
+<approved hash="104,1,640.08,261.62,D5,ANODE,N$50,,,"/>
+<approved hash="104,1,640.08,256.54,D5,CATHODE,N$51,,,"/>
+<approved hash="104,1,632.46,261.62,D4,ANODE,N$52,,,"/>
+<approved hash="104,1,632.46,256.54,D4,CATHODE,N$53,,,"/>
+<approved hash="104,1,142.24,210.82,D1,ANODE,N$9,,,"/>
+<approved hash="104,1,142.24,205.74,D1,CATHODE,GND,,,"/>
+<approved hash="106,1,53.34,116.84,I2C1_SCL,,,,,"/>
+<approved hash="106,1,53.34,119.38,I2C1_SDA,,,,,"/>
+<approved hash="106,1,60.96,111.76,PI_RX_3V,,,,,"/>
+<approved hash="106,1,60.96,114.3,PI_TX_3V,,,,,"/>
+<approved hash="106,1,60.96,91.44,SPI0_CS1,,,,,"/>
+<approved hash="106,1,60.96,78.74,SPI1_CS2,,,,,"/>
+<approved hash="113,1,57.1077,99.1912,J4,,,,,"/>
+<approved hash="113,1,801.328,330.331,J3,,,,,"/>
+<approved hash="113,1,114.063,20.1888,JP1,,,,,"/>
 </errors>
 </schematic>
 </drawing>
