@@ -1,12 +1,22 @@
 TODO
- * Figure out form factor for RF
- * Put rpi EEPROM on for DT autoconfigure
- * rough fix silks
  * route planes
  * route power
+ * route SPI
+ * route CAN
+ * select all caps
+ * select all resistors
  * route everything else
  * fine fix silks
 
+
+DONE 2020-01-28
+ * Fixed up stm32 pinouts
+ * renumber caps
+ * renumber resistors
+ * renumber diodes
+ * add overvoltage protection tvs
+ * fine place all components
+ * rough silks
 
 r3 DONE
  * Added pullup to RT8299 EN
