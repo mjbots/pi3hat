@@ -2608,7 +2608,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MF" value="Panasonic"/>
 <attribute name="MPN" value="ERJ-3EKF1002V"/>
 </part>
-<part name="F6" library="mfpassives" deviceset="RESISTOR" device="_0603" value="53.6k 1%">
+<part name="R6" library="mfpassives" deviceset="RESISTOR" device="_0603" value="53.6k 1%">
 <attribute name="MF" value="Panasonic"/>
 <attribute name="MPN" value="ERJ-3EKF5362V"/>
 </part>
@@ -3000,7 +3000,7 @@ Licensed under the Apache 2.0 License</text>
 <instance part="R5" gate="G$1" x="170.18" y="223.52">
 <attribute name="MF" x="170.18" y="223.52" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="F6" gate="G$1" x="190.5" y="223.52">
+<instance part="R6" gate="G$1" x="190.5" y="223.52">
 <attribute name="MF" x="190.5" y="223.52" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="J2" gate="G$1" x="-20.32" y="284.48"/>
@@ -3249,7 +3249,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="177.8" y1="218.44" x2="190.5" y2="218.44" width="0.1524" layer="91"/>
 <junction x="177.8" y="218.44"/>
 <pinref part="R5" gate="G$1" pin="P$2"/>
-<pinref part="F6" gate="G$1" pin="P$2"/>
+<pinref part="R6" gate="G$1" pin="P$2"/>
 </segment>
 <segment>
 <pinref part="GND10" gate="1" pin="GND"/>
@@ -3748,7 +3748,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="190.5" y1="231.14" x2="193.04" y2="231.14" width="0.1524" layer="91"/>
 <wire x1="193.04" y1="231.14" x2="193.04" y2="238.76" width="0.1524" layer="91"/>
 <junction x="190.5" y="231.14"/>
-<pinref part="F6" gate="G$1" pin="P$1"/>
+<pinref part="R6" gate="G$1" pin="P$1"/>
 </segment>
 </net>
 <net name="REGOUT" class="0">
@@ -4153,7 +4153,7 @@ Licensed under the Apache 2.0 License</text>
 <label x="688.34" y="116.84" size="1.778" layer="95"/>
 </segment>
 </net>
-<net name="N$10" class="0">
+<net name="V+FUSED" class="0">
 <segment>
 <pinref part="F1" gate="A" pin="2"/>
 <pinref part="C1" gate="G$1" pin="P$1"/>
@@ -4180,6 +4180,7 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="D8" gate="G$1" pin="C"/>
 <wire x1="43.18" y1="274.32" x2="43.18" y2="284.48" width="0.1524" layer="91"/>
 <junction x="43.18" y="284.48"/>
+<label x="12.7" y="284.48" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$19" class="0">
@@ -4190,7 +4191,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="53.34" y1="271.78" x2="58.42" y2="271.78" width="0.1524" layer="91"/>
 </segment>
 </net>
-<net name="N$20" class="0">
+<net name="5VSW" class="0">
 <segment>
 <pinref part="C5" gate="G$1" pin="P$2"/>
 <wire x1="96.52" y1="302.26" x2="99.06" y2="302.26" width="0.1524" layer="91"/>
@@ -4200,6 +4201,7 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="L1" gate="G$1" pin="P$1"/>
 <wire x1="99.06" y1="276.86" x2="104.14" y2="276.86" width="0.1524" layer="91"/>
 <junction x="99.06" y="276.86"/>
+<label x="88.9" y="276.86" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="N$14" class="0">
