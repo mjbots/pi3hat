@@ -2727,8 +2727,8 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="U11" library="pi3_hat" deviceset="STM32G474CEU6" device=""/>
 <part name="U12" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
 <part name="U13" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
+<part name="JC3" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
 <part name="JC4" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="JC5" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
 <part name="R19" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
 <part name="R20" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
 <part name="GND25" library="supply1" deviceset="GND" device=""/>
@@ -2794,7 +2794,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="GND37" library="supply1" deviceset="GND" device=""/>
 <part name="U7" library="pi3_hat" deviceset="STM32G474CEU6" device=""/>
 <part name="U9" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="JC3" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
+<part name="JC5" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
 <part name="R13" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
 <part name="GND38" library="supply1" deviceset="GND" device=""/>
 <part name="C18" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
@@ -3076,8 +3076,8 @@ Licensed under the Apache 2.0 License</text>
 <instance part="U11" gate="G$1" x="355.6" y="71.12"/>
 <instance part="U12" gate="G$1" x="464.82" y="83.82"/>
 <instance part="U13" gate="G$1" x="464.82" y="45.72"/>
-<instance part="JC4" gate="A" x="541.02" y="83.82" rot="MR0"/>
-<instance part="JC5" gate="A" x="541.02" y="45.72" rot="MR0"/>
+<instance part="JC3" gate="A" x="541.02" y="83.82" rot="MR0"/>
+<instance part="JC4" gate="A" x="541.02" y="45.72" rot="MR0"/>
 <instance part="R19" gate="G$1" x="520.7" y="81.28" rot="R90"/>
 <instance part="R20" gate="G$1" x="520.7" y="43.18" rot="R90"/>
 <instance part="GND25" gate="1" x="533.4" y="30.48"/>
@@ -3116,7 +3116,7 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND37" gate="1" x="505.46" y="30.48"/>
 <instance part="U7" gate="G$1" x="670.56" y="251.46"/>
 <instance part="U9" gate="G$1" x="779.78" y="226.06"/>
-<instance part="JC3" gate="A" x="855.98" y="226.06" rot="MR0"/>
+<instance part="JC5" gate="A" x="855.98" y="226.06" rot="MR0"/>
 <instance part="R13" gate="G$1" x="835.66" y="223.52" rot="R90"/>
 <instance part="GND38" gate="1" x="848.36" y="210.82"/>
 <instance part="C18" gate="G$1" x="652.78" y="233.68"/>
@@ -3449,13 +3449,13 @@ Licensed under the Apache 2.0 License</text>
 <junction x="508" y="218.44"/>
 </segment>
 <segment>
-<pinref part="JC4" gate="A" pin="3"/>
+<pinref part="JC3" gate="A" pin="3"/>
 <pinref part="GND26" gate="1" pin="GND"/>
 <wire x1="535.94" y1="81.28" x2="533.4" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="533.4" y1="81.28" x2="533.4" y2="73.66" width="0.1524" layer="91"/>
 </segment>
 <segment>
-<pinref part="JC5" gate="A" pin="3"/>
+<pinref part="JC4" gate="A" pin="3"/>
 <pinref part="GND25" gate="1" pin="GND"/>
 <wire x1="535.94" y1="43.18" x2="533.4" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="533.4" y1="43.18" x2="533.4" y2="33.02" width="0.1524" layer="91"/>
@@ -3546,7 +3546,7 @@ Licensed under the Apache 2.0 License</text>
 <junction x="505.46" y="38.1"/>
 </segment>
 <segment>
-<pinref part="JC3" gate="A" pin="3"/>
+<pinref part="JC5" gate="A" pin="3"/>
 <pinref part="GND38" gate="1" pin="GND"/>
 <wire x1="850.9" y1="223.52" x2="848.36" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="848.36" y1="223.52" x2="848.36" y2="213.36" width="0.1524" layer="91"/>
@@ -4586,7 +4586,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="502.92" y1="81.28" x2="515.62" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="515.62" y1="81.28" x2="515.62" y2="86.36" width="0.1524" layer="91"/>
 <junction x="515.62" y="81.28"/>
-<pinref part="JC4" gate="A" pin="1"/>
+<pinref part="JC3" gate="A" pin="1"/>
 <wire x1="515.62" y1="86.36" x2="535.94" y2="86.36" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -4598,7 +4598,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="525.78" y1="78.74" x2="525.78" y2="81.28" width="0.1524" layer="91"/>
 <wire x1="525.78" y1="81.28" x2="525.78" y2="83.82" width="0.1524" layer="91"/>
 <junction x="525.78" y="81.28"/>
-<pinref part="JC4" gate="A" pin="2"/>
+<pinref part="JC3" gate="A" pin="2"/>
 <wire x1="525.78" y1="83.82" x2="535.94" y2="83.82" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -4609,7 +4609,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="502.92" y1="43.18" x2="515.62" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="515.62" y1="43.18" x2="515.62" y2="48.26" width="0.1524" layer="91"/>
 <junction x="515.62" y="43.18"/>
-<pinref part="JC5" gate="A" pin="1"/>
+<pinref part="JC4" gate="A" pin="1"/>
 <wire x1="515.62" y1="48.26" x2="535.94" y2="48.26" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -4621,7 +4621,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="525.78" y1="40.64" x2="525.78" y2="43.18" width="0.1524" layer="91"/>
 <wire x1="525.78" y1="43.18" x2="525.78" y2="45.72" width="0.1524" layer="91"/>
 <junction x="525.78" y="43.18"/>
-<pinref part="JC5" gate="A" pin="2"/>
+<pinref part="JC4" gate="A" pin="2"/>
 <wire x1="525.78" y1="45.72" x2="535.94" y2="45.72" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -4728,7 +4728,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="817.88" y1="223.52" x2="830.58" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="830.58" y1="223.52" x2="830.58" y2="228.6" width="0.1524" layer="91"/>
 <junction x="830.58" y="223.52"/>
-<pinref part="JC3" gate="A" pin="1"/>
+<pinref part="JC5" gate="A" pin="1"/>
 <wire x1="830.58" y1="228.6" x2="850.9" y2="228.6" width="0.1524" layer="91"/>
 </segment>
 </net>
@@ -4740,7 +4740,7 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="840.74" y1="220.98" x2="840.74" y2="223.52" width="0.1524" layer="91"/>
 <wire x1="840.74" y1="223.52" x2="840.74" y2="226.06" width="0.1524" layer="91"/>
 <junction x="840.74" y="223.52"/>
-<pinref part="JC3" gate="A" pin="2"/>
+<pinref part="JC5" gate="A" pin="2"/>
 <wire x1="840.74" y1="226.06" x2="850.9" y2="226.06" width="0.1524" layer="91"/>
 </segment>
 </net>
