@@ -2917,6 +2917,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="GND57" library="supply1" deviceset="GND" device=""/>
+<part name="3V3_TP" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
 </parts>
 <sheets>
 <sheet>
@@ -3203,6 +3204,7 @@ Licensed under the Apache 2.0 License</text>
 <attribute name="MF" x="43.18" y="264.16" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND57" gate="1" x="43.18" y="248.92"/>
+<instance part="3V3_TP" gate="G$1" x="728.98" y="66.04"/>
 </instances>
 <busses>
 </busses>
@@ -4123,6 +4125,11 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="+3V32" gate="G$1" pin="+3V3"/>
 <wire x1="355.6" y1="71.12" x2="355.6" y2="83.82" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="3V3_TP" gate="G$1" pin="P$1"/>
+<wire x1="721.36" y1="66.04" x2="690.88" y2="66.04" width="0.1524" layer="91"/>
+<label x="688.34" y="66.04" size="1.778" layer="95"/>
+</segment>
 </net>
 <net name="PI_TX_3V" class="0">
 <segment>
@@ -4881,9 +4888,9 @@ Licensed under the Apache 2.0 License</text>
 <label x="764.54" y="284.48" size="1.778" layer="95" font="vector"/>
 </segment>
 <segment>
-<pinref part="U7" gate="G$1" pin="PB12"/>
-<wire x1="716.28" y1="223.52" x2="734.06" y2="223.52" width="0.1524" layer="91"/>
-<label x="726.44" y="223.52" size="1.778" layer="95"/>
+<pinref part="U7" gate="G$1" pin="PA9"/>
+<wire x1="716.28" y1="238.76" x2="736.6" y2="238.76" width="0.1524" layer="91"/>
+<label x="726.44" y="238.76" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="IMU_CS2" class="0">
@@ -4893,12 +4900,9 @@ Licensed under the Apache 2.0 License</text>
 <label x="764.54" y="281.94" size="1.778" layer="95" font="vector"/>
 </segment>
 <segment>
-<pinref part="U7" gate="G$1" pin="PB11"/>
-<wire x1="706.12" y1="205.74" x2="706.12" y2="203.2" width="0.1524" layer="91"/>
-<wire x1="706.12" y1="203.2" x2="713.74" y2="203.2" width="0.1524" layer="91"/>
-<wire x1="713.74" y1="203.2" x2="713.74" y2="215.9" width="0.1524" layer="91"/>
-<wire x1="713.74" y1="215.9" x2="734.06" y2="215.9" width="0.1524" layer="91"/>
-<label x="726.44" y="215.9" size="1.778" layer="95"/>
+<pinref part="U7" gate="G$1" pin="PB12"/>
+<wire x1="716.28" y1="223.52" x2="734.06" y2="223.52" width="0.1524" layer="91"/>
+<label x="726.44" y="223.52" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="IMU_ACC_INT" class="0">
@@ -4908,9 +4912,9 @@ Licensed under the Apache 2.0 License</text>
 <label x="822.96" y="297.18" size="1.778" layer="95" font="vector"/>
 </segment>
 <segment>
-<pinref part="U7" gate="G$1" pin="PA8"/>
-<wire x1="716.28" y1="236.22" x2="734.06" y2="236.22" width="0.1524" layer="91"/>
-<label x="726.44" y="236.22" size="1.778" layer="95" font="vector"/>
+<pinref part="U7" gate="G$1" pin="PA10"/>
+<wire x1="716.28" y1="241.3" x2="736.6" y2="241.3" width="0.1524" layer="91"/>
+<label x="726.44" y="241.3" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="IMU_GYRO_INT" class="0">
@@ -4920,9 +4924,9 @@ Licensed under the Apache 2.0 License</text>
 <label x="822.96" y="292.1" size="1.778" layer="95" font="vector"/>
 </segment>
 <segment>
-<pinref part="U7" gate="G$1" pin="PA9"/>
-<wire x1="716.28" y1="238.76" x2="734.06" y2="238.76" width="0.1524" layer="91"/>
-<label x="726.44" y="238.76" size="1.778" layer="95" font="vector"/>
+<pinref part="U7" gate="G$1" pin="PA8"/>
+<wire x1="716.28" y1="236.22" x2="736.6" y2="236.22" width="0.1524" layer="91"/>
+<label x="726.44" y="236.22" size="1.778" layer="95"/>
 </segment>
 </net>
 <net name="NRF_SCK" class="0">
