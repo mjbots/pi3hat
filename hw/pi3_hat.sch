@@ -2583,6 +2583,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="F1" library="pi3_hat" deviceset="MFU0603FF04000P100" device="">
 <attribute name="DPN" value="MFU06034.00CT-ND"/>
 <attribute name="MANUFACTURER_PART_NUMBER" value=""/>
+<attribute name="MF" value="VISHAY"/>
 <attribute name="MPN" value="MFU0603FF04000P100"/>
 <attribute name="POPULATE" value="1"/>
 </part>
@@ -2605,14 +2606,16 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="R5" library="mfpassives" deviceset="RESISTOR" device="_0603" value="10k 1%">
-<attribute name="MF" value="Panasonic"/>
-<attribute name="MPN" value="ERJ-3EKF1002V"/>
+<attribute name="MF" value="YAGEO"/>
+<attribute name="MPN" value="RC0402FR-0710KL"/>
 </part>
 <part name="R6" library="mfpassives" deviceset="RESISTOR" device="_0603" value="53.6k 1%">
-<attribute name="MF" value="Panasonic"/>
-<attribute name="MPN" value="ERJ-3EKF5362V"/>
+<attribute name="MF" value="YAGEO"/>
+<attribute name="MPN" value="RC0402FR-0753K6L"/>
 </part>
-<part name="J2" library="pi3_hat" deviceset="XT30" device="P"/>
+<part name="J2" library="pi3_hat" deviceset="XT30" device="P">
+<attribute name="POPULATE" value="0"/>
+</part>
 <part name="GND10" library="supply1" deviceset="GND" device=""/>
 <part name="C1" library="mfpassives" deviceset="CAPACITOR_NP" device="_0805" value=".1uF 50V">
 <attribute name="HOUSEPART" value="1"/>
@@ -2633,25 +2636,67 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="HOUSEPART" value="1"/>
 <attribute name="MPN" value="MF-CAP-0805-0.1uF"/>
 </part>
-<part name="R1" library="mfpassives" deviceset="RESISTOR" device="_0402" value="14k"/>
-<part name="C6" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="3.3nF"/>
+<part name="R1" library="mfpassives" deviceset="RESISTOR" device="_0402" value="15k">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-15K"/>
+</part>
+<part name="C6" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="4.7nF">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-CAP-0402-4.7nF"/>
+</part>
 <part name="GND14" library="supply1" deviceset="GND" device=""/>
-<part name="R2" library="mfpassives" deviceset="RESISTOR" device="_0402" value="115k"/>
-<part name="R3" library="mfpassives" deviceset="RESISTOR" device="_0402" value="22.1k"/>
+<part name="R2" library="mfpassives" deviceset="RESISTOR" device="_0402" value="115k">
+<attribute name="MF" value="YAGEO"/>
+<attribute name="MPN" value="RC0402FR-07115KL"/>
+</part>
+<part name="R3" library="mfpassives" deviceset="RESISTOR" device="_0402" value="22.1k">
+<attribute name="MF" value="YAGEO"/>
+<attribute name="MPN" value="RC0402FR-0722K1L"/>
+</part>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
 <part name="GND16" library="supply1" deviceset="GND" device=""/>
-<part name="J4" library="pinhead" deviceset="PINHD-2X20" device=""/>
+<part name="J4" library="pinhead" deviceset="PINHD-2X20" device="">
+<attribute name="MF" value="Sullins"/>
+<attribute name="MPN" value="PPPC202LFBN-RC"/>
+<attribute name="POPULATE" value="0"/>
+</part>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
 <part name="P+2" library="supply1" deviceset="+5V" device=""/>
 <part name="GND5" library="supply1" deviceset="GND" device=""/>
 <part name="GND18" library="supply1" deviceset="GND" device=""/>
-<part name="U4" library="pi3_hat" deviceset="STM32G474CEU6" device=""/>
-<part name="U5" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="U6" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="JC1" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="JC2" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="R9" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
-<part name="R10" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
+<part name="U4" library="pi3_hat" deviceset="STM32G474CEU6" device="">
+<attribute name="MF" value="ST"/>
+<attribute name="MPN" value="STM32G474CEU6"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="U5" library="pi3_hat" deviceset="TCAN334G" device="SOT23">
+<attribute name="MF" value="TI"/>
+<attribute name="MPN" value="TCAN334GDCNT"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="U6" library="pi3_hat" deviceset="TCAN334G" device="SOT23">
+<attribute name="MF" value="TI"/>
+<attribute name="MPN" value="TCAN334GDCNT"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="JC1" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="JC2" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="R9" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-100"/>
+</part>
+<part name="R10" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-100"/>
+</part>
 <part name="GND2" library="supply1" deviceset="GND" device=""/>
 <part name="GND3" library="supply1" deviceset="GND" device=""/>
 <part name="C9" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
@@ -2683,7 +2728,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-1uF"/>
 </part>
 <part name="GND4" library="supply1" deviceset="GND" device=""/>
-<part name="JD1" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT"/>
+<part name="JD1" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B6B-ZR-SM4-TF(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND6" library="supply1" deviceset="GND" device=""/>
 <part name="+3V1" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V2" library="supply1" deviceset="+3V3" device=""/>
@@ -2702,11 +2751,19 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="+3V4" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V5" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND17" library="supply1" deviceset="GND" device=""/>
-<part name="D3" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R8" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="D3" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED">
+<attribute name="MPN" value="MF-LED-0603-GREEN"/>
+</part>
+<part name="R8" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="+3V7" library="supply1" deviceset="+3V3" device=""/>
 <part name="D2" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R7" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="R7" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="GND19" library="supply1" deviceset="GND" device=""/>
 <part name="GND20" library="supply1" deviceset="GND" device=""/>
 <part name="+3V8" library="supply1" deviceset="+3V3" device=""/>
@@ -2723,14 +2780,42 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="GND22" library="supply1" deviceset="GND" device=""/>
 <part name="GND23" library="supply1" deviceset="GND" device=""/>
 <part name="GND24" library="supply1" deviceset="GND" device=""/>
-<part name="J1" library="pi3_hat" deviceset="XT30" device="P"/>
-<part name="U11" library="pi3_hat" deviceset="STM32G474CEU6" device=""/>
-<part name="U12" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="U13" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="JC3" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="JC4" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="R19" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
-<part name="R20" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
+<part name="J1" library="pi3_hat" deviceset="XT30" device="P">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="U11" library="pi3_hat" deviceset="STM32G474CEU6" device="">
+<attribute name="MF" value="ST"/>
+<attribute name="MPN" value="STM32G474CEU6"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="U12" library="pi3_hat" deviceset="TCAN334G" device="SOT23">
+<attribute name="MF" value="TI"/>
+<attribute name="MPN" value="TCAN334GDCNT"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="U13" library="pi3_hat" deviceset="TCAN334G" device="SOT23">
+<attribute name="MF" value="TI"/>
+<attribute name="MPN" value="TCAN334GDCNT"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="JC3" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="JC4" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="R19" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-100"/>
+</part>
+<part name="R20" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-100"/>
+</part>
 <part name="GND25" library="supply1" deviceset="GND" device=""/>
 <part name="GND26" library="supply1" deviceset="GND" device=""/>
 <part name="C32" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
@@ -2762,7 +2847,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-1uF"/>
 </part>
 <part name="GND27" library="supply1" deviceset="GND" device=""/>
-<part name="JD3" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT"/>
+<part name="JD3" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B6B-ZR-SM4-TF(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND28" library="supply1" deviceset="GND" device=""/>
 <part name="+3V10" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND29" library="supply1" deviceset="GND" device=""/>
@@ -2771,11 +2860,19 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="+3V12" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V13" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND31" library="supply1" deviceset="GND" device=""/>
-<part name="D7" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R18" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="D7" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED">
+<attribute name="MPN" value="MF-LED-0603-GREEN"/>
+</part>
+<part name="R18" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="+3V14" library="supply1" deviceset="+3V3" device=""/>
 <part name="D6" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R17" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="R17" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="GND32" library="supply1" deviceset="GND" device=""/>
 <part name="GND33" library="supply1" deviceset="GND" device=""/>
 <part name="+3V15" library="supply1" deviceset="+3V3" device=""/>
@@ -2792,10 +2889,25 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="GND35" library="supply1" deviceset="GND" device=""/>
 <part name="GND36" library="supply1" deviceset="GND" device=""/>
 <part name="GND37" library="supply1" deviceset="GND" device=""/>
-<part name="U7" library="pi3_hat" deviceset="STM32G474CEU6" device=""/>
-<part name="U9" library="pi3_hat" deviceset="TCAN334G" device="SOT23"/>
-<part name="JC5" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT"/>
-<part name="R13" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120"/>
+<part name="U7" library="pi3_hat" deviceset="STM32G474CEU6" device="">
+<attribute name="MF" value="ST"/>
+<attribute name="MPN" value="STM32G474CEU6"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="U9" library="pi3_hat" deviceset="TCAN334G" device="SOT23">
+<attribute name="MF" value="TI"/>
+<attribute name="MPN" value="TCAN334GDCNT"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="JC5" library="pi3_hat" deviceset="JST-PH3" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="R13" library="mfpassives" deviceset="RESISTOR" device="_0402" value="120">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-100"/>
+</part>
 <part name="GND38" library="supply1" deviceset="GND" device=""/>
 <part name="C18" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
 <attribute name="HOUSEPART" value="YES"/>
@@ -2826,7 +2938,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-1uF"/>
 </part>
 <part name="GND40" library="supply1" deviceset="GND" device=""/>
-<part name="JD2" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT"/>
+<part name="JD2" library="pi3_hat" deviceset="JST-ZH6" device="SMT_VERT">
+<attribute name="MF" value="JST"/>
+<attribute name="MPN" value="B6B-ZR-SM4-TF(LF)(SN)"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND41" library="supply1" deviceset="GND" device=""/>
 <part name="+3V17" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND42" library="supply1" deviceset="GND" device=""/>
@@ -2835,11 +2951,19 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="+3V19" library="supply1" deviceset="+3V3" device=""/>
 <part name="+3V20" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND44" library="supply1" deviceset="GND" device=""/>
-<part name="D5" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R12" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="D5" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED">
+<attribute name="MPN" value="MF-LED-0603-GREEN"/>
+</part>
+<part name="R12" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="+3V21" library="supply1" deviceset="+3V3" device=""/>
 <part name="D4" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R11" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220"/>
+<part name="R11" library="mfpassives" deviceset="RESISTOR" device="_0402" value="220">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-220"/>
+</part>
 <part name="GND46" library="supply1" deviceset="GND" device=""/>
 <part name="+3V23" library="supply1" deviceset="+3V3" device=""/>
 <part name="C25" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
@@ -2848,7 +2972,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 </part>
 <part name="GND48" library="supply1" deviceset="GND" device=""/>
 <part name="GND50" library="supply1" deviceset="GND" device=""/>
-<part name="U8" library="pi3_hat" deviceset="BMI088" device="LGA16"/>
+<part name="U8" library="pi3_hat" deviceset="BMI088" device="LGA16">
+<attribute name="MF" value="BOSCH"/>
+<attribute name="MPN" value="BMI088"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND51" library="supply1" deviceset="GND" device=""/>
 <part name="GND52" library="supply1" deviceset="GND" device=""/>
 <part name="C27" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
@@ -2860,7 +2988,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-0.1uF"/>
 </part>
 <part name="+3V24" library="supply1" deviceset="+3V3" device=""/>
-<part name="J3" library="pinhead" deviceset="PINHD-2X4" device=""/>
+<part name="J3" library="pinhead" deviceset="PINHD-2X4" device="">
+<attribute name="MF" value="Wurth Elektornik"/>
+<attribute name="MPN" value="61300821121"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND39" library="supply1" deviceset="GND" device=""/>
 <part name="+3V22" library="supply1" deviceset="+3V3" device=""/>
 <part name="C26" library="mfpassives" deviceset="CAPACITOR_NP" device="_1206" value="10uF">
@@ -2880,33 +3012,75 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="MF-CAP-0402-0.1uF"/>
 </part>
 <part name="GND47" library="supply1" deviceset="GND" device=""/>
-<part name="R14" library="mfpassives" deviceset="RESISTOR" device="_0402" value="1k"/>
+<part name="R14" library="mfpassives" deviceset="RESISTOR" device="_0402" value="1k">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-1K"/>
+</part>
 <part name="+3V27" library="supply1" deviceset="+3V3" device=""/>
-<part name="JP1" library="pinhead" deviceset="PINHD-1X2" device=""/>
+<part name="JP1" library="pinhead" deviceset="PINHD-1X2" device="">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-CON-2.54mm-01x02"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="GND49" library="supply1" deviceset="GND" device=""/>
-<part name="R15" library="mfpassives" deviceset="RESISTOR" device="_0402" value="3.9k 1%"/>
-<part name="R16" library="mfpassives" deviceset="RESISTOR" device="_0402" value="3.9k 1%"/>
+<part name="R15" library="mfpassives" deviceset="RESISTOR" device="_0402" value="4.7k">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-4.7K"/>
+</part>
+<part name="R16" library="mfpassives" deviceset="RESISTOR" device="_0402" value="4.7k">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-4.7K"/>
+</part>
 <part name="GND53" library="supply1" deviceset="GND" device=""/>
 <part name="+3V28" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND54" library="supply1" deviceset="GND" device=""/>
 <part name="+3V29" library="supply1" deviceset="+3V3" device=""/>
 <part name="GND55" library="supply1" deviceset="GND" device=""/>
 <part name="+3V30" library="supply1" deviceset="+3V3" device=""/>
-<part name="REGOUT" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="V+" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="+5V" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="GND" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI1_CS0" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI1_CS1" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI1_SCLK" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI1_MISO" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI1_MOSI" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI0_CS0" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI0_SCLK" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI0_MISO" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
-<part name="SPI0_MOSI" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
+<part name="REGOUT" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="V+" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="+5V" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="GND" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI1_CS0" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI1_CS1" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI1_SCLK" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI1_MISO" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI1_MOSI" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI0_CS0" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI0_SCLK" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI0_MISO" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="SPI0_MOSI" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
 <part name="D1" library="mfleds" deviceset="LED_SINGLE" device="-0603-RED" value="MF-LED-0603-RED"/>
-<part name="R4" library="mfpassives" deviceset="RESISTOR" device="_0402" value="~700"/>
+<part name="R4" library="mfpassives" deviceset="RESISTOR" device="_0402" value="560">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-RES-0402-560"/>
+</part>
 <part name="P+1" library="supply1" deviceset="+5V" device=""/>
 <part name="GND56" library="supply1" deviceset="GND" device=""/>
 <part name="+3V31" library="supply1" deviceset="+3V3" device=""/>
@@ -2917,7 +3091,9 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="GND57" library="supply1" deviceset="GND" device=""/>
-<part name="3V3_TP" library="pi3_hat" deviceset="PAD" device="24AWG_PAD"/>
+<part name="3V3_TP" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -2927,7 +3103,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="220.98" y1="170.18" x2="-48.26" y2="170.18" width="0.1524" layer="90"/>
 <wire x1="-48.26" y1="170.18" x2="-48.26" y2="347.98" width="0.1524" layer="90"/>
 <text x="-45.72" y="335.28" size="7.62" layer="90" font="vector">INPUT POWER</text>
-<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjmech pi3 hat r4
+<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots quad pi3 hat r4
 (c) jjp@pobox.com 2020
 Licensed under the Apache 2.0 License</text>
 <wire x1="-48.26" y1="162.56" x2="220.98" y2="162.56" width="0.1524" layer="90"/>
@@ -2982,6 +3158,7 @@ Licensed under the Apache 2.0 License</text>
 <attribute name="DPN" x="-2.54" y="284.48" size="1.778" layer="96" display="off"/>
 <attribute name="MPN" x="-2.54" y="284.48" size="1.778" layer="96" display="off"/>
 <attribute name="POPULATE" x="-2.54" y="284.48" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="-2.54" y="284.48" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="C2" gate="G$1" x="20.32" y="279.4">
 <attribute name="MF" x="20.32" y="279.4" size="1.778" layer="96" display="off"/>
@@ -3004,7 +3181,9 @@ Licensed under the Apache 2.0 License</text>
 <instance part="R6" gate="G$1" x="190.5" y="223.52">
 <attribute name="MF" x="190.5" y="223.52" size="1.778" layer="96" display="off"/>
 </instance>
-<instance part="J2" gate="G$1" x="-20.32" y="284.48"/>
+<instance part="J2" gate="G$1" x="-20.32" y="284.48">
+<attribute name="POPULATE" x="-20.32" y="284.48" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND10" gate="1" x="-12.7" y="271.78"/>
 <instance part="C1" gate="G$1" x="7.62" y="279.4"/>
 <instance part="C3" gate="G$1" x="33.02" y="279.4">
@@ -3019,20 +3198,48 @@ Licensed under the Apache 2.0 License</text>
 <instance part="R1" gate="G$1" x="96.52" y="256.54"/>
 <instance part="C6" gate="G$1" x="96.52" y="246.38"/>
 <instance part="GND14" gate="1" x="96.52" y="238.76"/>
-<instance part="R2" gate="G$1" x="119.38" y="269.24"/>
-<instance part="R3" gate="G$1" x="119.38" y="256.54"/>
+<instance part="R2" gate="G$1" x="119.38" y="269.24">
+<attribute name="MF" x="119.38" y="269.24" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="R3" gate="G$1" x="119.38" y="256.54">
+<attribute name="MF" x="119.38" y="256.54" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND15" gate="1" x="119.38" y="246.38"/>
 <instance part="GND16" gate="1" x="142.24" y="259.08"/>
-<instance part="J4" gate="A" x="55.88" y="99.06"/>
+<instance part="J4" gate="A" x="55.88" y="99.06">
+<attribute name="POPULATE" x="55.88" y="99.06" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="55.88" y="99.06" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="55.88" y="99.06" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="+3V6" gate="G$1" x="43.18" y="129.54"/>
 <instance part="P+2" gate="1" x="76.2" y="129.54"/>
 <instance part="GND5" gate="1" x="71.12" y="63.5"/>
 <instance part="GND18" gate="1" x="45.72" y="63.5"/>
-<instance part="U4" gate="G$1" x="358.14" y="251.46"/>
-<instance part="U5" gate="G$1" x="467.36" y="264.16"/>
-<instance part="U6" gate="G$1" x="467.36" y="226.06"/>
-<instance part="JC1" gate="A" x="543.56" y="264.16" rot="MR0"/>
-<instance part="JC2" gate="A" x="543.56" y="226.06" rot="MR0"/>
+<instance part="U4" gate="G$1" x="358.14" y="251.46">
+<attribute name="MPN" x="358.14" y="251.46" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="358.14" y="251.46" size="1.778" layer="96" display="off"/>
+<attribute name="POPULATE" x="358.14" y="251.46" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U5" gate="G$1" x="467.36" y="264.16">
+<attribute name="POPULATE" x="467.36" y="264.16" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="467.36" y="264.16" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="467.36" y="264.16" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U6" gate="G$1" x="467.36" y="226.06">
+<attribute name="POPULATE" x="467.36" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="467.36" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="467.36" y="226.06" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="JC1" gate="A" x="543.56" y="264.16" rot="MR0">
+<attribute name="POPULATE" x="543.56" y="264.16" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MPN" x="543.56" y="264.16" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MF" x="543.56" y="264.16" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
+<instance part="JC2" gate="A" x="543.56" y="226.06" rot="MR0">
+<attribute name="POPULATE" x="543.56" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MPN" x="543.56" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MF" x="543.56" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
 <instance part="R9" gate="G$1" x="523.24" y="261.62" rot="R90"/>
 <instance part="R10" gate="G$1" x="523.24" y="223.52" rot="R90"/>
 <instance part="GND2" gate="1" x="535.94" y="210.82"/>
@@ -3045,7 +3252,11 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C12" gate="G$1" x="393.7" y="187.96"/>
 <instance part="C11" gate="G$1" x="386.08" y="187.96"/>
 <instance part="GND4" gate="1" x="332.74" y="226.06"/>
-<instance part="JD1" gate="A" x="297.18" y="302.26"/>
+<instance part="JD1" gate="A" x="297.18" y="302.26">
+<attribute name="POPULATE" x="297.18" y="302.26" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="297.18" y="302.26" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="297.18" y="302.26" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND6" gate="1" x="320.04" y="292.1"/>
 <instance part="+3V1" gate="G$1" x="309.88" y="320.04"/>
 <instance part="+3V2" gate="G$1" x="180.34" y="137.16"/>
@@ -3073,12 +3284,34 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND22" gate="1" x="452.12" y="231.14"/>
 <instance part="GND23" gate="1" x="508" y="246.38"/>
 <instance part="GND24" gate="1" x="508" y="210.82"/>
-<instance part="J1" gate="G$1" x="-35.56" y="284.48"/>
-<instance part="U11" gate="G$1" x="355.6" y="71.12"/>
-<instance part="U12" gate="G$1" x="464.82" y="83.82"/>
-<instance part="U13" gate="G$1" x="464.82" y="45.72"/>
-<instance part="JC3" gate="A" x="541.02" y="83.82" rot="MR0"/>
-<instance part="JC4" gate="A" x="541.02" y="45.72" rot="MR0"/>
+<instance part="J1" gate="G$1" x="-35.56" y="284.48">
+<attribute name="POPULATE" x="-35.56" y="284.48" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U11" gate="G$1" x="355.6" y="71.12">
+<attribute name="POPULATE" x="355.6" y="71.12" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="355.6" y="71.12" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="355.6" y="71.12" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U12" gate="G$1" x="464.82" y="83.82">
+<attribute name="POPULATE" x="464.82" y="83.82" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="464.82" y="83.82" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="464.82" y="83.82" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U13" gate="G$1" x="464.82" y="45.72">
+<attribute name="POPULATE" x="464.82" y="45.72" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="464.82" y="45.72" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="464.82" y="45.72" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="JC3" gate="A" x="541.02" y="83.82" rot="MR0">
+<attribute name="POPULATE" x="541.02" y="83.82" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MPN" x="541.02" y="83.82" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MF" x="541.02" y="83.82" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
+<instance part="JC4" gate="A" x="541.02" y="45.72" rot="MR0">
+<attribute name="POPULATE" x="541.02" y="45.72" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MPN" x="541.02" y="45.72" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MF" x="541.02" y="45.72" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
 <instance part="R19" gate="G$1" x="520.7" y="81.28" rot="R90"/>
 <instance part="R20" gate="G$1" x="520.7" y="43.18" rot="R90"/>
 <instance part="GND25" gate="1" x="533.4" y="30.48"/>
@@ -3091,7 +3324,11 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C35" gate="G$1" x="391.16" y="7.62"/>
 <instance part="C34" gate="G$1" x="383.54" y="7.62"/>
 <instance part="GND27" gate="1" x="337.82" y="45.72"/>
-<instance part="JD3" gate="A" x="294.64" y="121.92"/>
+<instance part="JD3" gate="A" x="294.64" y="121.92">
+<attribute name="POPULATE" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="294.64" y="121.92" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND28" gate="1" x="317.5" y="111.76"/>
 <instance part="+3V10" gate="G$1" x="307.34" y="139.7"/>
 <instance part="GND29" gate="1" x="355.6" y="93.98"/>
@@ -3115,9 +3352,21 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND35" gate="1" x="449.58" y="50.8"/>
 <instance part="GND36" gate="1" x="505.46" y="66.04"/>
 <instance part="GND37" gate="1" x="505.46" y="30.48"/>
-<instance part="U7" gate="G$1" x="670.56" y="251.46"/>
-<instance part="U9" gate="G$1" x="779.78" y="226.06"/>
-<instance part="JC5" gate="A" x="855.98" y="226.06" rot="MR0"/>
+<instance part="U7" gate="G$1" x="670.56" y="251.46">
+<attribute name="POPULATE" x="670.56" y="251.46" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="670.56" y="251.46" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="670.56" y="251.46" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="U9" gate="G$1" x="779.78" y="226.06">
+<attribute name="POPULATE" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="JC5" gate="A" x="855.98" y="226.06" rot="MR0">
+<attribute name="POPULATE" x="855.98" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MPN" x="855.98" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+<attribute name="MF" x="855.98" y="226.06" size="1.778" layer="96" rot="MR0" display="off"/>
+</instance>
 <instance part="R13" gate="G$1" x="835.66" y="223.52" rot="R90"/>
 <instance part="GND38" gate="1" x="848.36" y="210.82"/>
 <instance part="C18" gate="G$1" x="652.78" y="233.68"/>
@@ -3128,7 +3377,11 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C21" gate="G$1" x="706.12" y="187.96"/>
 <instance part="C20" gate="G$1" x="698.5" y="187.96"/>
 <instance part="GND40" gate="1" x="652.78" y="226.06"/>
-<instance part="JD2" gate="A" x="609.6" y="302.26"/>
+<instance part="JD2" gate="A" x="609.6" y="302.26">
+<attribute name="POPULATE" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="609.6" y="302.26" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND41" gate="1" x="632.46" y="292.1"/>
 <instance part="+3V17" gate="G$1" x="622.3" y="320.04"/>
 <instance part="GND42" gate="1" x="670.56" y="274.32"/>
@@ -3147,13 +3400,21 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C25" gate="G$1" x="764.54" y="236.22"/>
 <instance part="GND48" gate="1" x="764.54" y="231.14"/>
 <instance part="GND50" gate="1" x="820.42" y="210.82"/>
-<instance part="U8" gate="G$1" x="800.1" y="284.48"/>
+<instance part="U8" gate="G$1" x="800.1" y="284.48">
+<attribute name="POPULATE" x="800.1" y="284.48" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="800.1" y="284.48" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="800.1" y="284.48" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND51" gate="1" x="784.86" y="269.24"/>
 <instance part="GND52" gate="1" x="822.96" y="266.7"/>
 <instance part="C27" gate="G$1" x="843.28" y="279.4"/>
 <instance part="C28" gate="G$1" x="855.98" y="279.4"/>
 <instance part="+3V24" gate="G$1" x="848.36" y="294.64"/>
-<instance part="J3" gate="A" x="800.1" y="327.66"/>
+<instance part="J3" gate="A" x="800.1" y="327.66">
+<attribute name="POPULATE" x="800.1" y="327.66" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="800.1" y="327.66" size="1.778" layer="96" display="off"/>
+<attribute name="MF" x="800.1" y="327.66" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="GND39" gate="1" x="815.34" y="309.88"/>
 <instance part="+3V22" gate="G$1" x="782.32" y="322.58"/>
 <instance part="C26" gate="G$1" x="800.1" y="317.5"/>
@@ -3169,7 +3430,11 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND47" gate="1" x="182.88" y="55.88"/>
 <instance part="R14" gate="G$1" x="119.38" y="45.72"/>
 <instance part="+3V27" gate="G$1" x="119.38" y="58.42"/>
-<instance part="JP1" gate="G$1" x="111.76" y="22.86" rot="R180"/>
+<instance part="JP1" gate="G$1" x="111.76" y="22.86" rot="R180">
+<attribute name="POPULATE" x="111.76" y="22.86" size="1.778" layer="96" rot="R180" display="off"/>
+<attribute name="MPN" x="111.76" y="22.86" size="1.778" layer="96" rot="R180" display="off"/>
+<attribute name="HOUSEPART" x="111.76" y="22.86" size="1.778" layer="96" rot="R180" display="off"/>
+</instance>
 <instance part="GND49" gate="1" x="119.38" y="10.16"/>
 <instance part="R15" gate="G$1" x="190.5" y="53.34"/>
 <instance part="R16" gate="G$1" x="200.66" y="53.34"/>
@@ -3179,19 +3444,45 @@ Licensed under the Apache 2.0 License</text>
 <instance part="+3V29" gate="G$1" x="345.44" y="73.66"/>
 <instance part="GND55" gate="1" x="662.94" y="231.14"/>
 <instance part="+3V30" gate="G$1" x="657.86" y="254"/>
-<instance part="REGOUT" gate="G$1" x="728.98" y="134.62"/>
-<instance part="V+" gate="G$1" x="728.98" y="116.84"/>
-<instance part="+5V" gate="G$1" x="728.98" y="99.06"/>
-<instance part="GND" gate="G$1" x="728.98" y="81.28"/>
-<instance part="SPI1_CS0" gate="G$1" x="642.62" y="129.54"/>
-<instance part="SPI1_CS1" gate="G$1" x="642.62" y="119.38"/>
-<instance part="SPI1_SCLK" gate="G$1" x="642.62" y="109.22"/>
-<instance part="SPI1_MISO" gate="G$1" x="642.62" y="99.06"/>
-<instance part="SPI1_MOSI" gate="G$1" x="642.62" y="88.9"/>
-<instance part="SPI0_CS0" gate="G$1" x="642.62" y="66.04"/>
-<instance part="SPI0_SCLK" gate="G$1" x="642.62" y="55.88"/>
-<instance part="SPI0_MISO" gate="G$1" x="642.62" y="45.72"/>
-<instance part="SPI0_MOSI" gate="G$1" x="642.62" y="35.56"/>
+<instance part="REGOUT" gate="G$1" x="728.98" y="134.62">
+<attribute name="POPULATE" x="728.98" y="134.62" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="V+" gate="G$1" x="728.98" y="116.84">
+<attribute name="POPULATE" x="728.98" y="116.84" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="+5V" gate="G$1" x="728.98" y="99.06">
+<attribute name="POPULATE" x="728.98" y="99.06" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="GND" gate="G$1" x="728.98" y="81.28">
+<attribute name="POPULATE" x="728.98" y="81.28" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI1_CS0" gate="G$1" x="642.62" y="129.54">
+<attribute name="POPULATE" x="642.62" y="129.54" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI1_CS1" gate="G$1" x="642.62" y="119.38">
+<attribute name="POPULATE" x="642.62" y="119.38" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI1_SCLK" gate="G$1" x="642.62" y="109.22">
+<attribute name="POPULATE" x="642.62" y="109.22" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI1_MISO" gate="G$1" x="642.62" y="99.06">
+<attribute name="POPULATE" x="642.62" y="99.06" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI1_MOSI" gate="G$1" x="642.62" y="88.9">
+<attribute name="POPULATE" x="642.62" y="88.9" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI0_CS0" gate="G$1" x="642.62" y="66.04">
+<attribute name="POPULATE" x="642.62" y="66.04" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI0_SCLK" gate="G$1" x="642.62" y="55.88">
+<attribute name="POPULATE" x="642.62" y="55.88" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI0_MISO" gate="G$1" x="642.62" y="45.72">
+<attribute name="POPULATE" x="642.62" y="45.72" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="SPI0_MOSI" gate="G$1" x="642.62" y="35.56">
+<attribute name="POPULATE" x="642.62" y="35.56" size="1.778" layer="96" display="off"/>
+</instance>
 <instance part="D1" gate="G$1" x="142.24" y="208.28" rot="R270"/>
 <instance part="R4" gate="G$1" x="142.24" y="220.98"/>
 <instance part="P+1" gate="1" x="142.24" y="233.68"/>
@@ -3204,7 +3495,9 @@ Licensed under the Apache 2.0 License</text>
 <attribute name="MF" x="43.18" y="264.16" size="1.778" layer="96" rot="R90" display="off"/>
 </instance>
 <instance part="GND57" gate="1" x="43.18" y="248.92"/>
-<instance part="3V3_TP" gate="G$1" x="728.98" y="66.04"/>
+<instance part="3V3_TP" gate="G$1" x="728.98" y="66.04">
+<attribute name="POPULATE" x="728.98" y="66.04" size="1.778" layer="96" display="off"/>
+</instance>
 </instances>
 <busses>
 </busses>
