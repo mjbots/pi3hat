@@ -1,13 +1,14 @@
 TODO
- * route planes
+
+
+
+DONE 2020-01-29
  * route power
  * route SPI
  * route CAN
- * select all caps
- * select all resistors
+ * selected parts
  * route everything else
  * fine fix silks
-
 
 DONE 2020-01-28
  * Fixed up stm32 pinouts
@@ -17,6 +18,7 @@ DONE 2020-01-28
  * add overvoltage protection tvs
  * fine place all components
  * rough silks
+ * route planes
 
 r3 DONE
  * Added pullup to RT8299 EN
