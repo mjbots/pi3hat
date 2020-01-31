@@ -2607,11 +2607,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 </part>
 <part name="R5" library="mfpassives" deviceset="RESISTOR" device="_0603" value="10k 1%">
 <attribute name="MF" value="YAGEO"/>
-<attribute name="MPN" value="RC0402FR-0710KL"/>
+<attribute name="MPN" value="RC0603FR-0710KL"/>
 </part>
 <part name="R6" library="mfpassives" deviceset="RESISTOR" device="_0603" value="53.6k 1%">
 <attribute name="MF" value="YAGEO"/>
-<attribute name="MPN" value="RC0402FR-0753K6L"/>
+<attribute name="MPN" value="RC0603FR-0753K6L"/>
 </part>
 <part name="J2" library="pi3_hat" deviceset="XT30" device="P">
 <attribute name="POPULATE" value="0"/>
