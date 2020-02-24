@@ -21,15 +21,13 @@ mbed_binary(
     srcs = [
         "millisecond_timer.h",
         "pi3_hat.cc",
-        "stm32_serial.cc",
-        "stm32_serial.h",
     ],
 )
 
 OCD = (
     "openocd " +
-    "-f /usr/share/openocd/scripts/interface/stlink-v2.cfg " +
-    "-f /usr/share/openocd/scripts/target/stm32f0x_stlink.cfg "
+    "-f interface/stlink.cfg " +
+    "-f target/stm32g4x.cfg "
 )
 
 genrule(

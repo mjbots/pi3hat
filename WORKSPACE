@@ -14,10 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-workspace(name = "com_github_jpieper_mjmech_pi3_hat")
+workspace(name = "com_github_mjbots_quad_pi3_hat")
 
-BAZEL_VERSION = "0.28.1"
-BAZEL_VERSION_SHA = "daa27fbf9213b3dbc8509a8481f7d99cce6815cf54c50d5d3af5ec2b4c41d31f"
+BAZEL_VERSION = "1.2.0"
+BAZEL_VERSION_SHA = "34eb178663a9f9c6765db72dd58958cdac64c5f08dd51e5b67e28d466079bd1e"
 
 load("//tools/workspace:default.bzl", "add_default_repositories")
 
@@ -27,9 +27,10 @@ load("@com_github_mjbots_rules_mbed//:rules.bzl", mbed_register = "mbed_register
 
 mbed_register(
     config = {
-        "mbed_target": "targets/TARGET_STM/TARGET_STM32F0/TARGET_DISCO_F051R8",
+        "mbed_target": "targets/TARGET_STM/TARGET_STM32G4/TARGET_STM32G474xE/TARGET_NUCLEO_G474RE",
         "mbed_config": {
             "MBED_CONF_RTOS_PRESENT": "0",
+            "MBED_CONF_TARGET_LSE_AVAILABLE": "0",
             "DEVICE_STDIO_MESSAGES": "0",
             "NDEBUG": "1",
         },

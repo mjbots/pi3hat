@@ -1,4 +1,4 @@
-// Copyright 2018-2019 Josh Pieper, jjp@pobox.com.
+// Copyright 2018 Josh Pieper, jjp@pobox.com.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,18 +16,33 @@
 
 #include "mbed.h"
 
+#ifdef wait_us
+#undef wait_us
+#endif
+
 namespace fw {
 
 class MillisecondTimer {
  public:
   MillisecondTimer() {
-    __HAL_RCC_TIM2_CLK_ENABLE();
+    __HAL_RCC_TIM5_CLK_ENABLE();
 
-    handle_.Instance = TIM2;
+    constexpr int kExtraPrescaler =
+#if defined(TARGET_STM32F4)
+        2
+#elif defined(TARGET_STM32G4)
+        1
+#else
+#error "Unknown target"
+#endif
+        ;
+
+    handle_.Instance = TIM5;
     handle_.Init.Period = 0xFFFFFFFF;
     handle_.Init.Prescaler =
-        (uint32_t)(SystemCoreClock / 1U / 1000000U) - 1;  // 1 us tick
-    handle_.Init.ClockDivision = 1;
+        (uint32_t)(SystemCoreClock / kExtraPrescaler /
+                   1000000U) - 1;  // 1 us tick
+    handle_.Init.ClockDivision = 0;
     handle_.Init.CounterMode = TIM_COUNTERMODE_UP;
     handle_.Init.RepetitionCounter = 0;
 
@@ -35,11 +50,11 @@ class MillisecondTimer {
   }
 
   uint32_t read_ms() {
-    return TIM2->CNT / 1000;
+    return TIM5->CNT / 1000;
   }
 
   uint32_t read_us() {
-    return TIM2->CNT;
+    return TIM5->CNT;
   }
 
   void wait_ms(uint32_t delay_ms) {
@@ -47,10 +62,10 @@ class MillisecondTimer {
   }
 
   void wait_us(uint32_t delay_us) {
-    uint32_t current = TIM2->CNT;
+    uint32_t current = TIM5->CNT;
     uint32_t elapsed = 0;
     while (true) {
-      const uint32_t next = TIM2->CNT;
+      const uint32_t next = TIM5->CNT;
       elapsed += next - current;
       // We check delay_us + 1 since we don't know where in the
       // current microsecond we started.
@@ -60,7 +75,7 @@ class MillisecondTimer {
   }
 
  private:
-  TIM_HandleTypeDef handle_;
+  TIM_HandleTypeDef handle_ = {};
 };
 
 }

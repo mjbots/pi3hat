@@ -1,8 +1,8 @@
 build --compiler=compiler
 test --compiler=compiler
 
-build --cpu=stm32f0
-test --cpu=stm32f0
+build --cpu=stm32g4
+test --cpu=stm32g4
 
 build --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
 test --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
