@@ -293,7 +293,29 @@ class RegisterSPISlave {
   ssize_t rx_bytes_ = 0;
 };
 
+int ParseDlc(uint32_t dlc_code) {
+  if (dlc_code == FDCAN_DLC_BYTES_0) { return 0; }
+  if (dlc_code == FDCAN_DLC_BYTES_1) { return 1; }
+  if (dlc_code == FDCAN_DLC_BYTES_2) { return 2; }
+  if (dlc_code == FDCAN_DLC_BYTES_3) { return 3; }
+  if (dlc_code == FDCAN_DLC_BYTES_4) { return 4; }
+  if (dlc_code == FDCAN_DLC_BYTES_5) { return 5; }
+  if (dlc_code == FDCAN_DLC_BYTES_6) { return 6; }
+  if (dlc_code == FDCAN_DLC_BYTES_7) { return 7; }
+  if (dlc_code == FDCAN_DLC_BYTES_8) { return 8; }
+  if (dlc_code == FDCAN_DLC_BYTES_12) { return 12; }
+  if (dlc_code == FDCAN_DLC_BYTES_16) { return 16; }
+  if (dlc_code == FDCAN_DLC_BYTES_20) { return 20; }
+  if (dlc_code == FDCAN_DLC_BYTES_24) { return 24; }
+  if (dlc_code == FDCAN_DLC_BYTES_32) { return 32; }
+  if (dlc_code == FDCAN_DLC_BYTES_48) { return 48; }
+  if (dlc_code == FDCAN_DLC_BYTES_64) { return 64; }
+  mbed_die();
+  return 0;
+}
+
 constexpr int kMaxSpiFrameSize = 70;
+constexpr int kBufferItems = 6;
 
 /// This presents the following SPI interface.
 ///
@@ -305,10 +327,10 @@ constexpr int kMaxSpiFrameSize = 70;
 /// 1: Interface type
 ///    byte 0: the constant value 1
 /// 16: Receive status
-///    byte 0-3 - Size of up to 4 received frames.  0 means no frame is available.
-///      this size includes the header, so is the total number of
-///      bytes that must be read from register 17 to get a complete
-///      frame
+///    byte 0-6 - Size of up to 6 received frames.  0 means no frame
+///      is available.  this size includes the header, so is the total
+///      number of bytes that must be read from register 17 to get a
+///      complete frame
 /// 17: Received frame: reading this register returns exactly one frame
 ///    from the received queue.
 ///   byte 0 - CAN bus (0/1/2) - 0 means this frame is not present
@@ -324,14 +346,50 @@ constexpr int kMaxSpiFrameSize = 70;
 class Application {
  public:
   void Poll() {
-    auto can_poll = [&](int id, auto* can) {
+    auto can_poll = [&](int bus_id, auto* can) {
       const bool rx = can->Poll(&can_header_, rx_buffer_);
-      // TODO: Do something with this packet.
-      (void)rx;
+      if (!rx) {
+        return;
+      }
+
+      auto* this_buf = [&]() -> CanReceiveBuf* {
+        for (auto& buf : can_buf_) {
+          if (!buf.active) { return &buf; }
+        }
+        return nullptr;
+      }();
+
+      if (this_buf == nullptr) {
+        // Record an error.
+        return;
+      }
+
+      this_buf->data[0] = bus_id;
+      const auto id = can_header_.Identifier;
+      this_buf->data[1] = (id >> 24) & 0xff;
+      this_buf->data[2] = (id >> 16) & 0xff;
+      this_buf->data[3] = (id >> 8) & 0xff;
+      this_buf->data[4] = (id >> 0) & 0xff;
+      const int size = ParseDlc(can_header_.DataLength);
+      this_buf->data[5] = size;
+      this_buf->size = size;
+      std::memcpy(&this_buf->data[6], rx_buffer_, size);
+
+      this_buf->active = true;
+
+      // Insert this item into the receive queue.
+      __disable_irq();
+      for (auto& item : can_rx_queue_) {
+        if (item == nullptr) {
+          item = this_buf;
+          break;
+        }
+      }
+      __enable_irq();
     };
 
-    can_poll(0, &can1_);
-    can_poll(1, &can2_);
+    can_poll(1, &can1_);
+    can_poll(2, &can2_);
 
     // Look to see if we have anything to send.
     for (auto& spi_buf : spi_buf_) {
@@ -351,6 +409,12 @@ class Application {
     int size = 0;
     std::atomic<bool> active{false};
     std::atomic<bool> ready_to_send{false};
+  };
+
+  struct CanReceiveBuf {
+    char data[kMaxSpiFrameSize] = {};
+    int size = 0;
+    std::atomic<bool> active{false};
   };
 
   void SendCan(const SpiReceiveBuf* spi) {
@@ -396,6 +460,31 @@ class Application {
         {},
       };
     }
+    if (address == 16) {
+      for (size_t i = 0; i < kBufferItems; i++) {
+        const auto item = can_rx_queue_[i];
+        address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 6);
+      }
+      return {
+        address16_buf_,
+        {},
+      };
+    }
+    if (address == 17) {
+      if (!can_rx_queue_[0]) {
+        current_can_buf_ = nullptr;
+        return { {}, {} };
+      }
+      current_can_buf_ = can_rx_queue_[0];
+
+      RegisterSPISlave::Buffer result = {
+        std::string_view(current_can_buf_->data, current_can_buf_->size + 6),
+        {},
+      };
+      // Shift everything over.
+      std::memmove(&can_rx_queue_[0], &can_rx_queue_[1], kBufferItems - 1);
+      return result;
+    }
     if (address == 18) {
       current_spi_buf_ = [&]() {
         for (auto& buf : spi_buf_) {
@@ -416,10 +505,15 @@ class Application {
   }
 
   void ISR_End(uint16_t address, int bytes) {
-    current_spi_buf_->size = bytes;
+    if (current_can_buf_) {
+      current_can_buf_->active = false;
+      current_can_buf_ = nullptr;
+    }
 
-    if (address == 18) {
+    if (current_spi_buf_) {
+      current_spi_buf_->size = bytes;
       current_spi_buf_->ready_to_send = true;
+      current_spi_buf_ = nullptr;
     }
   }
 
@@ -456,11 +550,17 @@ class Application {
     }()
   };
 
-  SpiReceiveBuf spi_buf_[3] = {};
+  SpiReceiveBuf spi_buf_[kBufferItems] = {};
   SpiReceiveBuf* current_spi_buf_ = nullptr;
+
+  CanReceiveBuf can_buf_[kBufferItems] = {};
+  CanReceiveBuf* can_rx_queue_[kBufferItems] = {};
+  CanReceiveBuf* current_can_buf_ = nullptr;
 
   FDCAN_RxHeaderTypeDef can_header_ = {};
   char rx_buffer_[64] = {};
+
+  char address16_buf_[kBufferItems] = {};
 };
 
 void SetupClock() {
