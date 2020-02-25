@@ -364,6 +364,8 @@ class Application {
         return;
       }
 
+      this_buf->active = true;
+
       this_buf->data[0] = bus_id;
       const auto id = can_header_.Identifier;
       this_buf->data[1] = (id >> 24) & 0xff;
@@ -375,16 +377,18 @@ class Application {
       this_buf->size = size;
       std::memcpy(&this_buf->data[6], rx_buffer_, size);
 
-      this_buf->active = true;
-
       // Insert this item into the receive queue.
       __disable_irq();
-      for (auto& item : can_rx_queue_) {
-        if (item == nullptr) {
-          item = this_buf;
-          break;
+      [&]() {
+        for (auto& item : can_rx_queue_) {
+          if (item == nullptr) {
+            item = this_buf;
+            return;
+          }
         }
-      }
+        // Hmm, we couldn't.  Just throw it away.
+        this_buf->active = false;
+      }();
       __enable_irq();
     };
 
@@ -482,7 +486,9 @@ class Application {
         {},
       };
       // Shift everything over.
-      std::memmove(&can_rx_queue_[0], &can_rx_queue_[1], kBufferItems - 1);
+      std::memmove(&can_rx_queue_[0], &can_rx_queue_[1],
+                   sizeof(can_rx_queue_[0]) * (kBufferItems - 1));
+      can_rx_queue_[kBufferItems - 1] = nullptr;
       return result;
     }
     if (address == 18) {
