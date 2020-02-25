@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <atomic>
+
 #include "mbed.h"
 #include "PeripheralPins.h"
 
@@ -19,12 +21,18 @@
 #include "mjlib/base/string_span.h"
 #include "mjlib/micro/callback_table.h"
 
+#include "fw/fdcan.h"
 #include "fw/millisecond_timer.h"
 
 namespace {
 template <typename T>
 uint32_t u32(T value) {
   return reinterpret_cast<uint32_t>(value);
+}
+
+template <typename T>
+uint8_t u8(T value) {
+  return static_cast<uint8_t>(value);
 }
 
 void EnableSPI(SPI_TypeDef* spi) {
@@ -230,7 +238,7 @@ class RegisterSPISlave {
           break;
         }
         case kWaitingAddress2: {
-          current_address_ |= ReadRegister(&spi_->DR) << 8;
+          current_address_ |= ReadRegister(&spi_->DR);
           buffer_ = start_handler_(current_address_);
           mode_ = kTransfer;
 
@@ -285,46 +293,212 @@ class RegisterSPISlave {
   ssize_t rx_bytes_ = 0;
 };
 
+constexpr int kMaxSpiFrameSize = 70;
+
+/// This presents the following SPI interface.
+///
+/// Each "register" points to a discontiguous block of data that
+/// cannot be read or written piecemeal.
+///
+/// 0: Protocol version
+///    byte 0: the constant value 1
+/// 1: Interface type
+///    byte 0: the constant value 1
+/// 16: Receive status
+///    byte 0-3 - Size of up to 4 received frames.  0 means no frame is available.
+///      this size includes the header, so is the total number of
+///      bytes that must be read from register 17 to get a complete
+///      frame
+/// 17: Received frame: reading this register returns exactly one frame
+///    from the received queue.
+///   byte 0 - CAN bus (0/1/2) - 0 means this frame is not present
+///   byte 1,2,3,4 - CAN ID, MSB first
+///   byte 5 - size of remaining payload
+///   byte 6+ payload
+/// 18: Send a CAN frame
+///   byte 0 - CAN bus (1/2)
+///   byte 1,2,3,4 - CAN ID, MSB first
+///   byte 5 - size of remaining payload
+///   byte 6+ payload
+
 class Application {
  public:
-  RegisterSPISlave::Buffer Start(uint16_t address) {
+  void Poll() {
+    auto can_poll = [&](int id, auto* can) {
+      const bool rx = can->Poll(&can_header_, rx_buffer_);
+      // TODO: Do something with this packet.
+      (void)rx;
+    };
+
+    can_poll(0, &can1_);
+    can_poll(1, &can2_);
+
+    // Look to see if we have anything to send.
+    for (auto& spi_buf : spi_buf_) {
+      if (spi_buf.ready_to_send) {
+        // Let's send this out.
+        SendCan(&spi_buf);
+
+        spi_buf.ready_to_send = false;
+        spi_buf.active = false;
+      }
+    }
+  }
+
+ private:
+  struct SpiReceiveBuf {
+    char data[kMaxSpiFrameSize] = {};
+    int size = 0;
+    std::atomic<bool> active{false};
+    std::atomic<bool> ready_to_send{false};
+  };
+
+  void SendCan(const SpiReceiveBuf* spi) {
+    if (spi->size < 6) {
+      // This is not big enough for a header.
+      // TODO record an error.
+      return;
+    }
+
+    const int can_bus = spi->data[0];
+    if (can_bus != 1 && can_bus != 2) {
+      // TODO Record an error of some sort.
+      return;
+    }
+    const uint32_t id =
+        (u8(spi->data[1]) << 24) |
+        (u8(spi->data[2]) << 16) |
+        (u8(spi->data[3]) << 8) |
+        (u8(spi->data[4]));
+    const int size = u8(spi->data[5]);
+    if (size + 6 > spi->size) {
+      // There is not enough data.  TODO Record an error.
+      return;
+    }
+
+    auto* const can = (can_bus == 1) ?
+        &can1_ :
+        &can2_;
+
+    can->Send(id, std::string_view(&spi->data[6], size));
+  }
+
+  RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 0) {
       return {
-        {reg0_tx_, 1},
-        {reg0_rx_, 1},
+        std::string_view("\x01", 1),
+        {},
       };
     }
+    if (address == 1) {
+      return {
+        std::string_view("\x01", 1),
+        {},
+      };
+    }
+    if (address == 18) {
+      current_spi_buf_ = [&]() {
+        for (auto& buf : spi_buf_) {
+          if (!buf.active) { return &buf; }
+        }
+        mbed_die();
+      }();
+
+      current_spi_buf_->active = true;
+
+      return {
+        {},
+        mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
+      };
+    }
+
     return { {}, {} };
   }
 
-  void End(uint16_t address, int bytes) {
-    if (address == 0) {
-      if (bytes > 0) {
-        led2_.write(reg0_rx_[0] % 2);
-      }
+  void ISR_End(uint16_t address, int bytes) {
+    current_spi_buf_->size = bytes;
+
+    if (address == 18) {
+      current_spi_buf_->ready_to_send = true;
     }
   }
 
   RegisterSPISlave spi_{
     PA_7, PA_6, PA_5, PA_4,
-        [this](uint16_t address) { return this->Start(address); },
-        [this](uint16_t address, int bytes) { return this->End(address, bytes); }};
+        [this](uint16_t address) {
+          return this->ISR_Start(address);
+        },
+        [this](uint16_t address, int bytes) {
+          return this->ISR_End(address, bytes);
+        }};
   DigitalOut led2_{PF_1, 1};
 
-  char reg0_rx_[1] = {};
-  char reg0_tx_[1] = { 0x45 };
+  fw::FDCan can1_{[]() {
+      fw::FDCan::Options o;
+      o.td = PB_4;
+      o.rd = PB_3;
+      o.slow_bitrate = 1000000;
+      o.fast_bitrate = 5000000;
+      o.fdcan_frame = true;
+      o.bitrate_switch = true;
+      return o;
+    }()
+  };
+  fw::FDCan can2_{[]() {
+      fw::FDCan::Options o;
+      o.td = PA_12;
+      o.rd = PA_11;
+      o.slow_bitrate = 1000000;
+      o.fast_bitrate = 5000000;
+      o.fdcan_frame = true;
+      o.bitrate_switch = true;
+      return o;
+    }()
+  };
+
+  SpiReceiveBuf spi_buf_[3] = {};
+  SpiReceiveBuf* current_spi_buf_ = nullptr;
+
+  FDCAN_RxHeaderTypeDef can_header_ = {};
+  char rx_buffer_[64] = {};
 };
+
+void SetupClock() {
+  RCC_ClkInitTypeDef RCC_ClkInitStruct;
+
+  RCC_ClkInitStruct.ClockType      = (RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2);
+  RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+  RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1; // 170 MHz
+  RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;  //  85 MHz
+  RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV2;  //  85 MHz
+
+  if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_6) != HAL_OK) {
+    mbed_die();
+  }
+
+  {
+    RCC_PeriphCLKInitTypeDef PeriphClkInit = {};
+
+    PeriphClkInit.PeriphClockSelection = RCC_PERIPHCLK_FDCAN;
+    PeriphClkInit.FdcanClockSelection = RCC_FDCANCLKSOURCE_PCLK1;
+    if (HAL_RCCEx_PeriphCLKConfig(&PeriphClkInit) != HAL_OK) {
+      mbed_die();
+    }
+  }
+}
 }
 
 int main(void) {
+  SetupClock();
+
   DigitalOut led1(PF_0, 1);
 
   fw::MillisecondTimer timer;
 
   Application application;
-  // SPISlave slave(PA_7, PA_6, PA_5, PA_4);
 
   while (true) {
+    application.Poll();
     const uint32_t time_s = timer.read_us() >> 20;
     led1.write(time_s % 2);
   }
