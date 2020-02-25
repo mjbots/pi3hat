@@ -155,7 +155,7 @@
 <text x="53.9" y="9" size="1" layer="21" ratio="10" rot="R90">jjp@pobox.com</text>
 <text x="55.6" y="9" size="1" layer="21" ratio="10" rot="R90">(c) 2020</text>
 <text x="52.3" y="9" size="1" layer="21" ratio="10" rot="R90">mjbots quad
-pi3hat r4</text>
+pi3hat r4.1</text>
 <wire x1="21.95" y1="25.9" x2="48.8" y2="25.9" width="0.127" layer="21"/>
 <wire x1="48.8" y1="25.9" x2="48.8" y2="10.7" width="0.127" layer="21"/>
 <wire x1="48.8" y1="10.7" x2="21.9" y2="10.7" width="0.127" layer="21"/>
@@ -1195,7 +1195,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="NAME" x="31.6" y="6.7" size="0.8" layer="25" font="vector" ratio="10" rot="R270"/>
 </element>
 <element name="U1" library="pi3_hat" package="SO-8EP" value="AP64351SO8EP" x="23.5" y="5.9" smashed="yes" rot="R90">
-<attribute name="MPN" value="AP64350SP-13" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
+<attribute name="MPN" value="AP64351SP-13" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="POPULATE" value="1" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MF" value="DIODES INC" x="23.5" y="5.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="NAME" x="22.28" y="3.21" size="0.8" layer="25" font="vector" ratio="10" rot="R180"/>

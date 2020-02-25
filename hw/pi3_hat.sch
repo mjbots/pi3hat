@@ -2626,7 +2626,9 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="MPN" value="CGA5L1X7R1H106K160AC"/>
 </part>
 <part name="GND11" library="supply1" deviceset="GND" device=""/>
-<part name="U1" library="pi3_hat" deviceset="AP64351" device="SO8EP"/>
+<part name="U1" library="pi3_hat" deviceset="AP64351" device="SO8EP">
+<attribute name="MPN" value="AP64351SP-13"/>
+</part>
 <part name="GND12" library="supply1" deviceset="GND" device=""/>
 <part name="C4" library="mfpassives" deviceset="CAPACITOR_NP" device="_0603" value="0.01uF">
 <attribute name="MPN" value="MF-CAP-0603-0.01uF"/>
@@ -3103,7 +3105,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="220.98" y1="170.18" x2="-48.26" y2="170.18" width="0.1524" layer="90"/>
 <wire x1="-48.26" y1="170.18" x2="-48.26" y2="347.98" width="0.1524" layer="90"/>
 <text x="-45.72" y="335.28" size="7.62" layer="90" font="vector">INPUT POWER</text>
-<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots quad pi3 hat r4
+<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots quad pi3 hat r4.1
 (c) jjp@pobox.com 2020
 Licensed under the Apache 2.0 License</text>
 <wire x1="-48.26" y1="162.56" x2="220.98" y2="162.56" width="0.1524" layer="90"/>

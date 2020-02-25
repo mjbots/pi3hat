@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2018 Josh Pieper, jjp@pobox.com.
+# Copyright 2018-2019 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,11 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("//tools/workspace/rules_mbed:repository.bzl", "rules_mbed_repository")
-load("//tools/workspace/mjlib:repository.bzl", "mjlib_repository")
+load("//tools/workspace:github_archive.bzl", "github_archive")
 
-def add_default_repositories(excludes = []):
-    if "com_github_mjbots_rules_bazel" not in excludes:
-        rules_mbed_repository()
-    if "mjlib" not in excludes:
-        mjlib_repository(name = "com_github_mjbots_mjlib")
+def mjlib_repository(name):
+    github_archive(
+        name = name,
+        repo = "mjbots/mjlib",
+        commit = "2dbc30b64b807908b7a7b7e1cdddc3af7f4ead19",
+        sha256 = "a5b8c3c71c1c7ed9e0eda725609b60411601187969c580da999c39bdb48b9b5e",
+    )

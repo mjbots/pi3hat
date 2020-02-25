@@ -22,6 +22,11 @@ mbed_binary(
         "millisecond_timer.h",
         "pi3_hat.cc",
     ],
+    deps = [
+        "@com_github_mjbots_mjlib//mjlib/base:inplace_function",
+        "@com_github_mjbots_mjlib//mjlib/base:string_span",
+        "@com_github_mjbots_mjlib//mjlib/micro:callback_table",
+    ],
 )
 
 OCD = (
