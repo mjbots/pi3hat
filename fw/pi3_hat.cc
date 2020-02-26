@@ -201,6 +201,7 @@ class RegisterSPISlave {
   }
 
   void ISR_HandleNssRise() {
+    led2_.write(0);
     // Mark the transfer as completed if we actually started one.
     if (mode_ == kTransfer) {
       end_handler_(current_address_, rx_bytes_);
@@ -217,6 +218,8 @@ class RegisterSPISlave {
   }
 
   void ISR_HandleNssFall() {
+    led2_.write(1);
+
     // Get ready to start receiving the address.
     mode_ = kWaitingAddress1;
 
@@ -225,6 +228,7 @@ class RegisterSPISlave {
   }
 
   void ISR_SPI() {
+    led1_.write(1);
     while (spi_->SR & SPI_SR_RXNE) {
       switch (mode_) {
         case kInactive: {
@@ -235,14 +239,19 @@ class RegisterSPISlave {
         case kWaitingAddress1: {
           current_address_ = ReadRegister(&spi_->DR) << 8;
           mode_ = kWaitingAddress2;
+          led2_.write(0);
+
           break;
         }
         case kWaitingAddress2: {
           current_address_ |= ReadRegister(&spi_->DR);
+          led1_.write(0);
           buffer_ = start_handler_(current_address_);
+          led1_.write(1);
           mode_ = kTransfer;
 
           ISR_PrepareTx();
+          led2_.write(1);
 
           break;
         }
@@ -258,6 +267,7 @@ class RegisterSPISlave {
         }
       }
     }
+    led1_.write(0);
   }
 
   void ISR_PrepareTx() {
@@ -291,6 +301,9 @@ class RegisterSPISlave {
   Buffer buffer_;
   size_t tx_bytes_ = 0;
   ssize_t rx_bytes_ = 0;
+
+  DigitalOut led1_{PF_0, 1};
+  DigitalOut led2_{PF_1, 1};
 };
 
 int ParseDlc(uint32_t dlc_code) {
@@ -532,7 +545,6 @@ class Application {
         [this](uint16_t address, int bytes) {
           return this->ISR_End(address, bytes);
         }};
-  DigitalOut led2_{PF_1, 1};
 
   fw::FDCan can1_{[]() {
       fw::FDCan::Options o;
@@ -598,7 +610,6 @@ void SetupClock() {
 int main(void) {
   SetupClock();
 
-  DigitalOut led1(PF_0, 1);
 
   fw::MillisecondTimer timer;
 
@@ -607,7 +618,7 @@ int main(void) {
   while (true) {
     application.Poll();
     const uint32_t time_s = timer.read_us() >> 20;
-    led1.write(time_s % 2);
+    (void)time_s;
   }
 }
 
