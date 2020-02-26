@@ -481,15 +481,16 @@ class Application {
       }
       current_can_buf_ = can_rx_queue_[0];
 
-      RegisterSPISlave::Buffer result = {
+      // Shift everything over.
+      for (size_t i = 1; i < kBufferItems; i++) {
+        can_rx_queue_[i - 1] = can_rx_queue_[i];
+      }
+      can_rx_queue_[kBufferItems - 1] = nullptr;
+
+      return {
         std::string_view(current_can_buf_->data, current_can_buf_->size + 6),
         {},
       };
-      // Shift everything over.
-      std::memmove(&can_rx_queue_[0], &can_rx_queue_[1],
-                   sizeof(can_rx_queue_[0]) * (kBufferItems - 1));
-      can_rx_queue_[kBufferItems - 1] = nullptr;
-      return result;
     }
     if (address == 18) {
       current_spi_buf_ = [&]() {
