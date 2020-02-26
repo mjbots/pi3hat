@@ -265,12 +265,12 @@ bool ApplyOverride(bool value, FDCan::Override o) {
 }
 }
 
-void FDCan::Send(uint32_t dest_id,
-                 std::string_view data,
-                 const SendOptions& send_options) {
+FDCan::SendResult FDCan::Send(uint32_t dest_id,
+                              std::string_view data,
+                              const SendOptions& send_options) {
 
   // Abort anything we have started that hasn't finished.
-  if (last_tx_request_) {
+  if (send_options.abort_existing && last_tx_request_) {
     HAL_FDCAN_AbortTxRequest(&hfdcan_, last_tx_request_);
   }
 
@@ -300,9 +300,11 @@ void FDCan::Send(uint32_t dest_id,
           &hfdcan_, &tx_header,
           const_cast<uint8_t*>(
               reinterpret_cast<const uint8_t*>(data.data()))) != HAL_OK) {
-    mbed_die();
+    return kNoSpace;
   }
   last_tx_request_ = HAL_FDCAN_GetLatestTxFifoQRequestBuffer(&hfdcan_);
+
+  return kSuccess;
 }
 
 bool FDCan::Poll(FDCAN_RxHeaderTypeDef* header,

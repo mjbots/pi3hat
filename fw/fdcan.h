@@ -87,13 +87,19 @@ class FDCan {
     Override fdcan_frame = Override::kDefault;
     Override remote_frame = Override::kDefault;
     Override extended_id = Override::kDefault;
+    bool abort_existing = false;
 
     SendOptions() {}
   };
 
-  void Send(uint32_t dest_id,
-            std::string_view data,
-            const SendOptions& = SendOptions());
+  enum SendResult {
+    kSuccess,
+    kNoSpace,
+  };
+
+  SendResult Send(uint32_t dest_id,
+                  std::string_view data,
+                  const SendOptions& = SendOptions());
 
   /// @return true if a packet was available.
   bool Poll(FDCAN_RxHeaderTypeDef* header, mjlib::base::string_span);

@@ -412,7 +412,11 @@ class Application {
     for (auto& spi_buf : spi_buf_) {
       if (spi_buf.ready_to_send) {
         // Let's send this out.
-        SendCan(&spi_buf);
+        const auto send_result = SendCan(&spi_buf);
+        if (send_result == fw::FDCan::kNoSpace) {
+          // Just finish this poll and try again later.
+          return;
+        }
 
         spi_buf.ready_to_send = false;
         spi_buf.active = false;
@@ -434,17 +438,17 @@ class Application {
     std::atomic<bool> active{false};
   };
 
-  void SendCan(const SpiReceiveBuf* spi) {
+  fw::FDCan::SendResult SendCan(const SpiReceiveBuf* spi) {
     if (spi->size < 6) {
       // This is not big enough for a header.
       // TODO record an error.
-      return;
+      return fw::FDCan::kSuccess;
     }
 
     const int can_bus = spi->data[0];
     if (can_bus != 1 && can_bus != 2) {
       // TODO Record an error of some sort.
-      return;
+      return fw::FDCan::kSuccess;
     }
     const uint32_t id =
         (u8(spi->data[1]) << 24) |
@@ -454,14 +458,14 @@ class Application {
     const int size = u8(spi->data[5]);
     if (size + 6 > spi->size) {
       // There is not enough data.  TODO Record an error.
-      return;
+      return fw::FDCan::kSuccess;
     }
 
     auto* const can = (can_bus == 1) ?
         &can1_ :
         &can2_;
 
-    can->Send(id, std::string_view(&spi->data[6], size));
+    return can->Send(id, std::string_view(&spi->data[6], size));
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
