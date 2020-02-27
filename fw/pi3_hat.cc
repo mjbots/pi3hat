@@ -558,6 +558,7 @@ class Application {
       o.fast_bitrate = 5000000;
       o.fdcan_frame = true;
       o.bitrate_switch = true;
+      o.automatic_retransmission = true;
       return o;
     }()
   };
@@ -569,6 +570,7 @@ class Application {
       o.fast_bitrate = 5000000;
       o.fdcan_frame = true;
       o.bitrate_switch = true;
+      o.automatic_retransmission = true;
       return o;
     }()
   };
