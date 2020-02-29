@@ -36,3 +36,7 @@ mbed_register(
         },
     },
 )
+
+load("@com_github_mjbots_bazel_deps//tools/workspace:default.bzl",
+     bazel_deps_add = "add_default_repositories")
+bazel_deps_add()

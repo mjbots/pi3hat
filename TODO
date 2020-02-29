@@ -1,6 +1,18 @@
 TODO
- * Add debug pads to each processor
+ * bring up IMU
+ * bring up NRF
+ * flash lights to actually mean something
+ * Be able to report the firmware version
+ * Be able to report errors back
+ * If a packet is sent to a non-existent device, the entire thing
+   hangs retransmitting forever
+ * Remove high two bytes of CAN id to improve packing efficiency
+ * Maybe switch registers to one byte to improve packing efficiency?
+ * try to get communication reliable at 15MHz instead of just 10MHz
 
+DONE 2020-02-28
+ * add mjbots logo
+ * Add debug pads to each processor
 
 DONE 2020-01-29
  * route power

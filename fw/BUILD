@@ -19,15 +19,24 @@ load("@com_github_ARMmbed_mbed-os//:rules.bzl", "mbed_binary")
 mbed_binary(
     name = "pi3_hat",
     srcs = [
+        "bmi088.cc",
+        "bmi088.h",
+        "euler.h",
         "fdcan.cc",
         "fdcan.h",
+        "math_util.h",
         "millisecond_timer.h",
         "pi3_hat.cc",
+        "point3d.h",
+        "quaternion.h",
     ],
     deps = [
         "@com_github_mjbots_mjlib//mjlib/base:inplace_function",
         "@com_github_mjbots_mjlib//mjlib/base:string_span",
+        "@com_github_mjbots_mjlib//mjlib/base:visitor",
         "@com_github_mjbots_mjlib//mjlib/micro:callback_table",
+        "@com_github_mjbots_mjlib//mjlib/micro:pool_ptr",
+        "@eigen",
     ],
 )
 
