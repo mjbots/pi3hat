@@ -41,15 +41,8 @@ constexpr uint32_t RoundUpDlc(size_t size) {
   return 0;
 }
 
-struct TimeOptions {
-  int prescaler = 0;
-  int sync_jump_width = 0;
-  int time_seg1 = 0;
-  int time_seg2 = 0;
-};
-
-TimeOptions MakeTime(int bitrate) {
-  TimeOptions result;
+FDCan::Rate MakeTime(int bitrate, int max_time_seg1, int max_time_seg2) {
+  FDCan::Rate result;
 
   result.prescaler = 1;
 
@@ -59,7 +52,17 @@ TimeOptions MakeTime(int bitrate) {
   while (true) {
     total_divisor = (pclk1 / result.prescaler) / bitrate;
 
-    if (total_divisor > 500) {
+    // One of the divisor counts comes for free.
+    const auto actual_divisor = total_divisor - 1;
+
+    // Split up the remainder roughly 3/1
+    result.time_seg2 = actual_divisor / 3;
+    result.time_seg1 = actual_divisor - result.time_seg2;
+
+    result.sync_jump_width = std::min(16, result.time_seg2);
+
+    if (result.time_seg1 > max_time_seg1 ||
+        result.time_seg2 > max_time_seg2) {
       result.prescaler++;
       continue;
     }
@@ -67,16 +70,23 @@ TimeOptions MakeTime(int bitrate) {
     break;
   }
 
-  // One of the divisor counts comes for free.
-  total_divisor--;
-
-  // Split up the remainder roughly 3/1
-  result.time_seg2 = total_divisor / 3;
-  result.time_seg1 = total_divisor - result.time_seg2;
-
-  result.sync_jump_width = std::min(16, result.time_seg2);
-
   return result;
+}
+
+FDCan::Rate ApplyRateOverride(FDCan::Rate base, FDCan::Rate overlay) {
+  if (overlay.prescaler >= 0) {
+    base.prescaler = overlay.prescaler;
+  }
+  if (overlay.sync_jump_width >= 0) {
+    base.sync_jump_width = overlay.sync_jump_width;
+  }
+  if (overlay.time_seg1 >= 0) {
+    base.time_seg1 = overlay.time_seg1;
+  }
+  if (overlay.time_seg2 >= 0) {
+    base.time_seg2 = overlay.time_seg2;
+  }
+  return base;
 }
 }
 
@@ -94,7 +104,7 @@ FDCan::FDCan(const Options& options)
   pinmap_pinout(options.td, PinMap_CAN_TD);
   pinmap_pinout(options.rd, PinMap_CAN_RD);
 
-  auto& can = hfdcan_;
+  auto& can = hfdcan1_;
 
   can.Instance = can_;
   can.Init.ClockDivider = FDCAN_CLOCK_DIV1;
@@ -119,13 +129,20 @@ FDCan::FDCan(const Options& options)
   can.Init.TransmitPause = ENABLE;
   can.Init.ProtocolException = DISABLE;
 
-  auto nominal = MakeTime(options.slow_bitrate);
+  auto nominal = ApplyRateOverride(MakeTime(options.slow_bitrate, 255, 127),
+                                   options.rate_override);
+  auto fast = ApplyRateOverride(MakeTime(options.fast_bitrate, 31, 15),
+                                options.fdrate_override);
+
+  config_.clock = HAL_RCC_GetPCLK1Freq();
+  config_.nominal = nominal;
+  config_.data = fast;
+
   can.Init.NominalPrescaler = nominal.prescaler;
   can.Init.NominalSyncJumpWidth = nominal.sync_jump_width;
   can.Init.NominalTimeSeg1 = nominal.time_seg1;
   can.Init.NominalTimeSeg2 = nominal.time_seg2;
 
-  auto fast = MakeTime(options.fast_bitrate);
   can.Init.DataPrescaler = fast.prescaler;
   can.Init.DataSyncJumpWidth = fast.sync_jump_width;
   can.Init.DataTimeSeg1 = fast.time_seg1;
@@ -271,7 +288,7 @@ FDCan::SendResult FDCan::Send(uint32_t dest_id,
 
   // Abort anything we have started that hasn't finished.
   if (send_options.abort_existing && last_tx_request_) {
-    HAL_FDCAN_AbortTxRequest(&hfdcan_, last_tx_request_);
+    HAL_FDCAN_AbortTxRequest(&hfdcan1_, last_tx_request_);
   }
 
   FDCAN_TxHeaderTypeDef tx_header;
@@ -297,12 +314,12 @@ FDCan::SendResult FDCan::Send(uint32_t dest_id,
   tx_header.MessageMarker = 0;
 
   if (HAL_FDCAN_AddMessageToTxFifoQ(
-          &hfdcan_, &tx_header,
+          &hfdcan1_, &tx_header,
           const_cast<uint8_t*>(
               reinterpret_cast<const uint8_t*>(data.data()))) != HAL_OK) {
     return kNoSpace;
   }
-  last_tx_request_ = HAL_FDCAN_GetLatestTxFifoQRequestBuffer(&hfdcan_);
+  last_tx_request_ = HAL_FDCAN_GetLatestTxFifoQRequestBuffer(&hfdcan1_);
 
   return kSuccess;
 }
@@ -310,7 +327,7 @@ FDCan::SendResult FDCan::Send(uint32_t dest_id,
 bool FDCan::Poll(FDCAN_RxHeaderTypeDef* header,
                  mjlib::base::string_span data) {
   if (HAL_FDCAN_GetRxMessage(
-          &hfdcan_, FDCAN_RX_FIFO0, header,
+          &hfdcan1_, FDCAN_RX_FIFO0, header,
           reinterpret_cast<uint8_t*>(data.data())) != HAL_OK) {
     return false;
   }
@@ -320,8 +337,12 @@ bool FDCan::Poll(FDCAN_RxHeaderTypeDef* header,
 
 FDCAN_ProtocolStatusTypeDef FDCan::status() {
   FDCAN_ProtocolStatusTypeDef result = {};
-  HAL_FDCAN_GetProtocolStatus(&hfdcan_, &result);
+  HAL_FDCAN_GetProtocolStatus(&hfdcan1_, &result);
   return result;
+}
+
+FDCan::Config FDCan::config() const {
+  return config_;
 }
 
 int FDCan::ParseDlc(uint32_t dlc_code) {

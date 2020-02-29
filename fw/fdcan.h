@@ -50,6 +50,13 @@ class FDCan {
     FilterType type = FilterType::kStandard;
   };
 
+  struct Rate {
+    int prescaler = -1;
+    int sync_jump_width = -1;
+    int time_seg1 = -1;
+    int time_seg2 = -1;
+  };
+
   struct Options {
     PinName td = NC;
     PinName rd = NC;
@@ -70,6 +77,11 @@ class FDCan {
 
     const Filter* filter_begin = nullptr;
     const Filter* filter_end = nullptr;
+
+    // If any members of this are non-negative, force them to be used
+    // instead of the auto-calculated values.
+    Rate rate_override;
+    Rate fdrate_override;
 
     Options() {}
   };
@@ -106,12 +118,22 @@ class FDCan {
 
   FDCAN_ProtocolStatusTypeDef status();
 
+  struct Config {
+    int clock = 0;
+    Rate nominal;
+    Rate data;
+  };
+
+  Config config() const;
+
   static int ParseDlc(uint32_t dlc_code);
 
  private:
   const Options options_;
+  Config config_;
+
   FDCAN_GlobalTypeDef* can_ = nullptr;
-  FDCAN_HandleTypeDef hfdcan_;
+  FDCAN_HandleTypeDef hfdcan1_;
   uint32_t last_tx_request_ = 0;
 };
 
