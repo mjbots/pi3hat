@@ -3096,6 +3096,24 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="3V3_TP" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
 <attribute name="POPULATE" value="0"/>
 </part>
+<part name="DBG1A" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="DBG1B" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="DBG2A" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="DBG2B" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="DBG3A" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
+<part name="DBG3B" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
+<attribute name="POPULATE" value="0"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -3444,7 +3462,7 @@ Licensed under the Apache 2.0 License</text>
 <instance part="+3V28" gate="G$1" x="347.98" y="251.46"/>
 <instance part="GND54" gate="1" x="347.98" y="50.8"/>
 <instance part="+3V29" gate="G$1" x="345.44" y="73.66"/>
-<instance part="GND55" gate="1" x="662.94" y="231.14"/>
+<instance part="GND55" gate="1" x="657.86" y="231.14"/>
 <instance part="+3V30" gate="G$1" x="657.86" y="254"/>
 <instance part="REGOUT" gate="G$1" x="728.98" y="134.62">
 <attribute name="POPULATE" x="728.98" y="134.62" size="1.778" layer="96" display="off"/>
@@ -3499,6 +3517,24 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND57" gate="1" x="43.18" y="248.92"/>
 <instance part="3V3_TP" gate="G$1" x="728.98" y="66.04">
 <attribute name="POPULATE" x="728.98" y="66.04" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG1A" gate="G$1" x="787.4" y="137.16">
+<attribute name="POPULATE" x="787.4" y="137.16" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG1B" gate="G$1" x="787.4" y="124.46">
+<attribute name="POPULATE" x="787.4" y="124.46" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG2A" gate="G$1" x="787.4" y="101.6">
+<attribute name="POPULATE" x="787.4" y="101.6" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG2B" gate="G$1" x="787.4" y="88.9">
+<attribute name="POPULATE" x="787.4" y="88.9" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG3A" gate="G$1" x="787.4" y="71.12">
+<attribute name="POPULATE" x="787.4" y="71.12" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="DBG3B" gate="G$1" x="787.4" y="58.42">
+<attribute name="POPULATE" x="787.4" y="58.42" size="1.778" layer="96" display="off"/>
 </instance>
 </instances>
 <busses>
@@ -3995,7 +4031,7 @@ Licensed under the Apache 2.0 License</text>
 </segment>
 <segment>
 <pinref part="GND55" gate="1" pin="GND"/>
-<wire x1="662.94" y1="233.68" x2="662.94" y2="243.84" width="0.1524" layer="91"/>
+<wire x1="657.86" y1="233.68" x2="662.94" y2="243.84" width="0.1524" layer="91"/>
 <pinref part="U7" gate="G$1" pin="PC15-OSC32_OUT"/>
 <wire x1="662.94" y1="243.84" x2="670.56" y2="243.84" width="0.1524" layer="91"/>
 </segment>
@@ -5334,6 +5370,78 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="D1" gate="G$1" pin="ANODE"/>
 <pinref part="R4" gate="G$1" pin="P$2"/>
 <wire x1="142.24" y1="210.82" x2="142.24" y2="215.9" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="DBG1A" class="0">
+<segment>
+<pinref part="DBG1A" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="137.16" x2="767.08" y2="137.16" width="0.1524" layer="91"/>
+<label x="767.08" y="137.16" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U4" gate="G$1" pin="PB13"/>
+<wire x1="403.86" y1="226.06" x2="419.1" y2="226.06" width="0.1524" layer="91"/>
+<label x="414.02" y="226.06" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="DBG1B" class="0">
+<segment>
+<pinref part="DBG1B" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="124.46" x2="767.08" y2="124.46" width="0.1524" layer="91"/>
+<label x="767.08" y="124.46" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U4" gate="G$1" pin="PB12"/>
+<wire x1="403.86" y1="223.52" x2="419.1" y2="223.52" width="0.1524" layer="91"/>
+<label x="414.02" y="223.52" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="DBG2A" class="0">
+<segment>
+<pinref part="DBG2A" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="101.6" x2="767.08" y2="101.6" width="0.1524" layer="91"/>
+<label x="767.08" y="101.6" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U11" gate="G$1" pin="PB13"/>
+<wire x1="401.32" y1="45.72" x2="416.56" y2="45.72" width="0.1524" layer="91"/>
+<label x="411.48" y="45.72" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="DBG2B" class="0">
+<segment>
+<pinref part="DBG2B" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="88.9" x2="767.08" y2="88.9" width="0.1524" layer="91"/>
+<label x="767.08" y="88.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U11" gate="G$1" pin="PB12"/>
+<wire x1="401.32" y1="43.18" x2="416.56" y2="43.18" width="0.1524" layer="91"/>
+<label x="411.48" y="43.18" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="DBG3A" class="0">
+<segment>
+<pinref part="DBG3A" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="71.12" x2="767.08" y2="71.12" width="0.1524" layer="91"/>
+<label x="767.08" y="71.12" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U7" gate="G$1" pin="PA2"/>
+<wire x1="670.56" y1="228.6" x2="662.94" y2="228.6" width="0.1524" layer="91"/>
+<label x="660.4" y="228.6" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="DBG3B" class="0">
+<segment>
+<pinref part="DBG3B" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="58.42" x2="767.08" y2="58.42" width="0.1524" layer="91"/>
+<label x="767.08" y="58.42" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U7" gate="G$1" pin="PA3"/>
+<wire x1="670.56" y1="226.06" x2="662.94" y2="226.06" width="0.1524" layer="91"/>
+<label x="660.4" y="226.06" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
