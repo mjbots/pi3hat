@@ -510,19 +510,26 @@ class Application {
       };
     }
     if (address == 18) {
-      current_spi_buf_ = [&]() {
+      current_spi_buf_ = [&]() -> SpiReceiveBuf* {
         for (auto& buf : spi_buf_) {
           if (!buf.active) { return &buf; }
         }
-        mbed_die();
+        // All our buffers are full.  There must be something wrong on the CAN bus.
+        //
+        // TODO: Log an error.
+        return nullptr;
       }();
 
-      current_spi_buf_->active = true;
+      if (!current_spi_buf_) {
+        return { {}, {} };
+      } else {
+        current_spi_buf_->active = true;
 
-      return {
-        {},
-        mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
-      };
+        return {
+          {},
+              mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
+        };
+      }
     }
 
     return { {}, {} };
@@ -629,7 +636,20 @@ int main(void) {
 }
 
 extern "C" {
-  void abort() {
-    mbed_die();
+void abort() {
+  mbed_die();
+}
+
+void mbed_die(void) {
+  // Flash an LED that exists.
+  gpio_t led;
+  gpio_init_out(&led, PF_0);
+
+  for (;;) {
+    gpio_write(&led, 0);
+    wait_ms(200);
+    gpio_write(&led, 1);
+    wait_ms(200);
   }
+}
 }
