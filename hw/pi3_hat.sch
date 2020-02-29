@@ -3105,7 +3105,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="220.98" y1="170.18" x2="-48.26" y2="170.18" width="0.1524" layer="90"/>
 <wire x1="-48.26" y1="170.18" x2="-48.26" y2="347.98" width="0.1524" layer="90"/>
 <text x="-45.72" y="335.28" size="7.62" layer="90" font="vector">INPUT POWER</text>
-<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots quad pi3 hat r4.1
+<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots pi3 hat r4.2
 (c) jjp@pobox.com 2020
 Licensed under the Apache 2.0 License</text>
 <wire x1="-48.26" y1="162.56" x2="220.98" y2="162.56" width="0.1524" layer="90"/>
