@@ -356,8 +356,16 @@ constexpr int kBufferItems = 6;
 ///   byte 5 - size of remaining payload
 ///   byte 6+ payload
 
-class Application {
+class CanBridge {
  public:
+  CanBridge(fw::FDCan* can1, fw::FDCan* can2,
+            RegisterSPISlave::StartHandler start_handler,
+            RegisterSPISlave::EndHandler end_handler)
+      : can1_{can1},
+        can2_{can2},
+        start_handler_(start_handler),
+        end_handler_(end_handler) {}
+
   void Poll() {
     auto can_poll = [&](int bus_id, auto* can) {
       const bool rx = can->Poll(&can_header_, rx_buffer_);
@@ -405,8 +413,12 @@ class Application {
       __enable_irq();
     };
 
-    can_poll(1, &can1_);
-    can_poll(2, &can2_);
+    if (can1_) {
+      can_poll(1, can1_);
+    }
+    if (can2_) {
+      can_poll(2, can2_);
+    }
 
     // Look to see if we have anything to send.
     for (auto& spi_buf : spi_buf_) {
@@ -462,10 +474,14 @@ class Application {
     }
 
     auto* const can = (can_bus == 1) ?
-        &can1_ :
-        &can2_;
+        can1_ :
+        can2_;
 
-    return can->Send(id, std::string_view(&spi->data[6], size));
+    if (can) {
+      return can->Send(id, std::string_view(&spi->data[6], size));
+    } else {
+      return fw::FDCan::kSuccess;
+    }
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
@@ -532,6 +548,9 @@ class Application {
       }
     }
 
+    if (start_handler_) {
+      return start_handler_(address);
+    }
     return { {}, {} };
   }
 
@@ -546,6 +565,13 @@ class Application {
       current_spi_buf_->ready_to_send = true;
       current_spi_buf_ = nullptr;
     }
+
+    if (address != 0 && address != 1 &&
+        address != 16 && address != 17 && address != 18) {
+      if (end_handler_) {
+        end_handler_(address, bytes);
+      }
+    }
   }
 
   RegisterSPISlave spi_{
@@ -556,6 +582,31 @@ class Application {
         [this](uint16_t address, int bytes) {
           return this->ISR_End(address, bytes);
         }};
+
+  fw::FDCan* can1_ = nullptr;
+  fw::FDCan* can2_ = nullptr;
+
+  RegisterSPISlave::StartHandler start_handler_;
+  RegisterSPISlave::EndHandler end_handler_;
+
+  SpiReceiveBuf spi_buf_[kBufferItems] = {};
+  SpiReceiveBuf* current_spi_buf_ = nullptr;
+
+  CanReceiveBuf can_buf_[kBufferItems] = {};
+  CanReceiveBuf* can_rx_queue_[kBufferItems] = {};
+  CanReceiveBuf* current_can_buf_ = nullptr;
+
+  FDCAN_RxHeaderTypeDef can_header_ = {};
+  char rx_buffer_[64] = {};
+
+  char address16_buf_[kBufferItems] = {};
+};
+
+class CanApplication {
+ public:
+  void Poll() {
+    bridge_.Poll();
+  }
 
   fw::FDCan can1_{[]() {
       fw::FDCan::Options o;
@@ -582,18 +633,9 @@ class Application {
     }()
   };
 
-  SpiReceiveBuf spi_buf_[kBufferItems] = {};
-  SpiReceiveBuf* current_spi_buf_ = nullptr;
-
-  CanReceiveBuf can_buf_[kBufferItems] = {};
-  CanReceiveBuf* can_rx_queue_[kBufferItems] = {};
-  CanReceiveBuf* current_can_buf_ = nullptr;
-
-  FDCAN_RxHeaderTypeDef can_header_ = {};
-  char rx_buffer_[64] = {};
-
-  char address16_buf_[kBufferItems] = {};
+  CanBridge bridge_{&can1_, &can2_, {}, {}};
 };
+
 
 void SetupClock() {
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
@@ -618,20 +660,76 @@ void SetupClock() {
     }
   }
 }
+
+
+class AuxApplication {
+ public:
+  void Poll() {
+    bridge_.Poll();
+  }
+
+ private:
+  RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
+    if (address == 32) {
+      return {
+        std::string_view("\x20", 1),
+        {},
+      };
+    }
+    return {};
+  }
+
+  void ISR_End(uint16_t address, int bytes) {
+  }
+
+  fw::FDCan can1_{[]() {
+      fw::FDCan::Options o;
+      o.td = PA_12;
+      o.rd = PA_11;
+      o.slow_bitrate = 125000;
+      o.fast_bitrate = 125000;
+      o.fdcan_frame = false;
+      o.bitrate_switch = false;
+      o.automatic_retransmission = true;
+      return o;
+    }()
+  };
+
+  CanBridge bridge_{
+    &can1_, nullptr,
+        [this](uint16_t address) {
+      return this->ISR_Start(address);
+    },
+        [this](uint16_t address, int bytes) {
+          this->ISR_End(address, bytes);
+        }
+  };
+};
 }
 
 int main(void) {
+  DigitalIn id_select1(PC_14);
+  DigitalIn id_select2(PC_15);
+
   SetupClock();
 
 
   fw::MillisecondTimer timer;
 
-  Application application;
+  // See what thing we're going to do.
+  if (id_select1.read() == 1) {
+    // We are the AUX processor.
+    AuxApplication application;
 
-  while (true) {
-    application.Poll();
-    const uint32_t time_s = timer.read_us() >> 20;
-    (void)time_s;
+    while (true) {
+      application.Poll();
+    }
+  } else {
+    CanApplication application;
+
+    while (true) {
+      application.Poll();
+    }
   }
 }
 
