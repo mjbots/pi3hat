@@ -18,32 +18,51 @@
 
 #include "mjlib/micro/pool_ptr.h"
 
-#include "fw/quaternion.h"
+#include "fw/millisecond_timer.h"
 
 namespace fw {
 
 // Operate the BMI088 IMU via SPI.
 class Bmi088 {
  public:
-  struct Config {
+  struct Options {
     PinName mosi = NC;
     PinName miso = NC;
     PinName sck = NC;
-    PinName imu_cs = NC;
+    PinName acc_cs = NC;
     PinName gyro_cs = NC;
-    PinName imu_int = NC;
+    PinName acc_int = NC;
     PinName gyro_int = NC;
 
-    uint16_t rate_hz = 1000;
+    uint16_t rate_hz = 800;
     uint16_t gyro_max_dps = 1000;
     uint16_t accel_max_g = 6;
-    Quaternion offset;
 
-    Config() {}
+    Options() {}
   };
 
-  Bmi088(mjlib::micro::Pool*, const Config& = Config());
+  Bmi088(mjlib::micro::Pool*, MillisecondTimer*, const Options& = Options());
   ~Bmi088();
+
+  struct SetupData {
+    uint8_t acc_id = 0;
+    uint8_t gyro_id = 0;
+  };
+
+  const SetupData& setup_data() const;
+
+  struct Data {
+    uint8_t acc_int = 0;
+    uint8_t gyro_int = 0;
+    uint16_t accelx = 0;
+    uint16_t accely = 0;
+    uint16_t accelz = 0;
+    uint16_t gyrox = 0;
+    uint16_t gyroy = 0;
+    uint16_t gyroz = 0;
+  };
+
+  Data data();
 
  private:
   class Impl;

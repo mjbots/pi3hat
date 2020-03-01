@@ -21,9 +21,11 @@
 #include "mjlib/base/string_span.h"
 #include "mjlib/micro/callback_table.h"
 
+#include "fw/bmi088.h"
 #include "fw/fdcan.h"
 #include "fw/millisecond_timer.h"
 
+namespace fw {
 namespace {
 template <typename T>
 uint32_t u32(T value) {
@@ -608,6 +610,9 @@ class CanApplication {
     bridge_.Poll();
   }
 
+  void PollMillisecond() {
+  }
+
   fw::FDCan can1_{[]() {
       fw::FDCan::Options o;
       o.td = PB_4;
@@ -664,8 +669,22 @@ void SetupClock() {
 
 class AuxApplication {
  public:
+  AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
+      : pool_(pool), timer_(timer) {
+    setup_data_ = imu_.setup_data();
+  }
+
   void Poll() {
     bridge_.Poll();
+  }
+
+  void PollMillisecond() {
+    auto data = imu_.data();
+
+    // Atomically update our data.
+    __disable_irq();
+    data_ = data;
+    __enable_irq();
   }
 
  private:
@@ -676,11 +695,29 @@ class AuxApplication {
         {},
       };
     }
+    if (address == 33) {
+      isr_data_ = data_;
+      return {
+        std::string_view(reinterpret_cast<const char*>(&isr_data_),
+                         sizeof(Bmi088::Data)),
+        {},
+      };
+    }
+    if (address == 34) {
+      return {
+        std::string_view(
+            reinterpret_cast<const char*>(&setup_data_), sizeof(setup_data_)),
+        {},
+      };
+    }
     return {};
   }
 
   void ISR_End(uint16_t address, int bytes) {
   }
+
+  mjlib::micro::Pool* const pool_;
+  MillisecondTimer* const timer_;
 
   fw::FDCan can1_{[]() {
       fw::FDCan::Options o;
@@ -704,32 +741,63 @@ class AuxApplication {
           this->ISR_End(address, bytes);
         }
   };
+
+  Bmi088 imu_{pool_, timer_, []() {
+      Bmi088::Options options;
+      options.mosi = PB_15;
+      options.miso = PB_14;
+      options.sck = PB_13;
+      options.acc_cs = PA_9;
+      options.gyro_cs = PB_12;
+      options.acc_int = PA_10;
+      options.gyro_int = PA_8;
+
+      options.rate_hz = 800;
+      options.gyro_max_dps = 1000;
+      options.accel_max_g = 6;
+
+      return options;
+    }()
+  };
+
+  Bmi088::Data data_;
+  Bmi088::Data isr_data_;
+  Bmi088::SetupData setup_data_;
 };
+}
 }
 
 int main(void) {
   DigitalIn id_select1(PC_14);
   DigitalIn id_select2(PC_15);
 
-  SetupClock();
+  fw::SetupClock();
 
-
+  mjlib::micro::SizedPool<16384> pool;
   fw::MillisecondTimer timer;
+
+  auto run = [&](auto& app) {
+    uint32_t last_ms = 0;
+    while (true) {
+      app.Poll();
+      const auto now = timer.read_ms();
+      if (now != last_ms) {
+        app.PollMillisecond();
+        last_ms = now;
+      }
+    }
+  };
 
   // See what thing we're going to do.
   if (id_select1.read() == 1) {
     // We are the AUX processor.
-    AuxApplication application;
+    fw::AuxApplication application{&pool, &timer};
 
-    while (true) {
-      application.Poll();
-    }
+    run(application);
   } else {
-    CanApplication application;
+    fw::CanApplication application;
 
-    while (true) {
-      application.Poll();
-    }
+    run(application);
   }
 }
 
