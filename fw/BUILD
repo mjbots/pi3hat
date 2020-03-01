@@ -26,6 +26,8 @@ mbed_binary(
         "fdcan.h",
         "math_util.h",
         "millisecond_timer.h",
+        "nrf24l01.cc",
+        "nrf24l01.h",
         "pi3_hat.cc",
         "point3d.h",
         "quaternion.h",
