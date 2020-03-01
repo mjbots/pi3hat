@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <atomic>
+#include <cstring>
 
 #include "mbed.h"
 #include "PeripheralPins.h"
@@ -24,6 +25,7 @@
 #include "fw/bmi088.h"
 #include "fw/fdcan.h"
 #include "fw/millisecond_timer.h"
+#include "fw/nrf24l01.h"
 
 namespace fw {
 namespace {
@@ -679,6 +681,10 @@ class AuxApplication {
   }
 
   void PollMillisecond() {
+    nrf_.PollMillisecond();
+    auto nrf_regs = nrf_.register_map();
+    std::memcpy(nrf_registers_, nrf_regs.data(), nrf_regs.size());
+
     auto data = imu_.data();
 
     // Atomically update our data.
@@ -707,6 +713,12 @@ class AuxApplication {
       return {
         std::string_view(
             reinterpret_cast<const char*>(&setup_data_), sizeof(setup_data_)),
+        {},
+      };
+    }
+    if (address == 48) {
+      return {
+        {nrf_registers_, sizeof(nrf_registers_)},
         {},
       };
     }
@@ -763,6 +775,20 @@ class AuxApplication {
   Bmi088::Data data_;
   Bmi088::Data isr_data_;
   Bmi088::SetupData setup_data_;
+
+  Nrf24l01 nrf_{pool_, timer_, []() {
+      Nrf24l01::Options options;
+      options.mosi = PB_5_ALT0;
+      options.miso = PB_4_ALT0;
+      options.sck = PB_3_ALT0;
+      options.cs = PA_15;
+      options.irq = PB_7;
+      options.ce = PB_6;
+      return options;
+    }()
+  };
+
+  char nrf_registers_[32] = {};
 };
 }
 }

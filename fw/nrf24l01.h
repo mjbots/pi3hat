@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <string_view>
+
 #include "PinNames.h"
 
 #include "mjlib/micro/pool_ptr.h"
@@ -37,6 +39,10 @@ class Nrf24l01 {
 
   Nrf24l01(mjlib::micro::Pool*, MillisecondTimer*, const Options& = Options());
   ~Nrf24l01();
+
+  void PollMillisecond();
+
+  std::string_view register_map() const;
 
  private:
   class Impl;
