@@ -35,7 +35,9 @@ class SpiMaster {
     bool post_address_dummy_read = false;
   };
   SpiMaster(SPI* spi, PinName cs, MillisecondTimer* timer, const Options& options)
-      : spi_(spi), cs_(cs, 1), timer_(timer), options_(options) {}
+      : spi_(spi), cs_(cs, 1), timer_(timer), options_(options) {
+    // TODO: Set SPI frequency.
+  }
 
   void Write(uint8_t address, std::string_view data) {
     cs_.write(0);
