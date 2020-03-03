@@ -671,6 +671,27 @@ void SetupClock() {
 
 class AuxApplication {
  public:
+  struct ImuRegister {
+    uint16_t present = 0;
+    float gx_dps = 0;
+    float gy_dps = 0;
+    float gz_dps = 0;
+    float ax_m_s2 = 0;
+    float ay_m_s2 = 0;
+    float az_m_s2 = 0;
+
+    ImuRegister() {}
+    ImuRegister(const Bmi088::Data& data) {
+      present = 1;
+      gx_dps = data.rate_dps.x();
+      gy_dps = data.rate_dps.y();
+      gz_dps = data.rate_dps.z();
+      ax_m_s2 = data.accel_m_s2.x();
+      ay_m_s2 = data.accel_m_s2.y();
+      az_m_s2 = data.accel_m_s2.z();
+    }
+  } __attribute__((packed));
+
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
       : pool_(pool), timer_(timer) {
     setup_data_ = imu_.setup_data();
@@ -678,19 +699,20 @@ class AuxApplication {
 
   void Poll() {
     bridge_.Poll();
+    if (imu_.data_ready()) {
+      const auto data = imu_.read_data();
+      ImuRegister my_data{data};
+
+      __disable_irq();
+      data_ = my_data;
+      __enable_irq();
+    }
   }
 
   void PollMillisecond() {
     nrf_.PollMillisecond();
     auto nrf_regs = nrf_.register_map();
     std::memcpy(nrf_registers_, nrf_regs.data(), nrf_regs.size());
-
-    auto data = imu_.data();
-
-    // Atomically update our data.
-    __disable_irq();
-    data_ = data;
-    __enable_irq();
   }
 
  private:
@@ -703,9 +725,10 @@ class AuxApplication {
     }
     if (address == 33) {
       isr_data_ = data_;
+      data_ = {};
       return {
         std::string_view(reinterpret_cast<const char*>(&isr_data_),
-                         sizeof(Bmi088::Data)),
+                         sizeof(isr_data_)),
         {},
       };
     }
@@ -772,8 +795,8 @@ class AuxApplication {
     }()
   };
 
-  Bmi088::Data data_;
-  Bmi088::Data isr_data_;
+  ImuRegister data_;
+  ImuRegister isr_data_;
   Bmi088::SetupData setup_data_;
 
   Nrf24l01 nrf_{pool_, timer_, []() {

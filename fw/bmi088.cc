@@ -14,6 +14,8 @@
 
 #include "fw/bmi088.h"
 
+#include <atomic>
+#include <utility>
 #include <string_view>
 
 #include "mbed.h"
@@ -138,27 +140,45 @@ class Bmi088::Impl {
 
     // Then the gyro.
     ConfigureGyro();
+
+    gyro_int_.rise(callback(this, &Impl::ISR_HandleImuInt));
   }
 
-  Data data() {
+  void ISR_HandleImuInt() {
+    data_ready_.store(true);
+  }
+
+  bool data_ready() {
+    return data_ready_.load();
+  }
+
+  Data read_data() {
     Data result;
-    result.acc_int = acc_int_.read();
-    result.gyro_int = gyro_int_.read();
 
     uint8_t buf[6] = {};
     acc_.Read(0x80 | 0x12,  // ACC_X_LSB
               {reinterpret_cast<char*>(buf), sizeof(buf)});
 
-    result.accelx = static_cast<int16_t>(buf[1] * 256 + buf[0]);
-    result.accely = static_cast<int16_t>(buf[3] * 256 + buf[2]);
-    result.accelz = static_cast<int16_t>(buf[5] * 256 + buf[4]);
+    auto read_int16 = [&](int offset) -> int16_t {
+      const auto u16 = static_cast<uint16_t>(
+          buf[offset + 1] * 256 + buf[offset]);
+      return u16 > 32767 ? (u16 - 65536) : u16;
+    };
+
+    result.accel_m_s2.x() = read_int16(0) * accel_scale_;
+    result.accel_m_s2.y() = read_int16(2) * accel_scale_;
+    result.accel_m_s2.z() = read_int16(4) * accel_scale_;
+
+    std::memset(&buf[0], 0, sizeof(buf));
 
     gyro_.Read(0x80 | 0x02,  // RATE_X_LSB
                {reinterpret_cast<char*>(buf), sizeof(buf)});
 
-    result.gyrox = static_cast<int16_t>(buf[1] * 256 + buf[0]);
-    result.gyroy = static_cast<int16_t>(buf[3] * 256 + buf[2]);
-    result.gyroz = static_cast<int16_t>(buf[5] * 256 + buf[4]);
+    result.rate_dps.x() = read_int16(0) * gyro_scale_;
+    result.rate_dps.y() = read_int16(2) * gyro_scale_;
+    result.rate_dps.z() = read_int16(4) * gyro_scale_;
+
+    data_ready_.store(false);
 
     return result;
   }
@@ -194,14 +214,23 @@ class Bmi088::Impl {
           if (options_.rate_hz <= 800) { return 0x0b; }
           return 0x0c;  // 1600
         }());
-    acc_.WriteScalar(
-        0x41,  // ACC_RANGE
-        [&]() {
-          if (options_.accel_max_g <= 3) { return 0x00; }
-          if (options_.accel_max_g <= 6) { return 0x01; }
-          if (options_.accel_max_g <= 12) { return 0x02; }
-          return 0x03;  // 24g
-        }());
+
+    constexpr float kG = 9.81;
+    auto [accel_range_conf, accel_scale] = [&]() {
+      if (options_.accel_max_g <= 3) {
+        return std::make_pair(0x00, kG / 10920.f);
+      }
+      if (options_.accel_max_g <= 6) {
+        return std::make_pair(0x01, kG / 5460.f);
+      }
+      if (options_.accel_max_g <= 12) {
+        return std::make_pair(0x02, kG / 2730.f);
+      }
+      return std::make_pair(0x03, kG / 1365.f);  // 24g
+    }();
+    // ACC_RANGE
+    acc_.WriteScalar(0x41, accel_range_conf);
+    accel_scale_ = accel_scale;
   }
 
   void ConfigureGyro() {
@@ -211,15 +240,26 @@ class Bmi088::Impl {
     gyro_.WriteScalar<uint8_t>(0x16, 0x00);  // push pull active high
     gyro_.WriteScalar<uint8_t>(0x18, 0x01);  // data ready mapped to int3
 
-    gyro_.WriteScalar<uint8_t>(
-        0x0f,  // GYRO_RANGE
-        [&]() {
-          if (options_.gyro_max_dps <= 125) { return 0x04; }
-          if (options_.gyro_max_dps <= 250) { return 0x03; }
-          if (options_.gyro_max_dps <= 500) { return 0x02; }
-          if (options_.gyro_max_dps <= 1000) { return 0x01; }
-          return 0x00;  // 2000 dps
-        }());
+    auto [gyro_conf, gyro_scale] = [&]() {
+      if (options_.gyro_max_dps <= 125) {
+        return std::make_pair(0x04, 0.0038f);
+      }
+      if (options_.gyro_max_dps <= 250) {
+        return std::make_pair(0x03, 0.0076f);
+      }
+      if (options_.gyro_max_dps <= 500) {
+        return std::make_pair(0x02, 0.0153f);
+      }
+      if (options_.gyro_max_dps <= 1000) {
+        return std::make_pair(0x01, 0.0305f);
+      }
+      return std::make_pair(0x00, 0.061f);
+    }();
+
+    // GYRO_RANGE
+    gyro_.WriteScalar<uint8_t>(0x0f, gyro_conf);
+    gyro_scale_ = gyro_scale;
+
     gyro_.WriteScalar<uint8_t>(
         0x10,  // GYRO_BANDWIDTH
         [&]() {
@@ -239,9 +279,13 @@ class Bmi088::Impl {
   SpiMaster acc_;
   SpiMaster gyro_;
   DigitalIn acc_int_;
-  DigitalIn gyro_int_;
+  std::atomic<bool> data_ready_;
+
+  InterruptIn gyro_int_;
 
   SetupData setup_data_;
+  float accel_scale_ = 0.0f;
+  float gyro_scale_ = 0.0f;
 };
 
 Bmi088::Bmi088(mjlib::micro::Pool* pool, MillisecondTimer* timer,
@@ -254,8 +298,12 @@ const Bmi088::SetupData& Bmi088::setup_data() const {
   return impl_->setup_data_;
 }
 
-Bmi088::Data Bmi088::data() {
-  return impl_->data();
+bool Bmi088::data_ready() {
+  return impl_->data_ready();
+}
+
+Bmi088::Data Bmi088::read_data() {
+  return impl_->read_data();
 }
 
 }

@@ -14,6 +14,8 @@
 
 #pragma once
 
+#include <Eigen/Core>
+
 #include "PinNames.h"
 
 #include "mjlib/micro/pool_ptr.h"
@@ -51,18 +53,15 @@ class Bmi088 {
 
   const SetupData& setup_data() const;
 
+  // Return true if new data is available.
+  bool data_ready();
+
   struct Data {
-    uint8_t acc_int = 0;
-    uint8_t gyro_int = 0;
-    uint16_t accelx = 0;
-    uint16_t accely = 0;
-    uint16_t accelz = 0;
-    uint16_t gyrox = 0;
-    uint16_t gyroy = 0;
-    uint16_t gyroz = 0;
+    Eigen::Vector3f rate_dps;
+    Eigen::Vector3f accel_m_s2;
   };
 
-  Data data();
+  Data read_data();
 
  private:
   class Impl;
