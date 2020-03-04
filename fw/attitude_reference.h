@@ -35,12 +35,13 @@ class AttitudeReference {
   using Filter = UkfFilter<float, kNumStates>;
 
   struct Options {
-    float process_noise_gyro_rps = 0.0005f;
-    float process_noise_bias_rps = 7e-5f;
-    float measurement_noise_accel = 0.5f;
-    float initial_noise_attitude = 0.1f;
-    float initial_noise_bias_rps = 0.1f;
+    float process_noise_gyro_rps = (5e-4f * 5e-4f);
+    float process_noise_bias_rps = (7e-5f * 7e-5f);
+    float measurement_noise_accel = (0.5f * 0.5f);
+    float initial_noise_attitude = (1.0f * 1.0f);
+    float initial_noise_bias_rps = (0.1f * 0.1f);
     float accelerometer_reject_mps2 = 2.0f;
+    float zero_yaw_noise_rps = (10.0f * 10.0f);
 
     Options() {}
   };
@@ -109,6 +110,14 @@ class AttitudeReference {
                options_.measurement_noise_accel,
                options_.measurement_noise_accel).finished())));
     }
+
+    // We have no observability into the yaw measurement.  Lets
+    // artificially constrain it to return to 0 velocity there just so
+    // things don't grow without bound.
+    ukf_.UpdateMeasurement(
+        [this](const auto& _1) { return this->MeasureYawRate(_1); },
+        Eigen::Matrix<float, 1, 1>(0.f),
+        (Eigen::Matrix<float, 1, 1>(options_.zero_yaw_noise_rps)));
   }
 
   Quaternion attitude() const {
@@ -119,9 +128,7 @@ class AttitudeReference {
   }
 
   Point3D bias_rps() const {
-    return Point3D(ukf_.state()(4),
-                   ukf_.state()(5),
-                   ukf_.state()(6));
+    return ukf_.state().tail(3);
   }
 
   Point3D rate_rps() const {
@@ -167,6 +174,12 @@ class AttitudeReference {
   static Eigen::Matrix<float, 3, 1> MeasureAccel(const Filter::State& s) {
     return OrientationToAccel(
         Quaternion(s(0), s(1), s(2), s(3)).normalized());
+  }
+
+  Eigen::Matrix<float, 1, 1> MeasureYawRate(const Filter::State& s) const {
+    const Eigen::Vector3f rate_rps = current_gyro_rps_ + s.tail(3);
+    const Quaternion attitude(s(0), s(1), s(2), s(3));
+    return Eigen::Matrix<float, 1, 1>(attitude.conjugated().Rotate(rate_rps).z());
   }
 
   static Quaternion AccelToOrientation(const Point3D& n) {
