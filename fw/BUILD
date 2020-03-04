@@ -34,6 +34,9 @@ mbed_binary(
         "quaternion.h",
         "ukf_filter.h",
     ],
+    features = [
+        "speedopt",
+    ],
     deps = [
         "@com_github_mjbots_mjlib//mjlib/base:inplace_function",
         "@com_github_mjbots_mjlib//mjlib/base:string_span",

@@ -26,7 +26,7 @@ namespace fw {
 class AttitudeReference {
  public:
   // Note: This is not ideal, as it treats the quaternion as 4
-  // independent states which in fact there are only 3 degrees of
+  // independent states when in fact there are only 3 degrees of
   // freedom.
   enum {
     kNumStates = 7,

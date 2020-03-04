@@ -694,7 +694,8 @@ class AuxApplication {
   } __attribute__((packed));
 
   struct AttitudeRegister {
-    uint16_t present = 0;
+    uint8_t present = 0;
+    uint8_t update_time_10us = 0;
     float w = 0;
     float x = 0;
     float y = 0;
@@ -724,6 +725,8 @@ class AuxApplication {
 
  private:
   void DoImu() {
+    const auto start = timer_->read_us();
+
     const auto data = imu_.read_data();
     ImuRegister my_data{data};
 
@@ -743,6 +746,9 @@ class AuxApplication {
     my_att.bx_dps = rate_dps.x();
     my_att.by_dps = rate_dps.y();
     my_att.bz_dps = rate_dps.z();
+
+    const auto end = timer_->read_us();
+    my_att.update_time_10us = std::min<decltype(end)>(255, (end - start) / 10);
 
     __disable_irq();
     data_ = my_data;
