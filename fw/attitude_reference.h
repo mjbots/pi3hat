@@ -40,6 +40,7 @@ class AttitudeReference {
     float measurement_noise_accel = 0.5f;
     float initial_noise_attitude = 0.1f;
     float initial_noise_bias_rps = 0.1f;
+    float accelerometer_reject_mps2 = 2.0f;
 
     Options() {}
   };
@@ -91,16 +92,23 @@ class AttitudeReference {
         [this](const auto& _1, const auto& _2) {
           return this->ProcessFunction(_1, _2);
         });
-    // TODO: Don't update this if we are too far away from 1g... that
-    // is only likely to cause problems.
-    ukf_.UpdateMeasurement(
-        &MeasureAccel,
-        norm_g,
-        (Eigen::DiagonalMatrix<float, 3, 3>(
-            (Eigen::Vector3f() <<
-             options_.measurement_noise_accel,
-             options_.measurement_noise_accel,
-             options_.measurement_noise_accel).finished())));
+
+    const float accel_norm_mps2 = accel_mps2.norm();
+    const float accel_err_mps2 = std::abs(accel_norm_mps2 - 9.81f);
+
+    // Only accept the acceleration measurement if we're somewhat
+    // close to 1g.  Otherwise, we are likely in some dynamic maneuver
+    // and it won't add much value.
+    if (accel_err_mps2 < options_.accelerometer_reject_mps2) {
+      ukf_.UpdateMeasurement(
+          &MeasureAccel,
+          norm_g,
+          (Eigen::DiagonalMatrix<float, 3, 3>(
+              (Eigen::Vector3f() <<
+               options_.measurement_noise_accel,
+               options_.measurement_noise_accel,
+               options_.measurement_noise_accel).finished())));
+    }
   }
 
   Quaternion attitude() const {
