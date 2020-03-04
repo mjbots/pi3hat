@@ -128,6 +128,14 @@ class AttitudeReference {
     return current_gyro_rps_ + bias_rps();
   }
 
+  Eigen::Vector4f attitude_uncertainty() const {
+    return ukf_.covariance().diagonal().head(4).cwiseSqrt();
+  }
+
+  Eigen::Vector3f bias_uncertainty_rps() const {
+    return ukf_.covariance().diagonal().tail(3).cwiseSqrt();
+  }
+
  private:
   Filter::State ProcessFunction(
       const Filter::State& state, float dt_s) const {

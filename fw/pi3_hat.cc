@@ -700,9 +700,19 @@ class AuxApplication {
     float x = 0;
     float y = 0;
     float z = 0;
-    float bx_dps = 0;
-    float by_dps = 0;
-    float bz_dps = 0;
+    float x_dps = 0;
+    float y_dps = 0;
+    float z_dps = 0;
+    float bias_x_dps = 0;
+    float bias_y_dps = 0;
+    float bias_z_dps = 0;
+    float uncertainty_w = 0;
+    float uncertainty_x = 0;
+    float uncertainty_y = 0;
+    float uncertainty_z = 0;
+    float uncertainty_bias_x_dps = 0;
+    float uncertainty_bias_y_dps = 0;
+    float uncertainty_bias_z_dps = 0;
   } __attribute__((packed));
 
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
@@ -746,10 +756,25 @@ class AuxApplication {
     my_att.x = att.x();
     my_att.y = att.y();
     my_att.z = att.z();
-    const Point3D rate_dps = (180.0 / M_PI) * attitude_reference_.rate_rps();
-    my_att.bx_dps = rate_dps.x();
-    my_att.by_dps = rate_dps.y();
-    my_att.bz_dps = rate_dps.z();
+    const Point3D rate_dps = (180.0f / M_PI) * attitude_reference_.rate_rps();
+    my_att.x_dps = rate_dps.x();
+    my_att.y_dps = rate_dps.y();
+    my_att.z_dps = rate_dps.z();
+    const Point3D bias_dps = (180.0f / M_PI) * attitude_reference_.bias_rps();
+    my_att.bias_x_dps = bias_dps.x();
+    my_att.bias_y_dps = bias_dps.y();
+    my_att.bias_z_dps = bias_dps.z();
+    const Eigen::Vector4f attitude_uncertainty =
+        attitude_reference_.attitude_uncertainty();
+    my_att.uncertainty_w = attitude_uncertainty(0);
+    my_att.uncertainty_x = attitude_uncertainty(1);
+    my_att.uncertainty_y = attitude_uncertainty(2);
+    my_att.uncertainty_z = attitude_uncertainty(3);
+    const Eigen::Vector3f bias_uncertainty_dps =
+        (180.0f / M_PI) * attitude_reference_.bias_uncertainty_rps();
+    my_att.uncertainty_bias_x_dps = bias_uncertainty_dps.x();
+    my_att.uncertainty_bias_y_dps = bias_uncertainty_dps.y();
+    my_att.uncertainty_bias_z_dps = bias_uncertainty_dps.z();
 
     const auto end = timer_->read_us();
     my_att.update_time_10us = std::min<decltype(end)>(255, (end - start) / 10);
