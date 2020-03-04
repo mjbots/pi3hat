@@ -737,12 +737,12 @@ class AuxApplication {
 
     AttitudeRegister my_att;
     my_att.present = 1;
-    const auto att = attitude_reference_.attitude();
+    const Quaternion att = attitude_reference_.attitude();
     my_att.w = att.w();
     my_att.x = att.x();
     my_att.y = att.y();
     my_att.z = att.z();
-    const auto rate_dps = (180.0 / M_PI) * attitude_reference_.rate_rps();
+    const Point3D rate_dps = (180.0 / M_PI) * attitude_reference_.rate_rps();
     my_att.bx_dps = rate_dps.x();
     my_att.by_dps = rate_dps.y();
     my_att.bz_dps = rate_dps.z();
