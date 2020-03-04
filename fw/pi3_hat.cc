@@ -727,7 +727,11 @@ class AuxApplication {
   void DoImu() {
     const auto start = timer_->read_us();
 
-    const auto data = imu_.read_data();
+    const auto unrotated_data = imu_.read_data();
+    auto data = unrotated_data;
+    data.rate_dps = mounting_.Rotate(data.rate_dps);
+    data.accel_mps2 = mounting_.Rotate(data.accel_mps2);
+
     ImuRegister my_data{data};
 
     attitude_reference_.ProcessMeasurement(
@@ -837,6 +841,8 @@ class AuxApplication {
       return options;
     }()
   };
+
+  Quaternion mounting_ = Quaternion::FromEuler(-0.5 * M_PI, 0., 0.);
 
   ImuRegister data_;
   ImuRegister isr_data_;
