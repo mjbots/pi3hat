@@ -1,7 +1,18 @@
 TODO
- * bring up IMU
- * bring up NRF
+ * AHRS
+   * Implement de-weighting or ignoring accelerometer during dynamic periods
+   * Need to have a term to keep the yaw uncertainty in check (or
+     maybe all uncertainties?)
+   * Need to report uncertainties
+   * Do some kind of evaluation / write-up
+   * Provide a way to set configurable parameters like noise and gains and rotation
+   * Do something better than asserting on NaN... report an error and
+     allow for reset?
+
  * flash lights to actually mean something
+
+ * Implement NRF communication protocol
+
  * Be able to report the firmware version
  * Be able to report errors back
  * If a packet is sent to a non-existent device, the entire thing
@@ -9,6 +20,25 @@ TODO
  * Remove high two bytes of CAN id to improve packing efficiency
  * Maybe switch registers to one byte to improve packing efficiency?
  * try to get communication reliable at 15MHz instead of just 10MHz
+
+ * add "stored procedure" sends, so that all the queries to all
+   servos, for instance can be sent with a 1 byte SPI command.
+
+r4 ERRATA
+ * NRF connector needs to be a female connector, not male
+ * switch all CAN transceivers to something with preferably >= 40V common mode
+ * Connect some pins from each uc to GPIOs on the rpi for IRQ or other
+   general purposes
+
+DONE 2020-03-03
+ * Implemented AHRS
+
+DONE 2020-03-01
+ * got eeprom settings into git
+ * Verified NRF works
+
+DONE 2020-02-29
+ * Verified IMU works
 
 DONE 2020-02-28
  * add mjbots logo
