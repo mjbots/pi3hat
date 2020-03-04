@@ -139,9 +139,9 @@ class Quaternion {
   static Quaternion IntegrateRotationRate(
       const Point3D& rate_rps, float dt_s) {
     return Quaternion(1.0f,
-                      0.5f * rate_rps.x * dt_s,
-                      0.5f * rate_rps.y * dt_s,
-                      0.5f * rate_rps.z * dt_s).normalized();
+                      0.5f * rate_rps.x() * dt_s,
+                      0.5f * rate_rps.y() * dt_s,
+                      0.5f * rate_rps.z() * dt_s).normalized();
   }
 
   float w() const { return w_; }

@@ -58,7 +58,7 @@ class Bmi088 {
 
   struct Data {
     Eigen::Vector3f rate_dps;
-    Eigen::Vector3f accel_m_s2;
+    Eigen::Vector3f accel_mps2;
   };
 
   Data read_data();

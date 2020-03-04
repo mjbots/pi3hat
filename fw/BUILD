@@ -19,6 +19,7 @@ load("@com_github_ARMmbed_mbed-os//:rules.bzl", "mbed_binary")
 mbed_binary(
     name = "pi3_hat",
     srcs = [
+        "attitude_reference.h",
         "bmi088.cc",
         "bmi088.h",
         "euler.h",
@@ -31,6 +32,7 @@ mbed_binary(
         "pi3_hat.cc",
         "point3d.h",
         "quaternion.h",
+        "ukf_filter.h",
     ],
     deps = [
         "@com_github_mjbots_mjlib//mjlib/base:inplace_function",

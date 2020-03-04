@@ -128,6 +128,7 @@ class Bmi088::Impl {
         gyro_{&spi_, options.gyro_cs, timer, {}},
         acc_int_{options.acc_int},
         gyro_int_{options.gyro_int} {
+    spi_.frequency(5000000);
     // Before the accelerometer can be be initialized, we have to wait
     // 1ms after power on.  We'll just assume our timer hasn't wrapped
     // around and we can use the timer as a per-boot clock.  That way,
@@ -165,9 +166,9 @@ class Bmi088::Impl {
       return u16 > 32767 ? (u16 - 65536) : u16;
     };
 
-    result.accel_m_s2.x() = read_int16(0) * accel_scale_;
-    result.accel_m_s2.y() = read_int16(2) * accel_scale_;
-    result.accel_m_s2.z() = read_int16(4) * accel_scale_;
+    result.accel_mps2.x() = read_int16(0) * accel_scale_;
+    result.accel_mps2.y() = read_int16(2) * accel_scale_;
+    result.accel_mps2.z() = read_int16(4) * accel_scale_;
 
     std::memset(&buf[0], 0, sizeof(buf));
 

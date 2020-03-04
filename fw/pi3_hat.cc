@@ -22,6 +22,7 @@
 #include "mjlib/base/string_span.h"
 #include "mjlib/micro/callback_table.h"
 
+#include "fw/attitude_reference.h"
 #include "fw/bmi088.h"
 #include "fw/fdcan.h"
 #include "fw/millisecond_timer.h"
@@ -676,9 +677,9 @@ class AuxApplication {
     float gx_dps = 0;
     float gy_dps = 0;
     float gz_dps = 0;
-    float ax_m_s2 = 0;
-    float ay_m_s2 = 0;
-    float az_m_s2 = 0;
+    float ax_mps2 = 0;
+    float ay_mps2 = 0;
+    float az_mps2 = 0;
 
     ImuRegister() {}
     ImuRegister(const Bmi088::Data& data) {
@@ -686,10 +687,21 @@ class AuxApplication {
       gx_dps = data.rate_dps.x();
       gy_dps = data.rate_dps.y();
       gz_dps = data.rate_dps.z();
-      ax_m_s2 = data.accel_m_s2.x();
-      ay_m_s2 = data.accel_m_s2.y();
-      az_m_s2 = data.accel_m_s2.z();
+      ax_mps2 = data.accel_mps2.x();
+      ay_mps2 = data.accel_mps2.y();
+      az_mps2 = data.accel_mps2.z();
     }
+  } __attribute__((packed));
+
+  struct AttitudeRegister {
+    uint16_t present = 0;
+    float w = 0;
+    float x = 0;
+    float y = 0;
+    float z = 0;
+    float bx_dps = 0;
+    float by_dps = 0;
+    float bz_dps = 0;
   } __attribute__((packed));
 
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
@@ -700,12 +712,7 @@ class AuxApplication {
   void Poll() {
     bridge_.Poll();
     if (imu_.data_ready()) {
-      const auto data = imu_.read_data();
-      ImuRegister my_data{data};
-
-      __disable_irq();
-      data_ = my_data;
-      __enable_irq();
+      DoImu();
     }
   }
 
@@ -716,6 +723,33 @@ class AuxApplication {
   }
 
  private:
+  void DoImu() {
+    const auto data = imu_.read_data();
+    ImuRegister my_data{data};
+
+    attitude_reference_.ProcessMeasurement(
+        0.001f,
+        (M_PI / 180.0f) * data.rate_dps,
+        data.accel_mps2);
+
+    AttitudeRegister my_att;
+    my_att.present = 1;
+    const auto att = attitude_reference_.attitude();
+    my_att.w = att.w();
+    my_att.x = att.x();
+    my_att.y = att.y();
+    my_att.z = att.z();
+    const auto rate_dps = (180.0 / M_PI) * attitude_reference_.rate_rps();
+    my_att.bx_dps = rate_dps.x();
+    my_att.by_dps = rate_dps.y();
+    my_att.bz_dps = rate_dps.z();
+
+    __disable_irq();
+    data_ = my_data;
+    attitude_ = my_att;
+    __enable_irq();
+  }
+
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 32) {
       return {
@@ -733,9 +767,12 @@ class AuxApplication {
       };
     }
     if (address == 34) {
+      isr_attitude_ = attitude_;
+      attitude_ = {};
       return {
         std::string_view(
-            reinterpret_cast<const char*>(&setup_data_), sizeof(setup_data_)),
+            reinterpret_cast<const char*>(&isr_attitude_),
+            sizeof(isr_attitude_)),
         {},
       };
     }
@@ -798,6 +835,9 @@ class AuxApplication {
   ImuRegister data_;
   ImuRegister isr_data_;
   Bmi088::SetupData setup_data_;
+  AttitudeReference attitude_reference_;
+  AttitudeRegister attitude_;
+  AttitudeRegister isr_attitude_;
 
   Nrf24l01 nrf_{pool_, timer_, []() {
       Nrf24l01::Options options;
