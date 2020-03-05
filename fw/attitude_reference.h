@@ -76,6 +76,7 @@ class AttitudeReference {
                           const Point3D& rate_B_rps,
                           const Point3D& accel_mps2) {
     current_gyro_rps_ = rate_B_rps;
+    current_accel_mps2_ = accel_mps2;
 
     const Point3D norm_g = accel_mps2.normalized();
 
@@ -127,12 +128,16 @@ class AttitudeReference {
                       ukf_.state()(3));
   }
 
-  Point3D bias_rps() const {
-    return ukf_.state().tail(3);
-  }
-
   Point3D rate_rps() const {
     return current_gyro_rps_ + bias_rps();
+  }
+
+  Point3D acceleration_mps2() const {
+    return current_accel_mps2_ - 9.81f * OrientationToAccel(attitude());
+  }
+
+  Point3D bias_rps() const {
+    return ukf_.state().tail(3);
   }
 
   Eigen::Vector4f attitude_uncertainty() const {
@@ -195,6 +200,7 @@ class AttitudeReference {
   Filter ukf_;
   bool initialized_ = false;
   Point3D current_gyro_rps_;
+  Point3D current_accel_mps2_;
 };
 
 }
