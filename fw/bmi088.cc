@@ -141,16 +141,10 @@ class Bmi088::Impl {
 
     // Then the gyro.
     ConfigureGyro();
-
-    gyro_int_.rise(callback(this, &Impl::ISR_HandleImuInt));
-  }
-
-  void ISR_HandleImuInt() {
-    data_ready_.store(true);
   }
 
   bool data_ready() {
-    return data_ready_.load();
+    return gyro_int_.read();
   }
 
   Data read_data() {
@@ -282,7 +276,7 @@ class Bmi088::Impl {
   DigitalIn acc_int_;
   std::atomic<bool> data_ready_;
 
-  InterruptIn gyro_int_;
+  DigitalIn gyro_int_;
 
   SetupData setup_data_;
   float accel_scale_ = 0.0f;
