@@ -703,6 +703,9 @@ class AuxApplication {
     float x_dps = 0;
     float y_dps = 0;
     float z_dps = 0;
+    float a_x_mps2 = 0;
+    float a_y_mps2 = 0;
+    float a_z_mps2 = 0;
     float bias_x_dps = 0;
     float bias_y_dps = 0;
     float bias_z_dps = 0;
@@ -760,6 +763,10 @@ class AuxApplication {
     my_att.x_dps = rate_dps.x();
     my_att.y_dps = rate_dps.y();
     my_att.z_dps = rate_dps.z();
+    const Point3D a_mps2 = attitude_reference_.acceleration_mps2();
+    my_att.a_x_mps2 = a_mps2.x();
+    my_att.a_y_mps2 = a_mps2.y();
+    my_att.a_z_mps2 = a_mps2.z();
     const Point3D bias_dps = (180.0f / M_PI) * attitude_reference_.bias_rps();
     my_att.bias_x_dps = bias_dps.x();
     my_att.bias_y_dps = bias_dps.y();
