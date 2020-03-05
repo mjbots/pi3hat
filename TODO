@@ -1,9 +1,5 @@
 TODO
  * AHRS
-   * Implement de-weighting or ignoring accelerometer during dynamic periods
-   * Need to have a term to keep the yaw uncertainty in check (or
-     maybe all uncertainties?)
-   * Need to report uncertainties
    * Do some kind of evaluation / write-up
    * Provide a way to set configurable parameters like noise and gains and rotation
    * Do something better than asserting on NaN... report an error and
@@ -29,6 +25,12 @@ r4 ERRATA
  * switch all CAN transceivers to something with preferably >= 40V common mode
  * Connect some pins from each uc to GPIOs on the rpi for IRQ or other
    general purposes
+
+DONE 2020-03-04
+ * Implemented accelerometer rejection for dynamic maneuvers
+ * Implemented a term to keep the yaw bias uncertainty in check
+ * Tuned constants a tiny bit
+ * Diagnosed SPI timing problem and improved things
 
 DONE 2020-03-03
  * Implemented AHRS
