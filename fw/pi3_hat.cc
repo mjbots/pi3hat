@@ -20,7 +20,6 @@
 
 #include "mjlib/base/inplace_function.h"
 #include "mjlib/base/string_span.h"
-#include "mjlib/micro/callback_table.h"
 
 #include "fw/attitude_reference.h"
 #include "fw/bmi088.h"
@@ -137,11 +136,14 @@ class RegisterSPISlave {
   using StartHandler = mjlib::base::inplace_function<Buffer (uint16_t)>;
   using EndHandler = mjlib::base::inplace_function<void (uint16_t, int)>;
 
-  RegisterSPISlave(PinName mosi, PinName miso, PinName sclk, PinName ssel,
+  RegisterSPISlave(fw::MillisecondTimer* timer,
+                   PinName mosi, PinName miso, PinName sclk, PinName ssel,
                    StartHandler start_handler, EndHandler end_handler)
-      : nss_{ssel},
+      : timer_{timer},
+        nss_{ssel},
         start_handler_(start_handler),
         end_handler_(end_handler) {
+    g_impl_ = this;
     spi_ = [&]() {
       const auto spi_mosi = pinmap_peripheral(mosi, PinMap_SPI_MOSI);
       const auto spi_miso = pinmap_peripheral(miso, PinMap_SPI_MISO);
@@ -164,18 +166,17 @@ class RegisterSPISlave {
     nss_.rise(callback(this, &RegisterSPISlave::ISR_HandleNssRise));
     nss_.fall(callback(this, &RegisterSPISlave::ISR_HandleNssFall));
 
-    isr_ = mjlib::micro::CallbackTable::MakeFunction([this]() {
-        this->ISR_SPI();
-      });
-
     const auto irq = GetSpiIrq(spi_);
 
     NVIC_SetVector(
-        irq,
-        u32(isr_.raw_function));
+        irq, reinterpret_cast<uint32_t>(&RegisterSPISlave::GlobalInterruptSPI));
 
     HAL_NVIC_SetPriority(irq, 0, 0);
     HAL_NVIC_EnableIRQ(irq);
+  }
+
+  static void GlobalInterruptSPI() {
+    g_impl_->ISR_SPI();
   }
 
   void Init() {
@@ -244,7 +245,6 @@ class RegisterSPISlave {
         case kWaitingAddress1: {
           current_address_ = ReadRegister(&spi_->DR) << 8;
           mode_ = kWaitingAddress2;
-          led2_.write(0);
 
           break;
         }
@@ -252,11 +252,9 @@ class RegisterSPISlave {
           current_address_ |= ReadRegister(&spi_->DR);
           led1_.write(0);
           buffer_ = start_handler_(current_address_);
+          ISR_PrepareTx();
           led1_.write(1);
           mode_ = kTransfer;
-
-          ISR_PrepareTx();
-          led2_.write(1);
 
           break;
         }
@@ -277,22 +275,21 @@ class RegisterSPISlave {
 
   void ISR_PrepareTx() {
     while (spi_->SR & SPI_SR_TXE) {
+      const size_t this_offset = tx_bytes_++;
       const auto this_byte =
-          (tx_bytes_ < buffer_.tx.size()) ?
-          buffer_.tx[tx_bytes_] : 0;
+          (this_offset < buffer_.tx.size()) ?
+          buffer_.tx[this_offset] : 0;
       WriteRegister(&spi_->DR, this_byte);
-      tx_bytes_++;
     }
   }
 
+  fw::MillisecondTimer* const timer_;
   SPI_HandleTypeDef spi_handle_ = {};
   SPI_TypeDef* spi_ = nullptr;
   InterruptIn nss_;
 
   StartHandler start_handler_;
   EndHandler end_handler_;
-
-  mjlib::micro::CallbackTable::Callback isr_;
 
   enum Mode {
     kInactive,
@@ -304,12 +301,16 @@ class RegisterSPISlave {
   uint16_t current_address_ = 0;
 
   Buffer buffer_;
-  size_t tx_bytes_ = 0;
-  ssize_t rx_bytes_ = 0;
+  volatile size_t tx_bytes_ = 0;
+  volatile ssize_t rx_bytes_ = 0;
 
   DigitalOut led1_{PF_0, 1};
   DigitalOut led2_{PF_1, 1};
+
+  static RegisterSPISlave* g_impl_;
 };
+
+RegisterSPISlave* RegisterSPISlave::g_impl_ = nullptr;
 
 int ParseDlc(uint32_t dlc_code) {
   if (dlc_code == FDCAN_DLC_BYTES_0) { return 0; }
@@ -363,10 +364,12 @@ constexpr int kBufferItems = 6;
 
 class CanBridge {
  public:
-  CanBridge(fw::FDCan* can1, fw::FDCan* can2,
+  CanBridge(fw::MillisecondTimer* timer,
+            fw::FDCan* can1, fw::FDCan* can2,
             RegisterSPISlave::StartHandler start_handler,
             RegisterSPISlave::EndHandler end_handler)
-      : can1_{can1},
+      : timer_{timer},
+        can1_{can1},
         can2_{can2},
         start_handler_(start_handler),
         end_handler_(end_handler) {}
@@ -579,7 +582,9 @@ class CanBridge {
     }
   }
 
+  fw::MillisecondTimer* const timer_;
   RegisterSPISlave spi_{
+    timer_,
     PA_7, PA_6, PA_5, PA_4,
         [this](uint16_t address) {
           return this->ISR_Start(address);
@@ -609,12 +614,17 @@ class CanBridge {
 
 class CanApplication {
  public:
+  CanApplication(fw::MillisecondTimer* timer)
+      : timer_(timer) {}
+
   void Poll() {
     bridge_.Poll();
   }
 
   void PollMillisecond() {
   }
+
+  fw::MillisecondTimer* const timer_;
 
   fw::FDCan can1_{[]() {
       fw::FDCan::Options o;
@@ -641,7 +651,7 @@ class CanApplication {
     }()
   };
 
-  CanBridge bridge_{&can1_, &can2_, {}, {}};
+  CanBridge bridge_{timer_, &can1_, &can2_, {}, {}};
 };
 
 
@@ -745,14 +755,25 @@ class AuxApplication {
     data.rate_dps = mounting_.Rotate(data.rate_dps);
     data.accel_mps2 = mounting_.Rotate(data.accel_mps2);
 
-    ImuRegister my_data{data};
+    auto& imu_data = [&]() -> ImuData& {
+      for (auto& item : imu_data_buffer_) {
+        if (item.active.load() == false) {
+          // Nothing is using it, and we're the only one who can set
+          // it to true, so this won't change.
+          return item;
+        }
+      }
+      mbed_die();
+    }();
+
+    imu_data.imu = ImuRegister{data};
 
     attitude_reference_.ProcessMeasurement(
         0.001f,
         (M_PI / 180.0f) * data.rate_dps,
         data.accel_mps2);
 
-    AttitudeRegister my_att;
+    AttitudeRegister& my_att = imu_data.attitude;
     my_att.present = 1;
     const Quaternion att = attitude_reference_.attitude();
     my_att.w = att.w();
@@ -786,10 +807,14 @@ class AuxApplication {
     const auto end = timer_->read_us();
     my_att.update_time_10us = std::min<decltype(end)>(255, (end - start) / 10);
 
-    __disable_irq();
-    data_ = my_data;
-    attitude_ = my_att;
-    __enable_irq();
+    // Now we need to let the ISR know about this.
+    imu_data.active.store(true);
+    auto* old_imu_data = imu_to_isr_.exchange(&imu_data);
+    // If we got something, that means the ISR hadn't claimed it yet.
+    // Put it back to unused.
+    if (old_imu_data) {
+      old_imu_data->active.store(false);
+    }
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
@@ -800,23 +825,37 @@ class AuxApplication {
       };
     }
     if (address == 33) {
-      isr_data_ = data_;
-      data_ = {};
-      return {
-        std::string_view(reinterpret_cast<const char*>(&isr_data_),
-                         sizeof(isr_data_)),
-        {},
-      };
+      const int bit = 1;
+      if (imu_isr_bitmask_ & bit) {
+        ISR_GetImuData();
+      }
+      imu_isr_bitmask_ |= bit;
+      if (imu_in_isr_) {
+        return {
+          std::string_view(reinterpret_cast<const char*>(&imu_in_isr_->imu),
+                           sizeof(imu_in_isr_->imu)),
+          {},
+              };
+      } else {
+        return {{}, {}};
+      }
     }
     if (address == 34) {
-      isr_attitude_ = attitude_;
-      attitude_ = {};
-      return {
-        std::string_view(
-            reinterpret_cast<const char*>(&isr_attitude_),
-            sizeof(isr_attitude_)),
-        {},
-      };
+      const int bit = 2;
+      if (imu_isr_bitmask_ & bit) {
+        ISR_GetImuData();
+      }
+      imu_isr_bitmask_ |= bit;
+      if (imu_in_isr_) {
+        return {
+          std::string_view(
+              reinterpret_cast<const char*>(&imu_in_isr_->attitude),
+              sizeof(imu_in_isr_->attitude)),
+          {},
+              };
+      } else {
+        return {{}, {}};
+      }
     }
     if (address == 48) {
       return {
@@ -825,6 +864,18 @@ class AuxApplication {
       };
     }
     return {};
+  }
+
+  void ISR_GetImuData() {
+    // If we have something, release it.
+    if (imu_in_isr_) {
+      imu_in_isr_->active.store(false);
+    }
+    imu_in_isr_ = nullptr;
+    // Now try to get the next value.
+    imu_in_isr_ = imu_to_isr_.exchange(nullptr);
+
+    imu_isr_bitmask_ = 0;
   }
 
   void ISR_End(uint16_t address, int bytes) {
@@ -847,7 +898,7 @@ class AuxApplication {
   };
 
   CanBridge bridge_{
-    &can1_, nullptr,
+    timer_, &can1_, nullptr,
         [this](uint16_t address) {
       return this->ISR_Start(address);
     },
@@ -876,12 +927,26 @@ class AuxApplication {
 
   Quaternion mounting_ = Quaternion::FromEuler(-0.5 * M_PI, 0., 0.);
 
-  ImuRegister data_;
-  ImuRegister isr_data_;
+  struct ImuData {
+    ImuRegister imu;
+    AttitudeRegister attitude;
+    std::atomic<bool> active{false};
+  };
+
+  // We need one here for the ISR to work from, one to be queued up
+  // for it to use next, and one for the main routine to fill in to
+  // replace that.
+  ImuData imu_data_buffer_[3] = {};
+  // This contains the value that we want to give to the ISR.
+  std::atomic<ImuData*> imu_to_isr_{nullptr};
+
+  // And this contains the value the ISR is currently using.
+  ImuData* imu_in_isr_{nullptr};
+  // Used to keep track of when we need to grab new data in the ISR.
+  uint32_t imu_isr_bitmask_ = 3;
+
   Bmi088::SetupData setup_data_;
   AttitudeReference attitude_reference_;
-  AttitudeRegister attitude_;
-  AttitudeRegister isr_attitude_;
 
   Nrf24l01 nrf_{pool_, timer_, []() {
       Nrf24l01::Options options;
@@ -928,7 +993,7 @@ int main(void) {
 
     run(application);
   } else {
-    fw::CanApplication application;
+    fw::CanApplication application{&timer};
 
     run(application);
   }
