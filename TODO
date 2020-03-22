@@ -1,13 +1,12 @@
 TODO
+ * Implement NRF communication protocol
+
+ * flash lights to actually mean something
  * AHRS
    * Do some kind of evaluation / write-up
    * Provide a way to set configurable parameters like noise and gains and rotation
    * Do something better than asserting on NaN... report an error and
      allow for reset?
-
- * flash lights to actually mean something
-
- * Implement NRF communication protocol
 
  * Be able to report the firmware version
  * Be able to report errors back
@@ -15,16 +14,35 @@ TODO
    hangs retransmitting forever
  * Remove high two bytes of CAN id to improve packing efficiency
  * Maybe switch registers to one byte to improve packing efficiency?
- * try to get communication reliable at 15MHz instead of just 10MHz
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
 
 r4 ERRATA
- * NRF connector needs to be a female connector, not male
- * switch all CAN transceivers to something with preferably >= 40V common mode
+ * NRF
+   * add a solid ground fill under the board on the top layer, maybe
+     with a few mounting holes to add more support hw
+   * add more filtering to NRF power supply... perhaps a LC filter of
+     some sort and a bigger decoupling cap
+   * think harder about NRF antenna placement options, turning it
+     around to face the other side of the board would allow the
+     antenna to be away from all the other cables, but soldering
+     directly to the board could interfere with other connectors
+
+ * incorporate some way to connect a microphone to the aux processor
+   * Maybe a SPW2430HR5H-B attached to the opamp input via a series cap?
  * Connect some pins from each uc to GPIOs on the rpi for IRQ or other
    general purposes
+ * expose some random pi GPIOs on pin headers w/ gnd
+ * expose some random STM32 pins, especially on the AUX STM32 on pin
+   headers w/ gnd
+
+DONE 2020-03-22
+ * r4.2
+   * Switched out aux CAN for the LTC2875 to get better common mode
+   * Stopped populating NRF header
+   * get the pi header into PCBA (so mirror all the pins and flip it to
+     the bottom of the board)
 
 DONE 2020-03-04
  * Implemented accelerometer rejection for dynamic maneuvers
