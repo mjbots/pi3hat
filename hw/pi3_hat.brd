@@ -2428,7 +2428,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <element name="R14" library="mfpassives" package="R0402" value="1k" x="10.3" y="48.3" smashed="yes" rot="MR90">
 <attribute name="HOUSEPART" value="YES" x="10.3" y="48.3" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="MPN" value="MF-RES-0402-1K" x="10.3" y="48.3" size="1.778" layer="28" rot="MR90" display="off"/>
-<attribute name="NAME" x="11" y="47.4" size="0.8" layer="26" font="vector" ratio="10" rot="MR90"/>
+<attribute name="NAME" x="10" y="49.6" size="0.8" layer="26" font="vector" ratio="10" rot="MR90"/>
 <attribute name="POPULATE" value="1" x="10.3" y="48.3" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="TOLERANCE" value="" x="10.3" y="48.3" size="1.778" layer="28" rot="MR90" display="off"/>
 <attribute name="URL" value="" x="10.3" y="48.3" size="1.778" layer="28" rot="MR90" display="off"/>
