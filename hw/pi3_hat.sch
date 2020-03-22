@@ -3261,6 +3261,12 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="GND59" library="supply1" deviceset="GND" device=""/>
+<part name="JP5" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X3" device="" package3d_urn="urn:adsk.eagle:package:22458/2">
+<attribute name="MF" value="MacroFab"/>
+<attribute name="MPN" value="MF-CON-2.54mm-01x03"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="GND60" library="supply1" deviceset="GND" device=""/>
 </parts>
 <sheets>
 <sheet>
@@ -4132,6 +4138,16 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND59" gate="1" x="406.4" y="215.9" smashed="yes">
 <attribute name="VALUE" x="403.86" y="213.36" size="1.778" layer="96"/>
 </instance>
+<instance part="JP5" gate="A" x="127" y="86.36" smashed="yes">
+<attribute name="NAME" x="120.65" y="92.075" size="1.778" layer="95"/>
+<attribute name="VALUE" x="120.65" y="78.74" size="1.778" layer="96"/>
+<attribute name="MF" x="127" y="86.36" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="127" y="86.36" size="1.778" layer="96" display="off"/>
+<attribute name="POPULATE" x="127" y="86.36" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="GND60" gate="1" x="119.38" y="78.74" smashed="yes">
+<attribute name="VALUE" x="116.84" y="76.2" size="1.778" layer="96"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -4653,6 +4669,12 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="411.48" y1="220.98" x2="406.4" y2="220.98" width="0.1524" layer="91"/>
 <pinref part="GND59" gate="1" pin="GND"/>
 <wire x1="406.4" y1="220.98" x2="406.4" y2="218.44" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="JP5" gate="A" pin="3"/>
+<wire x1="124.46" y1="83.82" x2="119.38" y2="83.82" width="0.1524" layer="91"/>
+<pinref part="GND60" gate="1" pin="GND"/>
+<wire x1="119.38" y1="83.82" x2="119.38" y2="81.28" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="N$1" class="0">
@@ -6102,6 +6124,30 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="U4" gate="G$1" pin="PB13"/>
 <pinref part="JP4" gate="A" pin="1"/>
 <wire x1="403.86" y1="226.06" x2="411.48" y2="226.06" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="PI33" class="0">
+<segment>
+<pinref part="JP5" gate="A" pin="2"/>
+<wire x1="124.46" y1="86.36" x2="109.22" y2="86.36" width="0.1524" layer="91"/>
+<label x="109.22" y="86.36" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="33"/>
+<wire x1="53.34" y1="81.28" x2="30.48" y2="81.28" width="0.1524" layer="91"/>
+<label x="30.48" y="81.28" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="PI32" class="0">
+<segment>
+<pinref part="JP5" gate="A" pin="1"/>
+<wire x1="124.46" y1="88.9" x2="109.22" y2="88.9" width="0.1524" layer="91"/>
+<label x="109.22" y="88.9" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="32"/>
+<wire x1="60.96" y1="83.82" x2="93.98" y2="83.82" width="0.1524" layer="91"/>
+<label x="81.28" y="83.82" size="1.778" layer="95"/>
 </segment>
 </net>
 </nets>
