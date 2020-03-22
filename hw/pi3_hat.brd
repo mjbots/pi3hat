@@ -2529,7 +2529,10 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="POPULATE" value="0" x="45.3" y="10" size="1.778" layer="27" display="off"/>
 </element>
 <element name="U9" library="pi3_hat" package="SOIC8" value="LTC2875" x="43.9" y="30.6" smashed="yes">
+<attribute name="MF" value="Analog" x="43.9" y="30.6" size="1.778" layer="27" display="off"/>
+<attribute name="MPN" value="LTC2875IS8#PBF" x="43.9" y="30.6" size="1.778" layer="27" display="off"/>
 <attribute name="NAME" x="43.3234" y="33.465" size="0.8" layer="25" font="vector" ratio="10" rot="SR0"/>
+<attribute name="POPULATE" value="1" x="43.9" y="30.6" size="1.778" layer="27" display="off"/>
 </element>
 <element name="JP2" library="pinhead" library_urn="urn:adsk.eagle:library:325" package="1X05" package3d_urn="urn:adsk.eagle:package:22469/2" value="" x="18.8" y="25.8" smashed="yes" rot="R90">
 <attribute name="MF" value="MacroFab" x="18.8" y="25.8" size="1.778" layer="27" rot="R90" display="off"/>

@@ -3395,7 +3395,11 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="3V3_TP" library="pi3_hat" deviceset="PAD" device="24AWG_PAD">
 <attribute name="POPULATE" value="0"/>
 </part>
-<part name="U9" library="pi3_hat" deviceset="LTC2875" device=""/>
+<part name="U9" library="pi3_hat" deviceset="LTC2875" device="">
+<attribute name="MF" value="Analog"/>
+<attribute name="MPN" value="LTC2875IS8#PBF"/>
+<attribute name="POPULATE" value="1"/>
+</part>
 <part name="JP2" library="pinhead" library_urn="urn:adsk.eagle:library:325" deviceset="PINHD-1X5" device="" package3d_urn="urn:adsk.eagle:package:22469/2">
 <attribute name="MF" value="MacroFab"/>
 <attribute name="MPN" value="MF-CON-2.54mm-01x05"/>
@@ -4282,6 +4286,9 @@ Licensed under the Apache 2.0 License</text>
 <instance part="U9" gate="G$1" x="779.78" y="226.06" smashed="yes">
 <attribute name="NAME" x="795.3756" y="235.1786" size="2.0828" layer="95" ratio="6" rot="SR0"/>
 <attribute name="VALUE" x="794.7406" y="232.6386" size="2.0828" layer="96" ratio="6" rot="SR0"/>
+<attribute name="MF" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="MPN" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
+<attribute name="POPULATE" x="779.78" y="226.06" size="1.778" layer="96" display="off"/>
 </instance>
 <instance part="JP2" gate="A" x="655.32" y="228.6" smashed="yes" rot="R180">
 <attribute name="NAME" x="661.67" y="220.345" size="1.778" layer="95" rot="R180"/>

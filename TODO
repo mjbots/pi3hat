@@ -18,9 +18,6 @@ TODO
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
 
-r4 ERRATA
-
-
 DONE 2020-03-22
  * r4.2
    * Switched out aux CAN for the LTC2875 to get better common mode
