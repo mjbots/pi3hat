@@ -1944,6 +1944,36 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="2.2" y1="1.6" x2="-2.2" y2="1.6" width="0.127" layer="21"/>
 <text x="-2.2" y="1.8" size="1.016" layer="25" font="vector" ratio="16">&gt;NAME</text>
 </package>
+<package name="L0402">
+<description>&lt;b&gt;Description:&lt;/b&gt; Standard 0402 Package for Inductors&lt;br/&gt;</description>
+<smd name="P$1" x="-0.55" y="0" dx="0.5" dy="0.6" layer="1" rot="R180"/>
+<smd name="P$2" x="0.55" y="0" dx="0.5" dy="0.6" layer="1" rot="R180"/>
+<wire x1="-1.1" y1="0.55" x2="-1.1" y2="-0.55" width="0.127" layer="21"/>
+<wire x1="-1.1" y1="-0.55" x2="1.1" y2="-0.55" width="0.127" layer="21"/>
+<wire x1="1.1" y1="-0.55" x2="1.1" y2="0.55" width="0.127" layer="21"/>
+<wire x1="1.1" y1="0.55" x2="-1.1" y2="0.55" width="0.127" layer="21"/>
+<text x="-1.1" y="1.1" size="1.016" layer="25" font="vector" ratio="16">&gt;NAME</text>
+</package>
+<package name="L0603">
+<description>&lt;b&gt;Description:&lt;/b&gt; Standard 0603 Package for Inductors&lt;br/&gt;</description>
+<smd name="P$1" x="-0.75" y="0" dx="0.6" dy="0.9" layer="1" rot="R180"/>
+<smd name="P$2" x="0.75" y="0" dx="0.6" dy="0.9" layer="1" rot="R180"/>
+<wire x1="-1.4" y1="0.7" x2="-1.4" y2="-0.7" width="0.127" layer="21"/>
+<wire x1="-1.4" y1="-0.7" x2="1.4" y2="-0.7" width="0.127" layer="21"/>
+<wire x1="1.4" y1="-0.7" x2="1.4" y2="0.7" width="0.127" layer="21"/>
+<wire x1="1.4" y1="0.7" x2="-1.4" y2="0.7" width="0.127" layer="21"/>
+<text x="-1.4" y="1.1" size="1.016" layer="25" font="vector" ratio="16">&gt;NAME</text>
+</package>
+<package name="L1210">
+<description>&lt;b&gt;Description:&lt;/b&gt; Standard 1210 Package for Inductors&lt;br/&gt;</description>
+<smd name="P$1" x="-1.45" y="0" dx="0.9" dy="2.5" layer="1" rot="R180"/>
+<smd name="P$2" x="1.45" y="0" dx="0.9" dy="2.5" layer="1" rot="R180"/>
+<wire x1="-2.2" y1="1.6" x2="-2.2" y2="-1.575" width="0.127" layer="21"/>
+<wire x1="-2.2" y1="-1.575" x2="2.2" y2="-1.575" width="0.127" layer="21"/>
+<wire x1="2.2" y1="-1.575" x2="2.2" y2="1.6" width="0.127" layer="21"/>
+<wire x1="2.2" y1="1.6" x2="-2.2" y2="1.6" width="0.127" layer="21"/>
+<text x="-2.2" y="1.8" size="1.016" layer="25" font="vector" ratio="16">&gt;NAME</text>
+</package>
 </packages>
 <symbols>
 <symbol name="CAPACITOR_NP">
@@ -1974,6 +2004,18 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="-1.016" y1="-2.286" x2="0" y2="-2.54" width="0.1524" layer="94"/>
 <text x="2.54" y="1.524" size="1.016" layer="95" font="vector" align="top-left">&gt;NAME</text>
 <text x="2.54" y="-1.524" size="1.016" layer="96" font="vector">&gt;VALUE</text>
+</symbol>
+<symbol name="INDUCTOR">
+<description>&lt;b&gt;Library:&lt;/b&gt;  MF_Passives&lt;br/&gt;
+&lt;b&gt;Description:&lt;/b&gt; Symbol for Inductors&lt;br/&gt;</description>
+<pin name="P$1" x="-5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1"/>
+<pin name="P$2" x="5.08" y="0" visible="off" length="short" direction="pas" swaplevel="1" rot="R180"/>
+<text x="-5.08" y="5.08" size="1.016" layer="95" font="vector" align="top-left">&gt;NAME</text>
+<text x="-5.08" y="2.54" size="1.016" layer="96" font="vector">&gt;VALUE</text>
+<wire x1="-2.54" y1="0" x2="-1.27" y2="0" width="0.1524" layer="94" curve="-180"/>
+<wire x1="-1.27" y1="0" x2="0" y2="0" width="0.1524" layer="94" curve="-180"/>
+<wire x1="0" y1="0" x2="1.27" y2="0" width="0.1524" layer="94" curve="-180"/>
+<wire x1="1.27" y1="0" x2="2.54" y2="0" width="0.1524" layer="94" curve="-180"/>
 </symbol>
 </symbols>
 <devicesets>
@@ -2160,6 +2202,57 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="URL" value="" constant="no"/>
 <attribute name="VOLTAGE" value="" constant="no"/>
 <attribute name="WATTAGE" value="" constant="no"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+<deviceset name="INDUCTOR" prefix="L" uservalue="yes">
+<description>&lt;b&gt;Library:&lt;/b&gt;  MF_Passives&lt;br/&gt;
+&lt;b&gt;Description:&lt;/b&gt; Device for Inductors. Manufacture part number (MPN) can be added via Attributes. Check https://factory.macrofab.com/parts for the house parts list.&lt;br/&gt;</description>
+<gates>
+<gate name="G$1" symbol="INDUCTOR" x="0" y="0"/>
+</gates>
+<devices>
+<device name="_0402" package="L0402">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$1"/>
+<connect gate="G$1" pin="P$2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="HOUSEPART" value="" constant="no"/>
+<attribute name="MPN" value="" constant="no"/>
+<attribute name="POPULATE" value="1" constant="no"/>
+<attribute name="URL" value="" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="_0603" package="L0603">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$1"/>
+<connect gate="G$1" pin="P$2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="HOUSEPART" value="" constant="no"/>
+<attribute name="MPN" value="" constant="no"/>
+<attribute name="POPULATE" value="1" constant="no"/>
+<attribute name="URL" value="" constant="no"/>
+</technology>
+</technologies>
+</device>
+<device name="_1210" package="L1210">
+<connects>
+<connect gate="G$1" pin="P$1" pad="P$1"/>
+<connect gate="G$1" pin="P$2" pad="P$2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="HOUSEPART" value="" constant="no"/>
+<attribute name="MPN" value="" constant="no"/>
+<attribute name="POPULATE" value="" constant="no"/>
+<attribute name="URL" value="" constant="no"/>
 </technology>
 </technologies>
 </device>
@@ -3207,10 +3300,6 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 </part>
 <part name="GND39" library="supply1" deviceset="GND" device=""/>
 <part name="+3V22" library="supply1" deviceset="+3V3" device=""/>
-<part name="C26" library="mfpassives" deviceset="CAPACITOR_NP" device="_1206" value="10uF">
-<attribute name="HOUSEPART" value="YES"/>
-<attribute name="MPN" value="MF-CAP-1206-10uF"/>
-</part>
 <part name="+3V25" library="supply1" deviceset="+3V3" device=""/>
 <part name="U10" library="pi3_hat" deviceset="CAT24C32" device="SOIC8">
 <attribute name="MF" value="ON Semiconductor"/>
@@ -3345,6 +3434,17 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <part name="C42" library="mfpassives" deviceset="CAPACITOR_NP" device="_1206" value="10uF">
 <attribute name="HOUSEPART" value="YES"/>
 <attribute name="MPN" value="MF-CAP-1206-10uF"/>
+</part>
+<part name="L2" library="mfpassives" deviceset="INDUCTOR" device="_1210" value="10uH">
+<attribute name="MPN" value="MF-IND-1210-10uH"/>
+</part>
+<part name="C43" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF"/>
+</part>
+<part name="C26" library="mfpassives" deviceset="CAPACITOR_NP" device="_1210" value="22uF 16V">
+<attribute name="MF" value="SAMSUNG"/>
+<attribute name="MPN" value="CL32A226KOJNNNE"/>
 </part>
 </parts>
 <sheets>
@@ -4025,12 +4125,8 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND39" gate="1" x="815.34" y="309.88" smashed="yes">
 <attribute name="VALUE" x="812.8" y="307.34" size="1.778" layer="96"/>
 </instance>
-<instance part="+3V22" gate="G$1" x="782.32" y="322.58" smashed="yes">
-<attribute name="VALUE" x="779.78" y="317.5" size="1.778" layer="96" rot="R90"/>
-</instance>
-<instance part="C26" gate="G$1" x="800.1" y="317.5" smashed="yes">
-<attribute name="NAME" x="802.64" y="319.024" size="1.016" layer="95" font="vector" align="top-left"/>
-<attribute name="VALUE" x="802.64" y="315.976" size="1.016" layer="96" font="vector"/>
+<instance part="+3V22" gate="G$1" x="756.92" y="327.66" smashed="yes">
+<attribute name="VALUE" x="754.38" y="322.58" size="1.778" layer="96" rot="R90"/>
 </instance>
 <instance part="+3V25" gate="G$1" x="355.6" y="261.62" smashed="yes">
 <attribute name="VALUE" x="353.06" y="256.54" size="1.778" layer="96" rot="R90"/>
@@ -4249,6 +4345,19 @@ Licensed under the Apache 2.0 License</text>
 <instance part="C42" gate="G$1" x="800.1" y="58.42" smashed="yes" rot="R90">
 <attribute name="NAME" x="798.576" y="60.96" size="1.016" layer="95" font="vector" rot="R90" align="top-left"/>
 <attribute name="VALUE" x="801.624" y="60.96" size="1.016" layer="96" font="vector" rot="R90"/>
+</instance>
+<instance part="L2" gate="G$1" x="767.08" y="320.04" smashed="yes">
+<attribute name="NAME" x="762" y="325.12" size="1.016" layer="95" font="vector" align="top-left"/>
+<attribute name="VALUE" x="762" y="322.58" size="1.016" layer="96" font="vector"/>
+</instance>
+<instance part="C43" gate="G$1" x="789.94" y="314.96" smashed="yes">
+<attribute name="NAME" x="792.48" y="316.484" size="1.016" layer="95" font="vector" align="top-left"/>
+<attribute name="VALUE" x="792.48" y="313.436" size="1.016" layer="96" font="vector"/>
+</instance>
+<instance part="C26" gate="G$1" x="779.78" y="314.96" smashed="yes">
+<attribute name="MF" x="779.78" y="314.96" size="1.778" layer="96" display="off"/>
+<attribute name="NAME" x="782.32" y="316.484" size="1.016" layer="95" font="vector" align="top-left"/>
+<attribute name="VALUE" x="782.32" y="313.436" size="1.016" layer="96" font="vector"/>
 </instance>
 </instances>
 <busses>
@@ -4682,11 +4791,13 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="J3" gate="A" pin="8"/>
 <pinref part="GND39" gate="1" pin="GND"/>
 <wire x1="805.18" y1="325.12" x2="815.34" y2="325.12" width="0.1524" layer="91"/>
-<wire x1="815.34" y1="325.12" x2="815.34" y2="314.96" width="0.1524" layer="91"/>
+<wire x1="815.34" y1="325.12" x2="815.34" y2="312.42" width="0.1524" layer="91"/>
+<wire x1="789.94" y1="312.42" x2="815.34" y2="312.42" width="0.1524" layer="91"/>
+<junction x="815.34" y="312.42"/>
+<pinref part="C43" gate="G$1" pin="P$2"/>
 <pinref part="C26" gate="G$1" pin="P$2"/>
-<wire x1="815.34" y1="314.96" x2="815.34" y2="312.42" width="0.1524" layer="91"/>
-<wire x1="800.1" y1="314.96" x2="815.34" y2="314.96" width="0.1524" layer="91"/>
-<junction x="815.34" y="314.96"/>
+<wire x1="779.78" y1="312.42" x2="789.94" y2="312.42" width="0.1524" layer="91"/>
+<junction x="789.94" y="312.42"/>
 </segment>
 <segment>
 <pinref part="C31" gate="G$1" pin="P$2"/>
@@ -5130,18 +5241,6 @@ Licensed under the Apache 2.0 License</text>
 <junction x="843.28" y="284.48"/>
 </segment>
 <segment>
-<pinref part="+3V22" gate="G$1" pin="+3V3"/>
-<wire x1="782.32" y1="320.04" x2="782.32" y2="314.96" width="0.1524" layer="91"/>
-<wire x1="782.32" y1="314.96" x2="789.94" y2="314.96" width="0.1524" layer="91"/>
-<wire x1="789.94" y1="314.96" x2="789.94" y2="320.04" width="0.1524" layer="91"/>
-<pinref part="J3" gate="A" pin="7"/>
-<wire x1="789.94" y1="320.04" x2="789.94" y2="325.12" width="0.1524" layer="91"/>
-<wire x1="789.94" y1="325.12" x2="797.56" y2="325.12" width="0.1524" layer="91"/>
-<pinref part="C26" gate="G$1" pin="P$1"/>
-<wire x1="789.94" y1="320.04" x2="800.1" y2="320.04" width="0.1524" layer="91"/>
-<junction x="789.94" y="320.04"/>
-</segment>
-<segment>
 <pinref part="U4" gate="G$1" pin="VBAT"/>
 <pinref part="+3V25" gate="G$1" pin="+3V3"/>
 <wire x1="358.14" y1="251.46" x2="355.6" y2="251.46" width="0.1524" layer="91"/>
@@ -5209,6 +5308,12 @@ Licensed under the Apache 2.0 License</text>
 <junction x="802.64" y="78.74"/>
 <pinref part="U14" gate="G$1" pin="VDD"/>
 <wire x1="802.64" y1="63.5" x2="792.48" y2="63.5" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="+3V22" gate="G$1" pin="+3V3"/>
+<wire x1="756.92" y1="325.12" x2="756.92" y2="320.04" width="0.1524" layer="91"/>
+<pinref part="L2" gate="G$1" pin="P$1"/>
+<wire x1="756.92" y1="320.04" x2="762" y2="320.04" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="PI_TX_3V" class="0">
@@ -6291,6 +6396,22 @@ Licensed under the Apache 2.0 License</text>
 <wire x1="701.04" y1="205.74" x2="701.04" y2="195.58" width="0.1524" layer="91"/>
 <wire x1="701.04" y1="195.58" x2="749.3" y2="195.58" width="0.1524" layer="91"/>
 <label x="741.68" y="195.58" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="N$56" class="0">
+<segment>
+<wire x1="772.16" y1="320.04" x2="779.78" y2="320.04" width="0.1524" layer="91"/>
+<pinref part="J3" gate="A" pin="7"/>
+<wire x1="779.78" y1="320.04" x2="789.94" y2="320.04" width="0.1524" layer="91"/>
+<wire x1="789.94" y1="320.04" x2="789.94" y2="325.12" width="0.1524" layer="91"/>
+<wire x1="789.94" y1="325.12" x2="797.56" y2="325.12" width="0.1524" layer="91"/>
+<wire x1="789.94" y1="320.04" x2="789.94" y2="317.5" width="0.1524" layer="91"/>
+<junction x="789.94" y="320.04"/>
+<pinref part="L2" gate="G$1" pin="P$2"/>
+<pinref part="C43" gate="G$1" pin="P$1"/>
+<pinref part="C26" gate="G$1" pin="P$1"/>
+<wire x1="779.78" y1="317.5" x2="779.78" y2="320.04" width="0.1524" layer="91"/>
+<junction x="779.78" y="320.04"/>
 </segment>
 </net>
 </nets>

@@ -19,15 +19,6 @@ TODO
    servos, for instance can be sent with a 1 byte SPI command.
 
 r4 ERRATA
- * NRF
-   * add a solid ground fill under the board on the top layer, maybe
-     with a few mounting holes to add more support hw
-   * add more filtering to NRF power supply... perhaps a LC filter of
-     some sort and a bigger decoupling cap
-   * think harder about NRF antenna placement options, turning it
-     around to face the other side of the board would allow the
-     antenna to be away from all the other cables, but soldering
-     directly to the board could interfere with other connectors
 
 
 DONE 2020-03-22
@@ -42,6 +33,15 @@ DONE 2020-03-22
      headers w/ gnd
    * expose some random pi GPIOs on pin headers w/ gnd
    * added microphone to aux processor
+ * NRF
+   * add a solid ground fill under the board on the top layer, maybe
+     with a few mounting holes to add more support hw
+   * add more filtering to NRF power supply... perhaps a LC filter of
+     some sort and a bigger decoupling cap
+   * think harder about NRF antenna placement options, turning it
+     around to face the other side of the board would allow the
+     antenna to be away from all the other cables, but soldering
+     directly to the board could interfere with other connectors
 
 DONE 2020-03-04
  * Implemented accelerometer rejection for dynamic maneuvers
