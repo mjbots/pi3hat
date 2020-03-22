@@ -2708,6 +2708,70 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 </deviceset>
 </devicesets>
 </library>
+<library name="SPW2430HR5H-B">
+<packages>
+<package name="MIC_SPW2430HR5H-B">
+<wire x1="-1.3" y1="1.6" x2="1.3" y2="1.6" width="0.127" layer="51"/>
+<wire x1="1.3" y1="1.6" x2="1.3" y2="-1.6" width="0.127" layer="51"/>
+<wire x1="1.3" y1="-1.6" x2="-1.3" y2="-1.6" width="0.127" layer="51"/>
+<wire x1="-1.3" y1="-1.6" x2="-1.3" y2="1.6" width="0.127" layer="51"/>
+<wire x1="-1.3" y1="0.4" x2="-1.3" y2="-0.4" width="0.127" layer="21"/>
+<wire x1="1.3" y1="0.4" x2="1.3" y2="-0.4" width="0.127" layer="21"/>
+<circle x="-1.7" y="1.2" radius="0.1" width="0.2" layer="21"/>
+<circle x="-1.7" y="1.2" radius="0.1" width="0.2" layer="51"/>
+<wire x1="-1.55" y1="1.85" x2="1.55" y2="1.85" width="0.05" layer="39"/>
+<wire x1="1.55" y1="1.85" x2="1.55" y2="-1.85" width="0.05" layer="39"/>
+<wire x1="1.55" y1="-1.85" x2="-1.55" y2="-1.85" width="0.05" layer="39"/>
+<wire x1="-1.55" y1="-1.85" x2="-1.55" y2="1.85" width="0.05" layer="39"/>
+<text x="-1.3" y="2.04" size="1.27" layer="25">&gt;NAME</text>
+<text x="-1.3" y="-3.2" size="1.27" layer="27">&gt;VALUE</text>
+<smd name="1" x="-0.675" y="1.095" dx="0.9" dy="0.66" layer="1"/>
+<smd name="2" x="-0.675" y="-1.095" dx="0.9" dy="0.66" layer="1"/>
+<smd name="3" x="0.675" y="-1.095" dx="0.9" dy="0.66" layer="1"/>
+<smd name="4" x="0.675" y="1.095" dx="0.9" dy="0.66" layer="1"/>
+</package>
+</packages>
+<symbols>
+<symbol name="SPW2430HR5H-B">
+<wire x1="7.62" y1="7.62" x2="7.62" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="7.62" y1="-7.62" x2="-7.62" y2="-7.62" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="-7.62" x2="-7.62" y2="7.62" width="0.254" layer="94"/>
+<wire x1="-7.62" y1="7.62" x2="7.62" y2="7.62" width="0.254" layer="94"/>
+<text x="-7.62" y="8.255" size="1.778" layer="95">&gt;NAME</text>
+<text x="-7.62" y="-10.16" size="1.778" layer="96">&gt;VALUE</text>
+<pin name="OUTPUT" x="12.7" y="0" length="middle" direction="out" rot="R180"/>
+<pin name="VDD" x="12.7" y="5.08" length="middle" direction="pwr" rot="R180"/>
+<pin name="GND" x="12.7" y="-5.08" length="middle" direction="pwr" rot="R180"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="SPW2430HR5H-B" prefix="MK">
+<description>Mic Mems Analog</description>
+<gates>
+<gate name="G$1" symbol="SPW2430HR5H-B" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="MIC_SPW2430HR5H-B">
+<connects>
+<connect gate="G$1" pin="GND" pad="2 3"/>
+<connect gate="G$1" pin="OUTPUT" pad="1"/>
+<connect gate="G$1" pin="VDD" pad="4"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="DESCRIPTION" value=" 100Hz ~ 10kHz Analog Microphone MEMS _Silicon_ 1.5V ~ 3.6V Omnidirectional _-42dB ±3dB @ 94dB SPL_ Solder Pads "/>
+<attribute name="DIGI-KEY_PART_NUMBER" value="423-1394-1-ND"/>
+<attribute name="DIGI-KEY_PURCHASE_URL" value="https://www.digikey.com/product-detail/en/knowles/SPW2430HR5H-B/423-1394-1-ND/5052772?utm_source=snapeda&amp;utm_medium=aggregator&amp;utm_campaign=symbol"/>
+<attribute name="MF" value="Knowles"/>
+<attribute name="MP" value="SPW2430HR5H-B"/>
+<attribute name="PACKAGE" value=" Knowles"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
 </libraries>
 <attributes>
 </attributes>
@@ -3267,6 +3331,21 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="GND60" library="supply1" deviceset="GND" device=""/>
+<part name="U14" library="SPW2430HR5H-B" deviceset="SPW2430HR5H-B" device="">
+<attribute name="MPN" value="SPW2430HR5H-B"/>
+<attribute name="POPULATE" value="1"/>
+</part>
+<part name="GND61" library="supply1" deviceset="GND" device=""/>
+<part name="+3V33" library="supply1" deviceset="+3V3" device=""/>
+<part name="C41" library="mfpassives" deviceset="CAPACITOR_NP" device="_0402" value="0.1uF">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-CAP-0402-0.1uF"/>
+</part>
+<part name="GND62" library="supply1" deviceset="GND" device=""/>
+<part name="C42" library="mfpassives" deviceset="CAPACITOR_NP" device="_1206" value="10uF">
+<attribute name="HOUSEPART" value="YES"/>
+<attribute name="MPN" value="MF-CAP-1206-10uF"/>
+</part>
 </parts>
 <sheets>
 <sheet>
@@ -4148,6 +4227,29 @@ Licensed under the Apache 2.0 License</text>
 <instance part="GND60" gate="1" x="119.38" y="78.74" smashed="yes">
 <attribute name="VALUE" x="116.84" y="76.2" size="1.778" layer="96"/>
 </instance>
+<instance part="U14" gate="G$1" x="779.78" y="58.42" smashed="yes">
+<attribute name="NAME" x="772.16" y="66.675" size="1.778" layer="95"/>
+<attribute name="VALUE" x="772.16" y="48.26" size="1.778" layer="96"/>
+<attribute name="MPN" x="779.78" y="58.42" size="1.778" layer="96" display="off"/>
+<attribute name="POPULATE" x="779.78" y="58.42" size="1.778" layer="96" display="off"/>
+</instance>
+<instance part="GND61" gate="1" x="802.64" y="45.72" smashed="yes">
+<attribute name="VALUE" x="800.1" y="43.18" size="1.778" layer="96"/>
+</instance>
+<instance part="+3V33" gate="G$1" x="802.64" y="81.28" smashed="yes">
+<attribute name="VALUE" x="800.1" y="76.2" size="1.778" layer="96" rot="R90"/>
+</instance>
+<instance part="C41" gate="G$1" x="810.26" y="73.66" smashed="yes">
+<attribute name="NAME" x="812.8" y="75.184" size="1.016" layer="95" font="vector" align="top-left"/>
+<attribute name="VALUE" x="812.8" y="72.136" size="1.016" layer="96" font="vector"/>
+</instance>
+<instance part="GND62" gate="1" x="810.26" y="66.04" smashed="yes">
+<attribute name="VALUE" x="807.72" y="63.5" size="1.778" layer="96"/>
+</instance>
+<instance part="C42" gate="G$1" x="800.1" y="58.42" smashed="yes" rot="R90">
+<attribute name="NAME" x="798.576" y="60.96" size="1.016" layer="95" font="vector" rot="R90" align="top-left"/>
+<attribute name="VALUE" x="801.624" y="60.96" size="1.016" layer="96" font="vector" rot="R90"/>
+</instance>
 </instances>
 <busses>
 </busses>
@@ -4676,6 +4778,17 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="GND60" gate="1" pin="GND"/>
 <wire x1="119.38" y1="83.82" x2="119.38" y2="81.28" width="0.1524" layer="91"/>
 </segment>
+<segment>
+<pinref part="GND62" gate="1" pin="GND"/>
+<pinref part="C41" gate="G$1" pin="P$2"/>
+<wire x1="810.26" y1="68.58" x2="810.26" y2="71.12" width="0.1524" layer="91"/>
+</segment>
+<segment>
+<pinref part="GND61" gate="1" pin="GND"/>
+<wire x1="802.64" y1="48.26" x2="802.64" y2="53.34" width="0.1524" layer="91"/>
+<pinref part="U14" gate="G$1" pin="GND"/>
+<wire x1="802.64" y1="53.34" x2="792.48" y2="53.34" width="0.1524" layer="91"/>
+</segment>
 </net>
 <net name="N$1" class="0">
 <segment>
@@ -5086,6 +5199,16 @@ Licensed under the Apache 2.0 License</text>
 <pinref part="3V3_TP" gate="G$1" pin="P$1"/>
 <wire x1="721.36" y1="66.04" x2="690.88" y2="66.04" width="0.1524" layer="91"/>
 <label x="688.34" y="66.04" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="C41" gate="G$1" pin="P$1"/>
+<wire x1="810.26" y1="76.2" x2="810.26" y2="78.74" width="0.1524" layer="91"/>
+<pinref part="+3V33" gate="G$1" pin="+3V3"/>
+<wire x1="810.26" y1="78.74" x2="802.64" y2="78.74" width="0.1524" layer="91"/>
+<wire x1="802.64" y1="78.74" x2="802.64" y2="63.5" width="0.1524" layer="91"/>
+<junction x="802.64" y="78.74"/>
+<pinref part="U14" gate="G$1" pin="VDD"/>
+<wire x1="802.64" y1="63.5" x2="792.48" y2="63.5" width="0.1524" layer="91"/>
 </segment>
 </net>
 <net name="PI_TX_3V" class="0">
@@ -6150,6 +6273,26 @@ Licensed under the Apache 2.0 License</text>
 <label x="81.28" y="83.82" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="N$59" class="0">
+<segment>
+<pinref part="U14" gate="G$1" pin="OUTPUT"/>
+<pinref part="C42" gate="G$1" pin="P$1"/>
+<wire x1="792.48" y1="58.42" x2="797.56" y2="58.42" width="0.1524" layer="91"/>
+</segment>
+</net>
+<net name="MIC_IN" class="0">
+<segment>
+<pinref part="C42" gate="G$1" pin="P$2"/>
+<wire x1="802.64" y1="58.42" x2="820.42" y2="58.42" width="0.1524" layer="91"/>
+<label x="815.34" y="58.42" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U7" gate="G$1" pin="PB10"/>
+<wire x1="701.04" y1="205.74" x2="701.04" y2="195.58" width="0.1524" layer="91"/>
+<wire x1="701.04" y1="195.58" x2="749.3" y2="195.58" width="0.1524" layer="91"/>
+<label x="741.68" y="195.58" size="1.778" layer="95"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>
@@ -6166,13 +6309,15 @@ Licensed under the Apache 2.0 License</text>
 <approved hash="104,1,325.12,76.2,D7,CATHODE,N$36,,,"/>
 <approved hash="104,1,317.5,81.28,D6,ANODE,N$37,,,"/>
 <approved hash="104,1,317.5,76.2,D6,CATHODE,N$38,,,"/>
-<approved hash="104,1,782.32,220.98,U9,VCC,+3V3,,,"/>
 <approved hash="104,1,640.08,261.62,D5,ANODE,N$50,,,"/>
 <approved hash="104,1,640.08,256.54,D5,CATHODE,N$51,,,"/>
 <approved hash="104,1,632.46,261.62,D4,ANODE,N$52,,,"/>
 <approved hash="104,1,632.46,256.54,D4,CATHODE,N$53,,,"/>
 <approved hash="104,1,142.24,210.82,D1,ANODE,N$9,,,"/>
 <approved hash="104,1,142.24,205.74,D1,CATHODE,GND,,,"/>
+<approved hash="104,1,782.32,220.98,U9,VCC,+3V3,,,"/>
+<approved hash="202,1,817.88,218.44,U9,SPLIT,,,,"/>
+<approved hash="104,1,792.48,63.5,U14,VDD,+3V3,,,"/>
 <approved hash="106,1,53.34,116.84,I2C1_SCL,,,,,"/>
 <approved hash="106,1,53.34,119.38,I2C1_SDA,,,,,"/>
 <approved hash="106,1,60.96,111.76,PI_RX_3V,,,,,"/>
@@ -6182,6 +6327,10 @@ Licensed under the Apache 2.0 License</text>
 <approved hash="113,1,57.1077,99.1912,J4,,,,,"/>
 <approved hash="113,1,801.328,330.331,J3,,,,,"/>
 <approved hash="113,1,114.063,20.1888,JP1,,,,,"/>
+<approved hash="113,1,657.623,227.199,JP2,,,,,"/>
+<approved hash="113,1,414.257,44.5812,JP3,,,,,"/>
+<approved hash="113,1,411.717,224.921,JP4,,,,,"/>
+<approved hash="113,1,124.697,87.7612,JP5,,,,,"/>
 </errors>
 </schematic>
 </drawing>

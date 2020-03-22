@@ -29,8 +29,6 @@ r4 ERRATA
      antenna to be away from all the other cables, but soldering
      directly to the board could interfere with other connectors
 
- * incorporate some way to connect a microphone to the aux processor
-   * Maybe a SPW2430HR5H-B attached to the opamp input via a series cap?
 
 DONE 2020-03-22
  * r4.2
@@ -43,6 +41,7 @@ DONE 2020-03-22
    * expose some random STM32 pins, especially on the AUX STM32 on pin
      headers w/ gnd
    * expose some random pi GPIOs on pin headers w/ gnd
+   * added microphone to aux processor
 
 DONE 2020-03-04
  * Implemented accelerometer rejection for dynamic maneuvers
