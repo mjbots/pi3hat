@@ -154,7 +154,7 @@
 <wire x1="3.5" y1="0" x2="0" y2="3.5" width="0" layer="20" curve="-90"/>
 <wire x1="53" y1="0" x2="56.5" y2="3.5" width="0" layer="20" curve="90"/>
 <text x="55.5" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">(c) 2020</text>
-<text x="54" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">pi3hat r4.2</text>
+<text x="54" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">pi3hat r4.1</text>
 <wire x1="21.95" y1="25.9" x2="47.7" y2="25.9" width="0.127" layer="21"/>
 <wire x1="47.7" y1="25.9" x2="47.7" y2="25.3" width="0.127" layer="21"/>
 <wire x1="47.7" y1="25.3" x2="49.6" y2="23.4" width="0.127" layer="21"/>
