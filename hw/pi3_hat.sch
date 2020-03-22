@@ -5670,6 +5670,66 @@ Licensed under the Apache 2.0 License</text>
 <label x="820.42" y="226.06" size="1.778" layer="95"/>
 </segment>
 </net>
+<net name="AUX_IRQ1" class="0">
+<segment>
+<pinref part="U7" gate="G$1" pin="PB0"/>
+<wire x1="688.34" y1="205.74" x2="688.34" y2="187.96" width="0.1524" layer="91"/>
+<label x="688.34" y="187.96" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="15"/>
+<wire x1="53.34" y1="104.14" x2="30.48" y2="104.14" width="0.1524" layer="91"/>
+<label x="30.48" y="104.14" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="AUX_IRQ2" class="0">
+<segment>
+<pinref part="U7" gate="G$1" pin="PB1"/>
+<wire x1="690.88" y1="205.74" x2="690.88" y2="187.96" width="0.1524" layer="91"/>
+<label x="690.88" y="187.96" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="16"/>
+<wire x1="60.96" y1="104.14" x2="88.9" y2="104.14" width="0.1524" layer="91"/>
+<label x="83.82" y="104.14" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="AUX_IRQ3" class="0">
+<segment>
+<pinref part="U7" gate="G$1" pin="PB2"/>
+<wire x1="693.42" y1="205.74" x2="693.42" y2="187.96" width="0.1524" layer="91"/>
+<label x="693.42" y="187.96" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="18"/>
+<wire x1="60.96" y1="101.6" x2="88.9" y2="101.6" width="0.1524" layer="91"/>
+<label x="83.82" y="101.6" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="IFACEA_IRQ1" class="0">
+<segment>
+<pinref part="U4" gate="G$1" pin="PB0"/>
+<wire x1="375.92" y1="205.74" x2="375.92" y2="185.42" width="0.1524" layer="91"/>
+<label x="375.92" y="185.42" size="1.778" layer="95" rot="R90"/>
+</segment>
+<segment>
+<pinref part="J4" gate="A" pin="37"/>
+<wire x1="53.34" y1="76.2" x2="30.48" y2="76.2" width="0.1524" layer="91"/>
+<label x="30.48" y="76.2" size="1.778" layer="95"/>
+</segment>
+</net>
+<net name="IFACEB_IRQ1" class="0">
+<segment>
+<pinref part="J4" gate="A" pin="29"/>
+<wire x1="53.34" y1="86.36" x2="30.48" y2="86.36" width="0.1524" layer="91"/>
+<label x="30.48" y="86.36" size="1.778" layer="95"/>
+</segment>
+<segment>
+<pinref part="U11" gate="G$1" pin="PB0"/>
+<wire x1="373.38" y1="25.4" x2="373.38" y2="5.08" width="0.1524" layer="91"/>
+<label x="373.38" y="5.08" size="1.778" layer="95" rot="R90"/>
+</segment>
+</net>
 </nets>
 </sheet>
 </sheets>

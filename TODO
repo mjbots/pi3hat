@@ -31,8 +31,6 @@ r4 ERRATA
 
  * incorporate some way to connect a microphone to the aux processor
    * Maybe a SPW2430HR5H-B attached to the opamp input via a series cap?
- * Connect some pins from each uc to GPIOs on the rpi for IRQ or other
-   general purposes
  * expose some random pi GPIOs on pin headers w/ gnd
  * expose some random STM32 pins, especially on the AUX STM32 on pin
    headers w/ gnd
@@ -43,6 +41,8 @@ DONE 2020-03-22
    * Stopped populating NRF header
    * get the pi header into PCBA (so mirror all the pins and flip it to
      the bottom of the board)
+   * Connect some pins from each uc to GPIOs on the rpi for IRQ or other
+     general purposes
 
 DONE 2020-03-04
  * Implemented accelerometer rejection for dynamic maneuvers
