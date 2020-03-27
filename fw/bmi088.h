@@ -49,12 +49,10 @@ class Bmi088 {
   struct SetupData {
     uint8_t acc_id = 0;
     uint8_t gyro_id = 0;
+    uint16_t rate_hz = 0;
   };
 
   const SetupData& setup_data() const;
-
-  // Return true if new data is available.
-  bool data_ready();
 
   struct Data {
     Eigen::Vector3f rate_dps;

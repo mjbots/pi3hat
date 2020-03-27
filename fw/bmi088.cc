@@ -106,6 +106,13 @@ class SpiMaster {
               reinterpret_cast<const char*>(&value), sizeof(value)));
   }
 
+  template <typename T>
+  void VerifyScalar(uint8_t address, T value) {
+    WriteScalar(address, value);
+    const T result = ReadScalar<T>(0x80 | address);
+    MJ_ASSERT(result == value);
+  }
+
  private:
   SPI* const spi_;
   DigitalOut cs_;
@@ -127,7 +134,7 @@ class Bmi088::Impl {
           }()},
         gyro_{&spi_, options.gyro_cs, timer, {}},
         acc_int_{options.acc_int},
-        gyro_int_{options.gyro_int} {
+        gyro_int_{options.gyro_int, PullUp} {
     spi_.frequency(5000000);
     // Before the accelerometer can be be initialized, we have to wait
     // 1ms after power on.  We'll just assume our timer hasn't wrapped
@@ -143,11 +150,9 @@ class Bmi088::Impl {
     ConfigureGyro();
   }
 
-  bool data_ready() {
-    return gyro_int_.read();
-  }
-
   Data read_data() {
+    last_read_ = timer_->read_us();
+
     Data result;
 
     uint8_t buf[6] = {};
@@ -173,15 +178,17 @@ class Bmi088::Impl {
     result.rate_dps.y() = read_int16(2) * gyro_scale_;
     result.rate_dps.z() = read_int16(4) * gyro_scale_;
 
-    data_ready_.store(false);
-
     return result;
   }
 
   void ConfigureAccelerometer() {
     // Switch the accelerometer into SPI mode.  Any CS toggle will do
     // this, we'll just make a dummy read.
-    acc_.ReadScalar<uint8_t>(0);
+    acc_.ReadScalar<uint8_t>(0x80);
+
+    // Verify we have an actual accelerometer present.
+    setup_data_.acc_id = acc_.ReadScalar<uint8_t>(0x80);
+    MJ_ASSERT(setup_data_.acc_id == 0x1e);
 
     // Power on the sensor.
     acc_.WriteScalar<uint8_t>(0x7d, 0x04);  // ACC_PWR_CTRL - o n
@@ -189,14 +196,11 @@ class Bmi088::Impl {
     // Wait long enough for it to power up.
     timer_->wait_us(50000);
 
-    // Get the chip id.
-    setup_data_.acc_id = acc_.ReadScalar<uint8_t>(0x80);
-
     // Configure interrupts.
-    acc_.WriteScalar<uint8_t>(0x53, 0x08);  // INT1_IO_CONF - INT1 as output
-    acc_.WriteScalar<uint8_t>(0x58, 0x04);  // INT1_INT2_DATA_MAP - drd -> int1
+    acc_.VerifyScalar<uint8_t>(0x53, 0x08);  // INT1_IO_CONF - INT1 as output
+    acc_.VerifyScalar<uint8_t>(0x58, 0x04);  // INT1_INT2_DATA_MAP - drd -> int1
 
-    acc_.WriteScalar(
+    acc_.VerifyScalar(
         0x40,  // ACC_CONF
         (0x0a << 4) | // acc_bwp - normal bandwidth
         [&]() {
@@ -224,16 +228,17 @@ class Bmi088::Impl {
       return std::make_pair(0x03, kG / 1365.f);  // 24g
     }();
     // ACC_RANGE
-    acc_.WriteScalar(0x41, accel_range_conf);
+    acc_.VerifyScalar(0x41, accel_range_conf);
     accel_scale_ = accel_scale;
   }
 
   void ConfigureGyro() {
     setup_data_.gyro_id = gyro_.ReadScalar<uint8_t>(0x80);
+    MJ_ASSERT(setup_data_.gyro_id == 0x0f);
 
-    gyro_.WriteScalar<uint8_t>(0x15, 0x80);  // GYRO_INT_CTRL - enable interrupts
-    gyro_.WriteScalar<uint8_t>(0x16, 0x00);  // push pull active high
-    gyro_.WriteScalar<uint8_t>(0x18, 0x01);  // data ready mapped to int3
+    gyro_.VerifyScalar<uint8_t>(0x15, 0x80);  // GYRO_INT_CTRL - enable interrupts
+    gyro_.VerifyScalar<uint8_t>(0x16, 0x00);  // push pull active high
+    gyro_.VerifyScalar<uint8_t>(0x18, 0x01);  // data ready mapped to int3
 
     auto [gyro_conf, gyro_scale] = [&]() {
       if (options_.gyro_max_dps <= 125) {
@@ -252,20 +257,24 @@ class Bmi088::Impl {
     }();
 
     // GYRO_RANGE
-    gyro_.WriteScalar<uint8_t>(0x0f, gyro_conf);
+    gyro_.VerifyScalar<uint8_t>(0x0f, gyro_conf);
     gyro_scale_ = gyro_scale;
 
-    gyro_.WriteScalar<uint8_t>(
+    auto [rate_bits, rate_hz] = [&]() -> std::pair<uint8_t, uint16_t> {
+      if (options_.rate_hz <= 100) { return {0x07, 100}; }
+      if (options_.rate_hz <= 200) { return {0x06, 200}; }
+      // We don't support the lower filter bandwidth versions of
+      // 100 and 200Hz ODR.
+      if (options_.rate_hz <= 400) { return {0x03, 400}; }
+      if (options_.rate_hz <= 1000) { return {0x02, 1000}; }
+      return {0x00, 2000};  // 2000 dps 532Hz BW
+    }();
+
+    setup_data_.rate_hz = rate_hz;
+
+    gyro_.VerifyScalar<uint8_t>(
         0x10,  // GYRO_BANDWIDTH
-        [&]() {
-          if (options_.rate_hz <= 100) { return 0x07; }
-          if (options_.rate_hz <= 200) { return 0x06; }
-          // We don't support the lower filter bandwidth versions of
-          // 100 and 200Hz ODR.
-          if (options_.rate_hz <= 400) { return 0x03; }
-          if (options_.rate_hz <= 1000) { return 0x02; }
-          return 0x00;  // 2000 dps 532Hz BW
-        }());
+        0x80 | rate_bits);
   }
 
   MillisecondTimer* const timer_;
@@ -274,13 +283,14 @@ class Bmi088::Impl {
   SpiMaster acc_;
   SpiMaster gyro_;
   DigitalIn acc_int_;
-  std::atomic<bool> data_ready_;
 
   DigitalIn gyro_int_;
 
   SetupData setup_data_;
   float accel_scale_ = 0.0f;
   float gyro_scale_ = 0.0f;
+
+  uint32_t last_read_ = 0;
 };
 
 Bmi088::Bmi088(mjlib::micro::Pool* pool, MillisecondTimer* timer,
@@ -291,10 +301,6 @@ Bmi088::~Bmi088() {}
 
 const Bmi088::SetupData& Bmi088::setup_data() const {
   return impl_->setup_data_;
-}
-
-bool Bmi088::data_ready() {
-  return impl_->data_ready();
 }
 
 Bmi088::Data Bmi088::read_data() {

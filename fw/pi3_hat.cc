@@ -731,11 +731,16 @@ class AuxApplication {
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
       : pool_(pool), timer_(timer) {
     setup_data_ = imu_.setup_data();
+    // We do this here after everything has been initialized.
+    next_imu_sample_ = timer_->read_us();
   }
 
   void Poll() {
     bridge_.Poll();
-    if (imu_.data_ready()) {
+    const auto now = timer_->read_us();
+    if (now - next_imu_sample_ < 0x80000000) {
+      // We have gone past.
+      next_imu_sample_ += us_step_;
       DoImu();
     }
   }
@@ -769,7 +774,7 @@ class AuxApplication {
     imu_data.imu = ImuRegister{data};
 
     attitude_reference_.ProcessMeasurement(
-        0.001f,
+        period_s_,
         (M_PI / 180.0f) * data.rate_dps,
         data.accel_mps2);
 
@@ -917,13 +922,16 @@ class AuxApplication {
       options.acc_int = PA_10;
       options.gyro_int = PA_8;
 
-      options.rate_hz = 800;
+      options.rate_hz = 400;
       options.gyro_max_dps = 1000;
       options.accel_max_g = 6;
 
       return options;
     }()
   };
+  const float period_s_ = 1.0f / static_cast<float>(imu_.setup_data().rate_hz);
+  const uint32_t us_step_ = 1000000 / imu_.setup_data().rate_hz;
+  uint32_t next_imu_sample_ = 0;
 
   Quaternion mounting_ = Quaternion::FromEuler(-0.5 * M_PI, 0., 0.);
 
