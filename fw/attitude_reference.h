@@ -23,6 +23,14 @@ namespace fw {
 
 /// Filters IMU readings to produce an estimate of attitude, rates,
 /// and accelerations.
+///
+/// The following frame conventions are used:
+///  +x is positive forward
+///  +y is positive right
+///  +z is positive down
+///
+/// Accelerometer measurements are assumed such that at rest, +1g is
+/// measured in the UP (-z) direction.
 class AttitudeReference {
  public:
   // Note: This is not ideal, as it treats the quaternion as 4
@@ -172,7 +180,7 @@ class AttitudeReference {
 
   static Eigen::Matrix<float, 3, 1> OrientationToAccel(
       const Quaternion& attitude) {
-    const Point3D gravity(0.f, 0.f, 1.f);
+    const Point3D gravity(0.f, 0.f, -1.f);
     return attitude.conjugated().Rotate(gravity);
   }
 
@@ -187,7 +195,8 @@ class AttitudeReference {
     return Eigen::Matrix<float, 1, 1>(attitude.conjugated().Rotate(rate_rps).z());
   }
 
-  static Quaternion AccelToOrientation(const Point3D& n) {
+  static Quaternion AccelToOrientation(const Point3D& n_inv) {
+    const Point3D n = -1.0 * n_inv;
     Euler euler_rad;
     euler_rad.roll = std::atan2(-n.x(), n.z());
     euler_rad.pitch = std::atan2(n.y(), std::sqrt(n.x() * n.x() +
