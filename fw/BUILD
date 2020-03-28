@@ -37,6 +37,7 @@ mbed_binary(
         "quaternion.h",
         "register_spi_slave.h",
         "register_spi_slave.cc",
+        "rf_transceiver.h",
         "slot_rf_protocol.h",
         "slot_rf_protocol.cc",
         "ukf_filter.h",

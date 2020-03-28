@@ -152,6 +152,7 @@ class Imu {
   void ISR_End(uint16_t address, int bytes) {
   }
 
+ private:
   void ISR_GetImuData() {
     // If we have something, release it.
     if (imu_in_isr_) {
@@ -164,7 +165,6 @@ class Imu {
     imu_isr_bitmask_ = 0;
   }
 
- private:
   void DoImu();
 
   mjlib::micro::Pool* const pool_;

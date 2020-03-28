@@ -27,6 +27,7 @@
 #include "fw/imu.h"
 #include "fw/millisecond_timer.h"
 #include "fw/register_spi_slave.h"
+#include "fw/rf_transceiver.h"
 #include "fw/slot_rf_protocol.h"
 
 namespace fw {
@@ -88,46 +89,26 @@ class AuxApplication {
  public:
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
       : pool_(pool), timer_(timer) {
-    SetupRf();
   }
 
   void Poll() {
     bridge_.Poll();
     imu_.Poll();
-    rf_->Poll();
+    rf_.Poll();
   }
 
   void PollMillisecond() {
     imu_.PollMillisecond();
-    rf_->PollMillisecond();
+    rf_.PollMillisecond();
   }
 
  private:
-  void SetupRf() {
-    rf_.emplace(timer_, []() {
-        Nrf24l01::Pins pins;
-        pins.mosi = PB_5_ALT0;
-        pins.miso = PB_4_ALT0;
-        pins.sck = PB_3_ALT0;
-        pins.cs = PA_15;
-        pins.irq = PB_7;
-        pins.ce = PB_6;
-
-        SlotRfProtocol::Options options;
-        options.id = 0x3045;
-        options.ptx = false;
-        options.pins = pins;
-
-        return options;
-      }());
-    rf_->Start();
-  }
-
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address >=32 && address < 48) {
       return imu_.ISR_Start(address);
     }
-    if (address == 48) {
+    if (address >= 48 && address < 80) {
+      return rf_.ISR_Start(address);
     }
     return {};
   }
@@ -135,6 +116,9 @@ class AuxApplication {
   void ISR_End(uint16_t address, int bytes) {
     if (address >= 32 && address < 48) {
       imu_.ISR_End(address, bytes);
+    }
+    if (address >= 48 && address < 80) {
+      rf_.ISR_End(address, bytes);
     }
   }
 
@@ -165,10 +149,7 @@ class AuxApplication {
   };
 
   Imu imu_{pool_, timer_};
-
-  std::optional<SlotRfProtocol> rf_;
-
-  char nrf_registers_[32] = {};
+  RfTransceiver rf_{timer_};
 };
 
 void SetupClock() {
