@@ -32,6 +32,8 @@ mbed_binary(
         "pi3_hat.cc",
         "point3d.h",
         "quaternion.h",
+        "slot_rf_protocol.h",
+        "slot_rf_protocol.cc",
         "ukf_filter.h",
     ],
     features = [
@@ -41,8 +43,11 @@ mbed_binary(
         "@com_github_mjbots_mjlib//mjlib/base:inplace_function",
         "@com_github_mjbots_mjlib//mjlib/base:string_span",
         "@com_github_mjbots_mjlib//mjlib/base:visitor",
+        "@com_github_mjbots_mjlib//mjlib/micro:async_types",
         "@com_github_mjbots_mjlib//mjlib/micro:callback_table",
         "@com_github_mjbots_mjlib//mjlib/micro:pool_ptr",
+        "@com_github_mjbots_mjlib//mjlib/micro:static_ptr",
+        "@com_github_mjbots_mjlib//mjlib/micro:static_vector",
         "@eigen",
     ],
 )

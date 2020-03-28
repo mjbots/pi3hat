@@ -25,7 +25,7 @@
 #include "fw/bmi088.h"
 #include "fw/fdcan.h"
 #include "fw/millisecond_timer.h"
-#include "fw/nrf24l01.h"
+#include "fw/slot_rf_protocol.h"
 
 namespace fw {
 namespace {
@@ -679,7 +679,25 @@ void SetupClock() {
   }
 }
 
-
+/// This is used on the auxiliary processor.  It exposes the following
+/// functions:
+///
+/// A. A CAN bridge using an identical SPI mapping as the
+/// CanApplication/CanBridge above.
+///
+/// B. An IMU with the following SPI registers:
+///
+///  32: Protocol version:
+///     byte 0: the constant value 0x20
+///  33: Raw IMU data
+///     bytes: The contents of the 'ImuRegister' structure
+///  34: Attitude data
+///     bytes: The contents of the 'AttitudeRegister' structure
+///
+/// C. A spread spectrum RF transceiver with the following SPI
+/// registers:
+///
+///  48: Protocol version
 class AuxApplication {
  public:
   struct ImuRegister {
@@ -733,6 +751,8 @@ class AuxApplication {
     setup_data_ = imu_.setup_data();
     // We do this here after everything has been initialized.
     next_imu_sample_ = timer_->read_us();
+
+    SetupRf();
   }
 
   void Poll() {
@@ -743,15 +763,34 @@ class AuxApplication {
       next_imu_sample_ += us_step_;
       DoImu();
     }
+    rf_->Poll();
   }
 
   void PollMillisecond() {
-    nrf_.PollMillisecond();
-    auto nrf_regs = nrf_.register_map();
-    std::memcpy(nrf_registers_, nrf_regs.data(), nrf_regs.size());
+    rf_->PollMillisecond();
   }
 
  private:
+  void SetupRf() {
+    rf_.emplace(timer_, []() {
+        Nrf24l01::Pins pins;
+        pins.mosi = PB_5_ALT0;
+        pins.miso = PB_4_ALT0;
+        pins.sck = PB_3_ALT0;
+        pins.cs = PA_15;
+        pins.irq = PB_7;
+        pins.ce = PB_6;
+
+        SlotRfProtocol::Options options;
+        options.id = 0x3045;
+        options.ptx = false;
+        options.pins = pins;
+
+        return options;
+      }());
+    rf_->Start();
+  }
+
   void DoImu() {
     const auto start = timer_->read_us();
 
@@ -863,10 +902,6 @@ class AuxApplication {
       }
     }
     if (address == 48) {
-      return {
-        {nrf_registers_, sizeof(nrf_registers_)},
-        {},
-      };
     }
     return {};
   }
@@ -956,17 +991,7 @@ class AuxApplication {
   Bmi088::SetupData setup_data_;
   AttitudeReference attitude_reference_;
 
-  Nrf24l01 nrf_{pool_, timer_, []() {
-      Nrf24l01::Options options;
-      options.mosi = PB_5_ALT0;
-      options.miso = PB_4_ALT0;
-      options.sck = PB_3_ALT0;
-      options.cs = PA_15;
-      options.irq = PB_7;
-      options.ce = PB_6;
-      return options;
-    }()
-  };
+  std::optional<SlotRfProtocol> rf_;
 
   char nrf_registers_[32] = {};
 };
