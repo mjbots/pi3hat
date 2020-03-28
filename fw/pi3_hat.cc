@@ -933,7 +933,7 @@ class AuxApplication {
   const uint32_t us_step_ = 1000000 / imu_.setup_data().rate_hz;
   uint32_t next_imu_sample_ = 0;
 
-  Quaternion mounting_ = Quaternion::FromEuler(-0.5 * M_PI, 0., 0.);
+  Quaternion mounting_ = Quaternion::FromEuler(0, M_PI_2, -M_PI_2);
 
   struct ImuData {
     ImuRegister imu;

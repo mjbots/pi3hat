@@ -83,25 +83,24 @@ class Quaternion {
   ///  +pitch -> forward edge up
   ///  +yaw -> clockwise looking down
   Euler euler_rad() const {
-    float sp = 2.0f * (w_ * x_ + y_ * z_);
     Euler result_rad;
-    if (std::abs(sp - 1.0f) < 1e-8f) { // north pole
+
+    const float sinr_cosp = 2.0f * (w_ * x_ + y_ * z_);
+    const float cosr_cosp = 1.0f - 2.0f * (x_ * x_ + y_ * y_);
+    result_rad.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+    const float sinp = 2.0f * (w_ * y_ - z_ * x_);
+    if (sinp >= (1.0f - 1e-8f)) {
       result_rad.pitch = M_PI_2;
-      result_rad.roll = 0.0f;
-      result_rad.yaw = -std::atan2((w_ * y_ + x_ * z_),
-                                   -(y_ * z_ - w_ * x_));
-    } else if (std::abs(sp + 1.0f) < 1e-8f) { // south pole
+    } else if (sinp <= (-1.0f + 1e-8f)) {
       result_rad.pitch = -M_PI_2;
-      result_rad.roll = 0.0f;
-      result_rad.yaw = std::atan2((w_ * y_ + x_ * z_),
-                                  (y_ * z_ - w_ * x_));
     } else {
-      result_rad.pitch = std::asin(sp);
-      result_rad.roll = -std::atan2(2.0f * (x_ * z_ - w_ * y_),
-                                    1.0f - 2.0f * x_ * x_ - 2.0f * y_ * y_);
-      result_rad.yaw = std::atan2(2.0f * (x_ * y_ - w_ * z_),
-                                  1.0f - 2.0f * x_ * x_ - 2.0f * z_ * z_);
+      result_rad.pitch = std::asin(sinp);
     }
+
+    const float siny_cosp = 2.0f * (w_ * z_ + x_ * y_);
+    const float cosy_cosp = 1.0f - 2.0f * (y_ * y_ + z_ * z_);
+    result_rad.yaw = std::atan2(siny_cosp, cosy_cosp);
 
     return result_rad;
   }
@@ -110,9 +109,9 @@ class Quaternion {
       float roll_rad, float pitch_rad, float yaw_rad) {
     // Quaternions multiply in opposite order, and we want to get into
     // roll, pitch, then yaw as standard.
-    return (Quaternion::FromAxisAngle(yaw_rad, 0.0f, 0.0f, -1.0f) *
-            Quaternion::FromAxisAngle(pitch_rad, 1.0f, 0.0f, 0.0f) *
-            Quaternion::FromAxisAngle(roll_rad, 0.0f, 1.0f, 0.0f));
+    return (Quaternion::FromAxisAngle(yaw_rad, 0.0f, 0.0f, 1.0f) *
+            Quaternion::FromAxisAngle(pitch_rad, 0.0f, 1.0f, 0.0f) *
+            Quaternion::FromAxisAngle(roll_rad, 1.0f, 0.0f, 0.0f));
   }
 
   static Quaternion FromEuler(const Euler& euler_rad) {
@@ -133,7 +132,7 @@ class Quaternion {
     return Quaternion(1.0f,
                       0.5f * pitch_rate_rps * dt_s,
                       0.5f * roll_rate_rps * dt_s,
-                      -0.5f * yaw_rate_rps * dt_s).normalized();
+                      0.5f * yaw_rate_rps * dt_s).normalized();
   }
 
   static Quaternion IntegrateRotationRate(
