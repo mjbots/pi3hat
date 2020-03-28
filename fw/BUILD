@@ -26,6 +26,8 @@ mbed_binary(
         "euler.h",
         "fdcan.cc",
         "fdcan.h",
+        "imu.h",
+        "imu.cc",
         "math_util.h",
         "millisecond_timer.h",
         "nrf24l01.cc",
