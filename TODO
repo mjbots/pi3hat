@@ -1,6 +1,4 @@
 TODO
- * Implement NRF communication protocol
-
  * flash lights to actually mean something
  * AHRS
    * Do some kind of evaluation / write-up
@@ -17,6 +15,11 @@ TODO
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
+
+ * Provide 5V pin header for external power
+
+DONE 2020-03-28
+ * Implemented NRF protocol
 
 DONE 2020-03-22
  * r4.2
