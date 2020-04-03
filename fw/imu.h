@@ -104,6 +104,10 @@ class Imu {
 
   void PollMillisecond() {}
 
+  bool data_present() const {
+    return imu_to_isr_.load() != nullptr;
+  }
+
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 32) {
       return {
@@ -122,7 +126,7 @@ class Imu {
           std::string_view(reinterpret_cast<const char*>(&imu_in_isr_->imu),
                            sizeof(imu_in_isr_->imu)),
           {},
-              };
+        };
       } else {
         return {{}, {}};
       }
@@ -139,12 +143,10 @@ class Imu {
               reinterpret_cast<const char*>(&imu_in_isr_->attitude),
               sizeof(imu_in_isr_->attitude)),
           {},
-              };
+        };
       } else {
         return {{}, {}};
       }
-    }
-    if (address == 48) {
     }
     return {};
   }

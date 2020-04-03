@@ -110,6 +110,18 @@ class AuxApplication {
     if (address >= 48 && address < 80) {
       return rf_.ISR_Start(address);
     }
+    if (address == 96) {
+      // Until we have IRQs, this will be a multiplexing register
+      // which allows clients to determine what is ready to read.
+      read_buf_[0] = bridge_.queue_size();
+      read_buf_[1] = imu_.data_present() ? 1 : 0;
+      const auto bitfield = rf_.bitfield();
+      std::memcpy(&read_buf_[2], &bitfield, sizeof(bitfield));
+      return {
+        std::string_view(&read_buf_[0], 6),
+        {},
+      };
+    }
     return {};
   }
 
@@ -150,6 +162,7 @@ class AuxApplication {
 
   Imu imu_{pool_, timer_};
   RfTransceiver rf_{timer_};
+  char read_buf_[6] = {};
 };
 
 void SetupClock() {

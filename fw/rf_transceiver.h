@@ -34,7 +34,7 @@ namespace fw {
 ///   byte1-: slot data
 ///  53: Write slot priority
 ///   byte0: slot number
-///   byte1-5: slot priority
+///   byte1-4: slot priority
 ///  56: Read bitfield
 ///   byte0-3: uint32 with 2 bits per field
 ///  64-79: Read slot data
@@ -56,6 +56,10 @@ class RfTransceiver {
 
   void PollMillisecond() {
     rf_->PollMillisecond();
+  }
+
+  uint32_t bitfield() const {
+    return rf_->slot_bitfield();
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {

@@ -136,6 +136,10 @@ class CanBridge {
     }
   }
 
+  uint8_t queue_size() const {
+    return can_rx_queue_[0] ? 1 : 0;
+  }
+
  private:
   struct SpiReceiveBuf {
     char data[kMaxSpiFrameSize] = {};
