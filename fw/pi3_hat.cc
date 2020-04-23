@@ -72,7 +72,7 @@ class CanApplication {
     }()
   };
 
-  CanBridge bridge_{timer_, &can1_, &can2_, {}, {}};
+  CanBridge bridge_{timer_, &can1_, &can2_, PB_0, {}, {}};
 };
 
 
@@ -151,7 +151,7 @@ class AuxApplication {
   };
 
   CanBridge bridge_{
-    timer_, &can1_, nullptr,
+    timer_, &can1_, nullptr, PB_0,
         [this](uint16_t address) {
           return this->ISR_Start(address);
         },
@@ -160,8 +160,10 @@ class AuxApplication {
         }
   };
 
-  Imu imu_{pool_, timer_};
-  RfTransceiver rf_{timer_};
+  DigitalOut can_shdn_{PC_6, 0};
+
+  Imu imu_{pool_, timer_, PB_1};
+  RfTransceiver rf_{timer_, PB_2};
   char read_buf_[6] = {};
 };
 

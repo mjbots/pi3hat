@@ -36,6 +36,7 @@ class SlotRfProtocol {
   };
 
   SlotRfProtocol(MillisecondTimer*,
+                 PinName irq_name,
                  const Options& options);
   ~SlotRfProtocol();
 
@@ -54,7 +55,7 @@ class SlotRfProtocol {
   /// increments upon each receipt of that slot.  This can be used to
   /// efficiently poll to see if any slots have been received and
   /// which ones have been received.
-  uint32_t slot_bitfield() const;
+  uint32_t slot_bitfield();
 
   /// Queue the given slot to be transmitted.
   void tx_slot(int slot_idx, const Slot&);

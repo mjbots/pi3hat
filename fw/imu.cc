@@ -77,6 +77,7 @@ void Imu::DoImu() {
   my_att.update_time_10us = std::min<decltype(end)>(255, (end - start) / 10);
 
   // Now we need to let the ISR know about this.
+  irq_.write(1);
   imu_data.active.store(true);
   auto* old_imu_data = imu_to_isr_.exchange(&imu_data);
   // If we got something, that means the ISR hadn't claimed it yet.

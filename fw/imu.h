@@ -84,9 +84,10 @@ class Imu {
     float uncertainty_bias_z_dps = 0;
   } __attribute__((packed));
 
-  Imu(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
+  Imu(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer, PinName irq_name)
       : pool_(pool),
-        timer_(timer) {
+        timer_(timer),
+        irq_(irq_name, 0) {
     // We do this here after everything has been initialized.
     next_imu_sample_ = timer_->read_us();
 
@@ -163,6 +164,7 @@ class Imu {
     imu_in_isr_ = nullptr;
     // Now try to get the next value.
     imu_in_isr_ = imu_to_isr_.exchange(nullptr);
+    irq_.write(0);
 
     imu_isr_bitmask_ = 0;
   }
@@ -171,6 +173,7 @@ class Imu {
 
   mjlib::micro::Pool* const pool_;
   MillisecondTimer* const timer_;
+  DigitalOut irq_;
 
   Bmi088 imu_{pool_, timer_, []() {
       Bmi088::Options options;

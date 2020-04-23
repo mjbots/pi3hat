@@ -58,11 +58,13 @@ class CanBridge {
 
   CanBridge(fw::MillisecondTimer* timer,
             fw::FDCan* can1, fw::FDCan* can2,
+            PinName irq_name,
             RegisterSPISlave::StartHandler start_handler,
             RegisterSPISlave::EndHandler end_handler)
       : timer_{timer},
         can1_{can1},
         can2_{can2},
+        irq_{irq_name, 0},
         start_handler_(start_handler),
         end_handler_(end_handler) {}
 
@@ -110,6 +112,7 @@ class CanBridge {
         // Hmm, we couldn't.  Just throw it away.
         this_buf->active = false;
       }();
+      irq_.write(1);
       __enable_irq();
     };
 
@@ -223,6 +226,9 @@ class CanBridge {
         can_rx_queue_[i - 1] = can_rx_queue_[i];
       }
       can_rx_queue_[kBufferItems - 1] = nullptr;
+      if (can_rx_queue_[0] == nullptr) {
+        irq_.write(0);
+      }
 
       return {
         std::string_view(current_can_buf_->data, current_can_buf_->size + 6),
@@ -317,6 +323,8 @@ class CanBridge {
 
   fw::FDCan* can1_ = nullptr;
   fw::FDCan* can2_ = nullptr;
+
+  DigitalOut irq_;
 
   RegisterSPISlave::StartHandler start_handler_;
   RegisterSPISlave::EndHandler end_handler_;

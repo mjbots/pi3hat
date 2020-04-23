@@ -43,8 +43,9 @@ namespace fw {
 ///   byte5-20: data
 class RfTransceiver {
  public:
-  RfTransceiver(fw::MillisecondTimer* timer)
-      : timer_(timer) {
+  RfTransceiver(fw::MillisecondTimer* timer, PinName irq_name)
+      : timer_(timer),
+        irq_name_(irq_name) {
     // Default all slots to send all the time.
     for (auto& val : priorities_) { val = 0xffffff; }
     SetupRf();
@@ -58,7 +59,7 @@ class RfTransceiver {
     rf_->PollMillisecond();
   }
 
-  uint32_t bitfield() const {
+  uint32_t bitfield() {
     return rf_->slot_bitfield();
   }
 
@@ -92,7 +93,8 @@ class RfTransceiver {
     if (address == 53) {
       return {
         {},
-        mjlib::base::string_span(reinterpret_cast<char*>(write_buf_), 5),
+        mjlib::base::string_span(
+            reinterpret_cast<char*>(write_buf_), 5),
       };
     }
     if (address == 56) {
@@ -140,7 +142,7 @@ class RfTransceiver {
 
  private:
   void SetupRf() {
-    rf_.emplace(timer_, [&]() {
+    rf_.emplace(timer_, irq_name_, [&]() {
         Nrf24l01::Pins pins;
         pins.mosi = PB_5_ALT0;
         pins.miso = PB_4_ALT0;
@@ -160,6 +162,7 @@ class RfTransceiver {
   }
 
   MillisecondTimer* const timer_;
+  const PinName irq_name_;
   std::optional<SlotRfProtocol> rf_;
   uint32_t id_ = 0x3045;
   uint32_t staged_id_ = 0;

@@ -33,9 +33,11 @@ constexpr int kNumChannels = 23;
 class SlotRfProtocol::Impl {
  public:
   Impl(fw::MillisecondTimer* timer,
+       PinName irq_name,
        const Options& options)
       : options_(options),
-        timer_(timer) {
+        timer_(timer),
+        irq_(irq_name, 0) {
   }
 
   void Start() {
@@ -107,7 +109,8 @@ class SlotRfProtocol::Impl {
     }
   }
 
-  uint32_t slot_bitfield() const {
+  uint32_t slot_bitfield() {
+    irq_.write(0);
     return slot_bitfield_;
   }
 
@@ -167,6 +170,8 @@ class SlotRfProtocol::Impl {
       cur_bitfield = (cur_bitfield + 1) % 4;
       slot_bitfield_ = (slot_bitfield_ & ~(0x03 << (slot_index * 2))) |
           (cur_bitfield << (slot_index * 2));
+
+      irq_.write(1);
 
       pos += slot_size;
       remaining -= slot_size;
@@ -353,6 +358,7 @@ class SlotRfProtocol::Impl {
 
   const Options options_;
   fw::MillisecondTimer* const timer_;
+  DigitalOut irq_;
 
   std::optional<Nrf24l01> nrf_;
 
@@ -385,8 +391,9 @@ class SlotRfProtocol::Impl {
 };
 
 SlotRfProtocol::SlotRfProtocol(MillisecondTimer* timer,
+                               PinName irq_name,
                                const Options& options)
-    : impl_(timer, options) {}
+    : impl_(timer, irq_name, options) {}
 
 SlotRfProtocol::~SlotRfProtocol() {}
 
@@ -402,7 +409,7 @@ void SlotRfProtocol::Start() {
   impl_->Start();
 }
 
-uint32_t SlotRfProtocol::slot_bitfield() const {
+uint32_t SlotRfProtocol::slot_bitfield() {
   return impl_->slot_bitfield();
 }
 
