@@ -25,6 +25,7 @@
 #include "fw/can_bridge.h"
 #include "fw/fdcan.h"
 #include "fw/imu.h"
+#include "fw/microphone.h"
 #include "fw/millisecond_timer.h"
 #include "fw/register_spi_slave.h"
 #include "fw/rf_transceiver.h"
@@ -85,6 +86,8 @@ class CanApplication {
 /// B. An IMU with the SPI mapping as per the Imu class.
 ///
 /// C. A spread spectrum RF transceiver as per TODO.
+///
+/// D. A microphone.
 class AuxApplication {
  public:
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
@@ -100,6 +103,7 @@ class AuxApplication {
   void PollMillisecond() {
     imu_.PollMillisecond();
     rf_.PollMillisecond();
+    microphone_.PollMillisecond();
   }
 
  private:
@@ -109,6 +113,9 @@ class AuxApplication {
     }
     if (address >= 48 && address < 80) {
       return rf_.ISR_Start(address);
+    }
+    if (address >= 80 && address < 96) {
+      return microphone_.ISR_Start(address);
     }
     if (address == 96) {
       // Until we have IRQs, this will be a multiplexing register
@@ -131,6 +138,9 @@ class AuxApplication {
     }
     if (address >= 48 && address < 80) {
       rf_.ISR_End(address, bytes);
+    }
+    if (address >= 80 && address < 96) {
+      microphone_.ISR_End(address, bytes);
     }
   }
 
@@ -164,6 +174,7 @@ class AuxApplication {
 
   Imu imu_{pool_, timer_, PB_1};
   RfTransceiver rf_{timer_, PB_2};
+  Microphone microphone_{timer_, PB_10};
   char read_buf_[6] = {};
 };
 

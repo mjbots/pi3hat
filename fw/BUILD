@@ -29,6 +29,7 @@ mbed_binary(
         "imu.h",
         "imu.cc",
         "math_util.h",
+        "microphone.h",
         "millisecond_timer.h",
         "nrf24l01.cc",
         "nrf24l01.h",
