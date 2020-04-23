@@ -25,7 +25,7 @@ namespace fw {
 ///  byte1-255: Up to 254 bytes of data
 class Microphone {
  public:
-  Microphone(fw::MillisecondTimer*, PinName adc_name) {
+  Microphone(fw::MillisecondTimer* timer, PinName adc_name) {
     __HAL_RCC_GPIOB_CLK_ENABLE();
 
     {
@@ -42,30 +42,21 @@ class Microphone {
     __HAL_RCC_DAC4_CLK_ENABLE();
 
     dac_.Instance = DAC4;
-    if (HAL_DAC_Init(&dac_) != HAL_OK) {
-      mbed_die();
-    }
 
     {
-      DAC_ChannelConfTypeDef config = {};
-      config.DAC_HighFrequency = DAC_HIGH_FREQUENCY_INTERFACE_MODE_AUTOMATIC;
-      config.DAC_DMADoubleDataMode = DISABLE;
-      config.DAC_SignedFormat = DISABLE;
-      config.DAC_SampleAndHold = DAC_SAMPLEANDHOLD_DISABLE;
-      config.DAC_Trigger = DAC_TRIGGER_NONE;
-      config.DAC_Trigger2 = DAC_TRIGGER_NONE;
-      config.DAC_OutputBuffer = DAC_OUTPUTBUFFER_ENABLE;  // probably not needed, since we're just going to an op-amp?
-      config.DAC_ConnectOnChipPeripheral = DAC_CHIPCONNECT_INTERNAL;
-      config.DAC_UserTrimming = DAC_TRIMMING_FACTORY;
-      config.DAC_TrimmingValue = {};
-      config.DAC_SampleAndHoldConfig = {};
+      DAC4->MCR = (
+          (2 << DAC_MCR_HFSEL_Pos) | // High frequency mode
+          (3 << DAC_MCR_MODE1_Pos) | // on chip peripherals w/ buffer disabled
+          0);
 
-      const auto channel = DAC_CHANNEL_1;
+      DAC4->CR = (
+          (DAC_CR_EN1) | // enable channel 1
+          0);
 
-      HAL_DAC_ConfigChannel(&dac_, &config, channel);
-      HAL_DAC_Start(&dac_, channel);
+      // tWAKEUP is defined as max 7.5us
+      timer->wait_us(10);
 
-      HAL_DAC_SetValue(&dac_, channel, DAC_ALIGN_12B_R, 2048);
+      DAC4->DHR12R1 = 2048;
     }
 
     opamp_.Instance = OPAMP4;
@@ -89,42 +80,60 @@ class Microphone {
 
     HAL_OPAMP_Start(&opamp_);
 
-    adc_.Instance = ADC5;
-    adc_.State = HAL_ADC_STATE_RESET;
-    adc_.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV2;
-    adc_.Init.Resolution = ADC_RESOLUTION_12B;
-    adc_.Init.DataAlign = ADC_DATAALIGN_RIGHT;
-    adc_.Init.ScanConvMode = DISABLE;
-    adc_.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-    adc_.Init.LowPowerAutoWait = DISABLE;
-    adc_.Init.ContinuousConvMode = DISABLE;
-    adc_.Init.NbrOfConversion = 1;
-    adc_.Init.DiscontinuousConvMode = DISABLE;
-    adc_.Init.NbrOfDiscConversion = 0;
-    adc_.Init.ExternalTrigConv = ADC_EXTERNALTRIG_T1_CC1;
-    adc_.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
-    adc_.Init.DMAContinuousRequests = DISABLE;
-    adc_.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-
     __HAL_RCC_ADC345_CLK_ENABLE();
 
-    if (HAL_ADC_Init(&adc_) != HAL_OK) {
-      mbed_die();
+    adc_.Instance = ADC5;
+    auto* adc = adc_.Instance;
+
+    // Initialize the ADC.  First, we have to disable to ensure a
+    // known state.
+    if (adc->CR & ADC_CR_ADEN) {
+      adc->CR |= ADC_CR_ADDIS;
+      while (adc->CR & ADC_CR_ADEN);
     }
 
-    if (!HAL_ADCEx_Calibration_GetValue(&adc_, ADC_SINGLE_ENDED)) {
-        HAL_ADCEx_Calibration_Start(&adc_, ADC_SINGLE_ENDED);
-    }
+    ADC345_COMMON->CCR =
+        (1 << ADC_CCR_PRESC_Pos);  // Prescaler / 2
 
-    ADC_ChannelConfTypeDef adc_conf;
-    adc_conf.Rank = ADC_REGULAR_RANK_1;
-    adc_conf.SamplingTime = ADC_SAMPLETIME_12CYCLES_5;
-    adc_conf.SingleDiff = ADC_SINGLE_ENDED;
-    adc_conf.OffsetNumber = ADC_OFFSET_NONE;
-    adc_conf.Offset = 0;
-    adc_conf.Channel = ADC_CHANNEL_5;
+    // 20.4.6: ADC Deep power-down mode startup procedure
+    adc->CR &= ~ADC_CR_DEEPPWD;
+    adc->CR |= ADC_CR_ADVREGEN;
+    timer->wait_us(20);
+    adc->CR |= ADC_CR_ADCAL;
+    while ((adc->CR & ADC_CR_ADCAL));
 
-    HAL_ADC_ConfigChannel(&adc_, &adc_conf);
+    timer->wait_us(1);
+
+    // 20.4.9: Software procedure to enable the ADC
+    adc->ISR |= ADC_ISR_ADRDY;
+    adc->CR |= ADC_CR_ADEN;
+
+    while (!(adc->ISR & ADC_ISR_ADRDY));
+
+    adc->ISR |= ADC_ISR_ADRDY;
+
+    const auto sqr = 5;  // adc_IN5 is the output of the opamp
+
+    adc->SQR1 =
+        (1 << ADC_SQR1_L_Pos) |  // length 1
+        (sqr << ADC_SQR1_SQ1_Pos);
+
+    auto make_cycles = [](auto v) {
+      return
+        (v << 0) |
+        (v << 3) |
+        (v << 6) |
+        (v << 9) |
+        (v << 12) |
+        (v << 15) |
+        (v << 18) |
+        (v << 21) |
+        (v << 24);
+    };
+    const uint32_t all_aux_cycles = make_cycles(4); // 47 cycles
+
+    adc->SMPR1 = all_aux_cycles;
+    adc->SMPR2 = all_aux_cycles;
   }
 
   class DisableIrqs {
@@ -139,10 +148,13 @@ class Microphone {
   };
 
   void PollMillisecond() {
-    HAL_ADC_Start(&adc_);
-    HAL_ADC_PollForConversion(&adc_, 10);
-    const auto adc_value = HAL_ADC_GetValue(&adc_) >> 8;
-    HAL_ADC_Stop(&adc_);
+    auto* adc = adc_.Instance;
+    adc->CR |= ADC_CR_ADSTART;
+    while ((adc->ISR & ADC_ISR_EOC) == 0);
+    adc->ISR |= ADC_ISR_EOC;
+    const auto adc_value = adc->DR >> 4;
+    adc->CR |= ADC_CR_ADSTP;
+    while (adc->CR & ADC_CR_ADSTP);
 
     DisableIrqs disable_irqs;
 
