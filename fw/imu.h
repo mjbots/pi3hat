@@ -36,6 +36,10 @@ namespace fw {
 ///     bytes: The contents of the 'ImuRegister' structure
 ///  34: Attitude data
 ///     bytes: The contents of the 'AttitudeRegister' structure
+///  35: Read mounting angle
+///     bytes: The contents of the 'MountingAngle' structure
+///  36: Write mounting angle
+///     bytes: The contents of the 'MountingAngle' structure
 class Imu {
  public:
   struct ImuRegister {
@@ -84,10 +88,35 @@ class Imu {
     float uncertainty_bias_z_dps = 0;
   } __attribute__((packed));
 
+  struct MountingAngle {
+    float yaw_deg = 0;
+    float pitch_deg = 0;
+    float roll_deg = 0;
+
+    Quaternion quaternion() {
+      return Quaternion::FromEuler(
+          Radians(yaw_deg),
+          Radians(pitch_deg),
+          Radians(roll_deg));
+    }
+
+    bool operator==(const MountingAngle& rhs) const {
+      return yaw_deg == rhs.yaw_deg &&
+          pitch_deg == rhs.pitch_deg &&
+          roll_deg == rhs.roll_deg;
+    }
+
+    bool operator!=(const MountingAngle& rhs) const {
+      return !(*this == rhs);
+    }
+  } __attribute__((packed));
+
   Imu(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer, PinName irq_name)
       : pool_(pool),
         timer_(timer),
         irq_(irq_name, 0) {
+    attitude_reference_.emplace();
+
     // We do this here after everything has been initialized.
     next_imu_sample_ = timer_->read_us();
 
@@ -149,10 +178,36 @@ class Imu {
         return {{}, {}};
       }
     }
+    if (address == 35) {
+      return {
+        std::string_view(
+            reinterpret_cast<const char*>(&spi_mounting_),
+            sizeof(spi_mounting_)),
+        {},
+      };
+    }
+    if (address == 36) {
+      return {
+        {},
+        mjlib::base::string_span(
+            reinterpret_cast<char*>(&spi_mounting_shadow_),
+            sizeof(spi_mounting_shadow_)),
+      };
+    }
     return {};
   }
 
   void ISR_End(uint16_t address, int bytes) {
+    if (address == 36 &&
+        bytes == sizeof(spi_mounting_shadow_)) {
+      if (spi_mounting_ != spi_mounting_shadow_) {
+        spi_mounting_ = spi_mounting_shadow_;
+        // This is a data race, but we're about to throw away our entire
+        // estimator, so who cares?
+        mounting_ = spi_mounting_.quaternion();
+        reset_estimator_.store(true);
+      }
+    }
   }
 
  private:
@@ -196,7 +251,9 @@ class Imu {
   const uint32_t us_step_ = 1000000 / imu_.setup_data().rate_hz;
   uint32_t next_imu_sample_ = 0;
 
-  Quaternion mounting_ = Quaternion::FromEuler(0, M_PI_2, -M_PI_2);
+  MountingAngle spi_mounting_{0, 90, -90};
+  MountingAngle spi_mounting_shadow_;
+  Quaternion mounting_ = spi_mounting_.quaternion();
 
   struct ImuData {
     ImuRegister imu;
@@ -217,7 +274,9 @@ class Imu {
   uint32_t imu_isr_bitmask_ = 3;
 
   Bmi088::SetupData setup_data_;
-  AttitudeReference attitude_reference_;
+  std::optional<AttitudeReference> attitude_reference_;
+
+  std::atomic<bool> reset_estimator_{false};
 };
 
 }
