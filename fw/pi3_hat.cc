@@ -29,7 +29,6 @@
 #include "fw/millisecond_timer.h"
 #include "fw/register_spi_slave.h"
 #include "fw/rf_transceiver.h"
-#include "fw/slot_rf_protocol.h"
 
 namespace fw {
 namespace {
