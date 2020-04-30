@@ -43,6 +43,8 @@ namespace fw {
 ///   byte5-20: data
 class RfTransceiver {
  public:
+  static inline constexpr int kTimeoutMs = 1000;
+
   RfTransceiver(fw::MillisecondTimer* timer, PinName irq_name)
       : timer_(timer),
         irq_name_(irq_name) {
@@ -56,6 +58,21 @@ class RfTransceiver {
   }
 
   void PollMillisecond() {
+    if (reset_.load()) {
+      reset_.store(false);
+      SetupRf();
+    }
+
+    auto old_timeout = remaining_timeout_ms_.load();
+    if (old_timeout == 0) {
+      // do nothing
+    } else {
+      if (old_timeout == 1) {
+        Disable();
+      }
+      const auto new_timeout = old_timeout - 1;
+      remaining_timeout_ms_.compare_exchange_strong(old_timeout, new_timeout);
+    }
     rf_->PollMillisecond();
   }
 
@@ -72,7 +89,8 @@ class RfTransceiver {
     }
     if (address == 49) {
       return {
-        std::string_view(reinterpret_cast<const char*>(&id_), sizeof(id_)),
+        std::string_view(reinterpret_cast<const char*>(&staged_id_),
+                         sizeof(staged_id_)),
         {},
       };
     }
@@ -122,8 +140,8 @@ class RfTransceiver {
 
   void ISR_End(uint16_t address, int bytes) {
     if (address == 50 && bytes == sizeof(staged_id_)) {
-      id_ = staged_id_;
-      SetupRf();
+      id_.store(staged_id_);
+      reset_.store(true);
     }
     if (address == 52 && bytes > 1) {
       const auto slot_num = std::max(0, std::min<int>(15, write_buf_[0]));
@@ -132,6 +150,7 @@ class RfTransceiver {
       slot.size = bytes - 1;
       std::memcpy(slot.data, &write_buf_[1], bytes - 1);
       rf_->tx_slot(slot_num, slot);
+      remaining_timeout_ms_.store(kTimeoutMs);
     }
     if (address == 53 && bytes == 5) {
       const auto slot_num = std::max(0, std::min<int>(15, write_buf_[0]));
@@ -161,14 +180,26 @@ class RfTransceiver {
     rf_->Start();
   }
 
+  void Disable() {
+    for (int slot_index = 0;
+         slot_index < SlotRfProtocol::kNumSlots;
+         slot_index++) {
+      auto slot = rf_->tx_slot(slot_index);
+      slot.priority = 0;
+      rf_->tx_slot(slot_index, slot);
+    }
+  }
+
   MillisecondTimer* const timer_;
   const PinName irq_name_;
   std::optional<SlotRfProtocol> rf_;
-  uint32_t id_ = 0x3045;
-  uint32_t staged_id_ = 0;
+  std::atomic<uint32_t> id_{0x3045};
+  uint32_t staged_id_ = id_.load();
   char write_buf_[64] = {};
   char read_buf_[24] = {};
   uint32_t priorities_[15] = {};
+  std::atomic<int32_t> remaining_timeout_ms_ = 0;
+  std::atomic<bool> reset_{false};
 };
 
 }
