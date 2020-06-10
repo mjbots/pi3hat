@@ -65,22 +65,17 @@ class CanBridge {
   static constexpr int kBufferItems = 6;
 
   struct Pins {
-    RegisterSPISlave::Pins spi;
     PinName irq_name = NC;
   };
 
   CanBridge(fw::MillisecondTimer* timer,
             fw::FDCan* can1, fw::FDCan* can2,
-            const Pins& pins,
-            RegisterSPISlave::StartHandler start_handler,
-            RegisterSPISlave::EndHandler end_handler)
+            const Pins& pins)
       : timer_{timer},
         pins_{pins},
         can1_{can1},
         can2_{can2},
-        irq_{pins.irq_name, 0},
-        start_handler_(start_handler),
-        end_handler_(end_handler) {}
+        irq_{pins.irq_name, 0} {}
 
   void Poll() {
     auto can_poll = [&](int bus_id, auto* can) {
@@ -154,63 +149,14 @@ class CanBridge {
   }
 
   void PollMillisecond() {
-    spi_.PollMillisecond();
   }
 
   uint8_t queue_size() const {
     return can_rx_queue_[0] ? 1 : 0;
   }
 
- private:
-  struct SpiReceiveBuf {
-    char data[kMaxSpiFrameSize] = {};
-    int size = 0;
-    int address = 0;
-    std::atomic<bool> active{false};
-    std::atomic<bool> ready_to_send{false};
-  };
-
-  struct CanReceiveBuf {
-    char data[kMaxSpiFrameSize] = {};
-    int size = 0;
-    std::atomic<bool> active{false};
-  };
-
-  fw::FDCan::SendResult SendCan(const SpiReceiveBuf* spi) {
-    const int min_size = (spi->address == 4) ? 5 : 3;
-    if (spi->size < min_size) {
-      // This is not big enough for a header.
-      // TODO record an error.
-      return fw::FDCan::kSuccess;
-    }
-    const int can_bus = (spi->data[0] & 0x80) ? 1 : 0;
-    const int size = (spi->data[0] & 0x7f);
-    uint32_t id = 0;
-    if (spi->address == 4) {
-      // 4 byte ID
-      id = (u8(spi->data[1]) << 24) |
-          (u8(spi->data[2]) << 16) |
-          (u8(spi->data[3]) << 8) |
-          (u8(spi->data[4]));
-    } else {
-      // 2 byte ID
-      id = (u8(spi->data[1]) << 8) |
-          (u8(spi->data[2]));
-    }
-    if (size + min_size > spi->size) {
-      // There is not enough data.  TODO Record an error.
-      return fw::FDCan::kSuccess;
-    }
-
-    auto* const can = (can_bus == 0) ?
-        can1_ :
-        can2_;
-
-    if (can) {
-      return can->Send(id, std::string_view(&spi->data[min_size], size));
-    } else {
-      return fw::FDCan::kSuccess;
-    }
+  static bool IsSpiAddress(uint16_t address) {
+    return address <= 5;
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
@@ -283,9 +229,6 @@ class CanBridge {
       }
     }
 
-    if (start_handler_) {
-      return start_handler_(address);
-    }
     return { {}, {} };
   }
 
@@ -300,12 +243,57 @@ class CanBridge {
       current_spi_buf_->ready_to_send = true;
       current_spi_buf_ = nullptr;
     }
+  }
 
-    if (address != 0 && address != 1 &&
-        address != 2 && address != 3 && address != 4 && address != 5) {
-      if (end_handler_) {
-        end_handler_(address, bytes);
-      }
+ private:
+  struct SpiReceiveBuf {
+    char data[kMaxSpiFrameSize] = {};
+    int size = 0;
+    int address = 0;
+    std::atomic<bool> active{false};
+    std::atomic<bool> ready_to_send{false};
+  };
+
+  struct CanReceiveBuf {
+    char data[kMaxSpiFrameSize] = {};
+    int size = 0;
+    std::atomic<bool> active{false};
+  };
+
+  fw::FDCan::SendResult SendCan(const SpiReceiveBuf* spi) {
+    const int min_size = (spi->address == 4) ? 5 : 3;
+    if (spi->size < min_size) {
+      // This is not big enough for a header.
+      // TODO record an error.
+      return fw::FDCan::kSuccess;
+    }
+    const int can_bus = (spi->data[0] & 0x80) ? 1 : 0;
+    const int size = (spi->data[0] & 0x7f);
+    uint32_t id = 0;
+    if (spi->address == 4) {
+      // 4 byte ID
+      id = (u8(spi->data[1]) << 24) |
+          (u8(spi->data[2]) << 16) |
+          (u8(spi->data[3]) << 8) |
+          (u8(spi->data[4]));
+    } else {
+      // 2 byte ID
+      id = (u8(spi->data[1]) << 8) |
+          (u8(spi->data[2]));
+    }
+    if (size + min_size > spi->size) {
+      // There is not enough data.  TODO Record an error.
+      return fw::FDCan::kSuccess;
+    }
+
+    auto* const can = (can_bus == 0) ?
+        can1_ :
+        can2_;
+
+    if (can) {
+      return can->Send(id, std::string_view(&spi->data[min_size], size));
+    } else {
+      return fw::FDCan::kSuccess;
     }
   }
 
@@ -337,23 +325,11 @@ class CanBridge {
 
   fw::MillisecondTimer* const timer_;
   const Pins pins_;
-  RegisterSPISlave spi_{
-    timer_,
-    pins_.spi,
-    [this](uint16_t address) {
-      return this->ISR_Start(address);
-    },
-    [this](uint16_t address, int bytes) {
-      return this->ISR_End(address, bytes);
-    }};
 
   fw::FDCan* can1_ = nullptr;
   fw::FDCan* can2_ = nullptr;
 
   DigitalOut irq_;
-
-  RegisterSPISlave::StartHandler start_handler_;
-  RegisterSPISlave::EndHandler end_handler_;
 
   SpiReceiveBuf spi_buf_[kBufferItems] = {};
   SpiReceiveBuf* current_spi_buf_ = nullptr;

@@ -91,6 +91,10 @@ class RfTransceiver {
     return rf_->remote()->slot_bitfield();
   }
 
+  static bool IsSpiAddress(uint16_t address) {
+    return address >= 48 && address <= 52;
+  }
+
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 48) {
       return {

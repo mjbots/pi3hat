@@ -31,13 +31,19 @@
 namespace fw {
 namespace {
 
+RegisterSPISlave::Pins MakeSpiPins() {
+  RegisterSPISlave::Pins result;
+  result.mosi = PA_7;
+  result.miso = PA_6;
+  result.sclk = PA_5;
+  result.ssel = PA_4;
+  result.status_led = PF_0;
+
+  return result;
+}
+
 CanBridge::Pins MakeCanPins() {
   CanBridge::Pins result;
-  result.spi.mosi = PA_7;
-  result.spi.miso = PA_6;
-  result.spi.sclk = PA_5;
-  result.spi.ssel = PA_4;
-  result.spi.status_led = PF_0;
   result.irq_name = PB_0;
   return result;
 }
@@ -52,6 +58,7 @@ class CanApplication {
   }
 
   void PollMillisecond() {
+    spi_.PollMillisecond();
   }
 
   fw::MillisecondTimer* const timer_;
@@ -81,7 +88,17 @@ class CanApplication {
     }()
   };
 
-  CanBridge bridge_{timer_, &can1_, &can2_, MakeCanPins(), {}, {}};
+  CanBridge bridge_{timer_, &can1_, &can2_, MakeCanPins()};
+  RegisterSPISlave spi_{
+    timer_,
+    MakeSpiPins(),
+    [this](uint16_t address) {
+      return bridge_.ISR_Start(address);
+    },
+    [this](uint16_t address, int bytes) {
+      bridge_.ISR_End(address, bytes);
+    }
+  };
 };
 
 
@@ -110,6 +127,7 @@ class AuxApplication {
   }
 
   void PollMillisecond() {
+    spi_.PollMillisecond();
     imu_.PollMillisecond();
     rf_.PollMillisecond();
     microphone_.PollMillisecond();
@@ -117,18 +135,21 @@ class AuxApplication {
 
  private:
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
-    if (address >=32 && address < 48) {
+    if (CanBridge::IsSpiAddress(address)) {
+      return bridge_.ISR_Start(address);
+    }
+    if (Imu::IsSpiAddress(address)) {
       return imu_.ISR_Start(address);
     }
-    if (address >= 48 && address < 80) {
+    if (RfTransceiver::IsSpiAddress(address)) {
       return rf_.ISR_Start(address);
     }
-    if (address >= 80 && address < 96) {
+    if (Microphone::IsSpiAddress(address)) {
       return microphone_.ISR_Start(address);
     }
     if (address == 96) {
-      // Until we have IRQs, this will be a multiplexing register
-      // which allows clients to determine what is ready to read.
+      // This is a multiplexing register which allows clients to
+      // determine what is ready to read.
       read_buf_[0] = bridge_.queue_size();
       read_buf_[1] = imu_.data_present() ? 1 : 0;
       const auto bitfield = rf_.bitfield();
@@ -142,13 +163,16 @@ class AuxApplication {
   }
 
   void ISR_End(uint16_t address, int bytes) {
-    if (address >= 32 && address < 48) {
+    if (CanBridge::IsSpiAddress(address)) {
+      bridge_.ISR_End(address, bytes);
+    }
+    if (Imu::IsSpiAddress(address)) {
       imu_.ISR_End(address, bytes);
     }
-    if (address >= 48 && address < 80) {
+    if (RfTransceiver::IsSpiAddress(address)) {
       rf_.ISR_End(address, bytes);
     }
-    if (address >= 80 && address < 96) {
+    if (Microphone::IsSpiAddress(address)) {
       microphone_.ISR_End(address, bytes);
     }
   }
@@ -169,21 +193,25 @@ class AuxApplication {
     }()
   };
 
-  CanBridge bridge_{
-    timer_, &can1_, nullptr, MakeCanPins(),
-        [this](uint16_t address) {
-          return this->ISR_Start(address);
-        },
-        [this](uint16_t address, int bytes) {
-          this->ISR_End(address, bytes);
-        }
-  };
+  CanBridge bridge_{timer_, &can1_, nullptr, MakeCanPins()};
 
   DigitalOut can_shdn_{PC_6, 0};
 
   Imu imu_{pool_, timer_, PB_1};
   RfTransceiver rf_{timer_, PB_2};
   Microphone microphone_{timer_, PB_10};
+
+  RegisterSPISlave spi_{
+    timer_,
+    MakeSpiPins(),
+    [this](uint16_t address) {
+      return this->ISR_Start(address);
+    },
+    [this](uint16_t address, int bytes) {
+      this->ISR_End(address, bytes);
+    }
+  };
+
   char read_buf_[6] = {};
 };
 

@@ -171,6 +171,10 @@ class Microphone {
     data->data[data->size++] = adc_value;
   }
 
+  static bool IsSpiAddress(uint16_t address) {
+    return address >= 80 && address <= 81;
+  }
+
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 80) {
       return {

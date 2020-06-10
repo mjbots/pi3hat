@@ -138,6 +138,10 @@ class Imu {
     return imu_to_isr_.load() != nullptr;
   }
 
+  static bool IsSpiAddress(uint16_t address) {
+    return address >= 32 && address <= 36;
+  }
+
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 32) {
       return {
