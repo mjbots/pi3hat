@@ -834,7 +834,7 @@ class Pi3Hat::Impl {
     return result;
   }
 
-  bool GetAttitude(Attitude* output, bool wait) {
+  bool GetAttitude(Attitude* output, bool wait, bool detail) {
     device_attitude_ = {};
 
     // Busy loop until we get something.
@@ -842,7 +842,7 @@ class Pi3Hat::Impl {
       primary_spi_.Read(
           0, 34,
           reinterpret_cast<char*>(&device_attitude_),
-          sizeof(device_attitude_));
+          detail ? sizeof(device_attitude_) : 42);
     } while (wait && ((device_attitude_.present & 0x01) == 0));
 
     if ((device_attitude_.present & 0x01) == 0) {
@@ -1156,7 +1156,8 @@ class Pi3Hat::Impl {
 
     if (input.request_attitude) {
       result.attitude_present =
-          GetAttitude(input.attitude, input.wait_for_attitude);
+          GetAttitude(input.attitude, input.wait_for_attitude,
+                      input.request_attitude_detail);
     }
 
     ReadCan(input, expected_replies, &result);

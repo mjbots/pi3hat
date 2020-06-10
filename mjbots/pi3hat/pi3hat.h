@@ -153,6 +153,11 @@ class Pi3Hat {
     uint32_t timeout_ns = 0;
 
     bool request_attitude = false;
+
+    // If true, then the bias and uncertainty information will be
+    // filled in.  This increases the overall cycle time.
+    bool request_attitude_detail = false;
+
     // If no new attitude is available, wait for it.
     bool wait_for_attitude = false;
 
