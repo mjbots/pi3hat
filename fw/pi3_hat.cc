@@ -292,7 +292,7 @@ void abort() {
 void mbed_die(void) {
   // Flash an LED that exists.
   gpio_t led;
-  gpio_init_out(&led, PF_0);
+  gpio_init_out(&led, PF_1);
 
   for (;;) {
     gpio_write(&led, 0);

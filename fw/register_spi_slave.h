@@ -66,7 +66,7 @@ class RegisterSPISlave {
                    StartHandler start_handler, EndHandler end_handler)
       : timer_{timer},
         nss_{pins.ssel},
-        status_led_{pins.status_led},
+        status_led_{pins.status_led, 1},
         start_handler_(start_handler),
         end_handler_(end_handler) {
     g_impl_ = this;
@@ -134,9 +134,9 @@ class RegisterSPISlave {
 
   void PollMillisecond() {
     // We might have had our LED set high by a NSS fall.  Here we just
-    // clear it again.  That results in a pulse pattern if the SPI bus
-    // is being used.
-    status_led_.write(0);
+    // turn it off again.  That results in a pulse pattern if the SPI
+    // bus is being used.
+    status_led_.write(1);
   }
 
   void ISR_HandleNssRise() {
@@ -156,7 +156,7 @@ class RegisterSPISlave {
   }
 
   void ISR_HandleNssFall() {
-    status_led_.write(1);
+    status_led_.write(0);
 
     // Get ready to start receiving the address.
     mode_ = kWaitingAddress;
