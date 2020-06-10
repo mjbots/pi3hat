@@ -1104,9 +1104,9 @@ class Pi3Hat::Impl {
             ReadCanFrames(primary_spi_, 0, 5, &input.rx_can, output);
       }
 
-      if (bus_replies[0] == 0 &&
-          bus_replies[1] == 0 &&
-          bus_replies[2] == 0) {
+      if (bus_replies[0] <= 0 &&
+          bus_replies[1] <= 0 &&
+          bus_replies[2] <= 0) {
         // We've read all the replies we are expecting and have polled
         // everything at least once if requested.
         return;
