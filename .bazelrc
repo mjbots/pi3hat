@@ -24,3 +24,9 @@ test:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
 
 build:pi --compiler=clang
 test:pi --compiler=clang
+
+build --workspace_status_command=tools/workspace_status.sh
+test --workspace_status_command=tools/workspace_status.sh
+
+build --stamp
+test --stamp

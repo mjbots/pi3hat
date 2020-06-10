@@ -21,6 +21,7 @@
 #include "mjlib/base/string_span.h"
 
 #include "fw/can_bridge.h"
+#include "fw/device_info.h"
 #include "fw/fdcan.h"
 #include "fw/imu.h"
 #include "fw/microphone.h"
@@ -89,14 +90,27 @@ class CanApplication {
   };
 
   CanBridge bridge_{timer_, &can1_, &can2_, MakeCanPins()};
+  DeviceInfo device_info_;
+
   RegisterSPISlave spi_{
     timer_,
     MakeSpiPins(),
     [this](uint16_t address) {
-      return bridge_.ISR_Start(address);
+      if (CanBridge::IsSpiAddress(address)) {
+        return bridge_.ISR_Start(address);
+      }
+      if (DeviceInfo::IsSpiAddress(address)) {
+        return device_info_.ISR_Start(address);
+      }
+      return RegisterSPISlave::Buffer();
     },
     [this](uint16_t address, int bytes) {
-      bridge_.ISR_End(address, bytes);
+      if (CanBridge::IsSpiAddress(address)) {
+        bridge_.ISR_End(address, bytes);
+      }
+      if (DeviceInfo::IsSpiAddress(address)) {
+        device_info_.ISR_End(address, bytes);
+      }
     }
   };
 };
@@ -159,6 +173,9 @@ class AuxApplication {
         {},
       };
     }
+    if (DeviceInfo::IsSpiAddress(address)) {
+      return device_info_.ISR_Start(address);
+    }
     return {};
   }
 
@@ -174,6 +191,9 @@ class AuxApplication {
     }
     if (Microphone::IsSpiAddress(address)) {
       microphone_.ISR_End(address, bytes);
+    }
+    if (DeviceInfo::IsSpiAddress(address)) {
+      device_info_.ISR_End(address, bytes);
     }
   }
 
@@ -200,6 +220,7 @@ class AuxApplication {
   Imu imu_{pool_, timer_, PB_1};
   RfTransceiver rf_{timer_, PB_2};
   Microphone microphone_{timer_, PB_10};
+  DeviceInfo device_info_;
 
   RegisterSPISlave spi_{
     timer_,

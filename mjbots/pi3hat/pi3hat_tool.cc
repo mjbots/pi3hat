@@ -64,6 +64,8 @@ struct Arguments {
         read_rf = true;
       } else if (arg == "--read-att") {
         read_attitude = true;
+      } else if (arg == "--info") {
+        info = true;
       } else if (arg == "-r" || arg == "--run") {
         run = true;
       } else {
@@ -86,6 +88,8 @@ struct Arguments {
   std::vector<std::string> write_rf;
   bool read_rf = false;
   bool read_attitude = false;
+
+  bool info = false;
 };
 
 void DisplayUsage() {
@@ -110,6 +114,7 @@ void DisplayUsage() {
   std::cout << "     SLOT,PRIORITY,DATA\n";
   std::cout << "  --read-rf       request any RF data\n";
   std::cout << "  --read-att      request attitude data\n";
+  std::cout << "  --info          display device info\n";
   std::cout << "  -r,--run        run a sample high rate cycle\n";
 }
 
@@ -170,6 +175,16 @@ size_t ParseHexData(uint8_t* output, const char* data, size_t size) {
   }
 
   return bytes;
+}
+
+std::string FormatHexBytes(const uint8_t* data, size_t size) {
+  std::string result;
+  char buf[10] = {};
+  for (size_t i = 0; i < size; i++) {
+    ::snprintf(buf, sizeof(buf) - 1, "%02x", static_cast<int>(data[i]));
+    result += std::string(buf);
+  }
+  return result;
 }
 
 struct MiniTokenizer {
@@ -243,10 +258,7 @@ std::string FormatCanFrame(const CanFrame& can_frame) {
   result += std::to_string(can_frame.bus) + ",";
   ::snprintf(buf, sizeof(buf) - 1, "%X", can_frame.id);
   result += std::string(buf) + ",";
-  for (size_t i = 0; i < can_frame.size; i++) {
-    ::snprintf(buf, sizeof(buf) - 1, "%02X", static_cast<int>(can_frame.data[i]));
-    result += std::string(buf);
-  }
+  result += FormatHexBytes(&can_frame.data[0], can_frame.size);
   return result;
 }
 
@@ -263,12 +275,8 @@ std::string FormatAttitude(const Attitude& a) {
 }
 
 std::string FormatRf(const RfSlot& r) {
-  char buf[10] = {};
   std::string result = std::to_string(r.slot) + " ";
-  for (size_t i = 0; i < r.size; i++) {
-    ::snprintf(buf, sizeof(buf) - 1, "%02X", static_cast<int>(r.data[i]));
-    result += std::string(buf);
-  }
+  result += FormatHexBytes(&r.data[0], r.size);
   return result;
 }
 
@@ -310,6 +318,20 @@ void Run(Pi3Hat* pi3hat) {
 
     ::usleep(500);
   }
+}
+
+std::string FormatProcessorInfo(const Pi3Hat::ProcessorInfo& pi) {
+  std::string result = FormatHexBytes(&pi.git_hash[0], 20) + " ";
+  result += (pi.dirty ? "dirty" : "clean");
+  result += " " + FormatHexBytes(&pi.serial_number[0], 12);
+  return result;
+}
+
+void DoInfo(Pi3Hat* pi3hat) {
+  const auto di = pi3hat->device_info();
+  std::cout << "CAN1: " << FormatProcessorInfo(di.can1) << "\n";
+  std::cout << "CAN2: " << FormatProcessorInfo(di.can2) << "\n";
+  std::cout << "AUX:  " << FormatProcessorInfo(di.aux) << "\n";
 }
 
 void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
@@ -383,6 +405,8 @@ int do_main(int argc, char** argv) {
 
   if (args.run) {
     Run(&pi3hat);
+  } else if (args.info) {
+    DoInfo(&pi3hat);
   } else {
     SingleCycle(&pi3hat, args);
   }

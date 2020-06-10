@@ -23,6 +23,17 @@ COPTS = [
     "-Wdouble-promotion",
 ]
 
+cc_library(
+    name = "git_info",
+    hdrs = ["git_info.h"],
+    srcs = ["git_info.cc"],
+    linkstamp = "git_info_linkstamp.cc",
+    deps = [
+        "@com_github_mjbots_mjlib//mjlib/base:visitor",
+    ],
+    copts = COPTS,
+)
+
 mbed_binary(
     name = "pi3_hat",
     srcs = [
@@ -30,6 +41,7 @@ mbed_binary(
         "bmi088.cc",
         "bmi088.h",
         "can_bridge.h",
+        "device_info.h",
         "euler.h",
         "fdcan.cc",
         "fdcan.h",
@@ -54,6 +66,7 @@ mbed_binary(
         "speedopt",
     ],
     deps = [
+        ":git_info",
         "@com_github_mjbots_mjlib//mjlib/base:inplace_function",
         "@com_github_mjbots_mjlib//mjlib/base:string_span",
         "@com_github_mjbots_mjlib//mjlib/base:visitor",

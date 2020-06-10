@@ -200,7 +200,7 @@ class Pi3Hat {
     ProcessorInfo aux;
   };
 
-  DeviceInfo device_info() const;
+  DeviceInfo device_info();
 
  private:
   class Impl;

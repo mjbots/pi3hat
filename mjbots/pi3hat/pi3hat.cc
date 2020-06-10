@@ -734,11 +734,23 @@ struct DeviceRfStatus {
   uint32_t lock_age_ms = 0;
 } __attribute__((packed));
 
+struct DeviceDeviceInfo {
+  uint8_t git_hash[20] = {};
+  uint8_t dirty = 0;
+  uint8_t serial_number[12] = {};
+} __attribute__((packed));
 
 template <typename Spi>
 Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
-  // TODO
-  return {};
+  DeviceDeviceInfo di;
+  spi->Read(cs, 97, reinterpret_cast<char*>(&di), sizeof(di));
+
+  Pi3Hat::ProcessorInfo result;
+  std::memcpy(&result.git_hash[0], &di.git_hash[0], sizeof(di.git_hash));
+  result.dirty = di.dirty != 0;
+  std::memcpy(&result.serial_number[0], &di.serial_number[0],
+              sizeof(di.serial_number));
+  return result;
 }
 }
 
@@ -817,7 +829,7 @@ class Pi3Hat::Impl {
     DeviceInfo result;
     // Now get the device information from all three processors.
     result.can1 = GetProcessorInfo(&aux_spi_, 0);
-    result.can1 = GetProcessorInfo(&aux_spi_, 1);
+    result.can2 = GetProcessorInfo(&aux_spi_, 1);
     result.aux = GetProcessorInfo(&primary_spi_, 0);
     return result;
   }
@@ -1176,6 +1188,10 @@ Pi3Hat::~Pi3Hat() {
 
 Pi3Hat::Output Pi3Hat::Cycle(const Input& input) {
   return impl_->Cycle(input);
+}
+
+Pi3Hat::DeviceInfo Pi3Hat::device_info() {
+  return impl_->device_info();
 }
 
 }

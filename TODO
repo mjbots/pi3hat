@@ -1,8 +1,3 @@
- * Commit checkpoint
- * LEDs aren't flashing in a useful way yet
-
- * factor so that CanBridge doesn't own the RegisterSpiSlave, but
-   instead all the things are connected up after at the top level
  * Make pi3hat_tool --run use the arguments passed in for everything
  * Test performance of --run in terms of cycles per second
  * Measure how fast I can run the IMU, make it configurable
@@ -12,7 +7,6 @@
    * Do something better than asserting on NaN... report an error and
      allow for reset?
 
- * Be able to report the firmware version
  * Be able to report errors back
  * Be able to report CPU utilization back for IMU processor
  * If a packet is sent to a non-existent device, the entire thing
