@@ -283,6 +283,7 @@ std::string FormatRf(const RfSlot& r) {
 void Run(Pi3Hat* pi3hat) {
   Pi3Hat::Input input;
   Attitude attitude;
+  input.request_attitude = true;
   input.wait_for_attitude = true;
   input.attitude = &attitude;
   char buf[2048] = {};
