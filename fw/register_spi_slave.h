@@ -28,7 +28,7 @@ namespace fw {
 
 /// Implements a register based SPI slave.
 ///
-/// 8 bit transactions are assumed, with a 16 bit address scheme.  The
+/// 8 bit transactions are assumed, with a 8 bit address scheme.  The
 /// master first sends the address, then simultaneously reads and
 /// writes from the logical address space.
 ///
@@ -53,30 +53,39 @@ class RegisterSPISlave {
   using StartHandler = mjlib::base::inplace_function<Buffer (uint16_t)>;
   using EndHandler = mjlib::base::inplace_function<void (uint16_t, int)>;
 
+  struct Pins {
+    PinName mosi = NC;
+    PinName miso = NC;
+    PinName sclk = NC;
+    PinName ssel = NC;
+    PinName status_led = NC;
+  };
+
   RegisterSPISlave(fw::MillisecondTimer* timer,
-                   PinName mosi, PinName miso, PinName sclk, PinName ssel,
+                   const Pins& pins,
                    StartHandler start_handler, EndHandler end_handler)
       : timer_{timer},
-        nss_{ssel},
+        nss_{pins.ssel},
+        status_led_{pins.status_led},
         start_handler_(start_handler),
         end_handler_(end_handler) {
     g_impl_ = this;
     spi_ = [&]() {
-      const auto spi_mosi = pinmap_peripheral(mosi, PinMap_SPI_MOSI);
-      const auto spi_miso = pinmap_peripheral(miso, PinMap_SPI_MISO);
-      const auto spi_sclk = pinmap_peripheral(sclk, PinMap_SPI_SCLK);
-      const auto spi_ssel = pinmap_peripheral(ssel, PinMap_SPI_SSEL);
+      const auto spi_mosi = pinmap_peripheral(pins.mosi, PinMap_SPI_MOSI);
+      const auto spi_miso = pinmap_peripheral(pins.miso, PinMap_SPI_MISO);
+      const auto spi_sclk = pinmap_peripheral(pins.sclk, PinMap_SPI_SCLK);
+      const auto spi_ssel = pinmap_peripheral(pins.ssel, PinMap_SPI_SSEL);
       return reinterpret_cast<SPI_TypeDef*>(
           merge(spi_mosi, merge(spi_miso, merge(spi_sclk, spi_ssel))));
     }();
 
     MJ_ASSERT(spi_ != nullptr);
 
-    pinmap_pinout(mosi, PinMap_SPI_MOSI);
-    pinmap_pinout(miso, PinMap_SPI_MISO);
-    pinmap_pinout(sclk, PinMap_SPI_SCLK);
-    pin_mode(sclk, PullDown);
-    pin_mode(ssel, PullUp);
+    pinmap_pinout(pins.mosi, PinMap_SPI_MOSI);
+    pinmap_pinout(pins.miso, PinMap_SPI_MISO);
+    pinmap_pinout(pins.sclk, PinMap_SPI_SCLK);
+    pin_mode(pins.sclk, PullDown);
+    pin_mode(pins.ssel, PullUp);
 
     Init();
 
@@ -123,8 +132,14 @@ class RegisterSPISlave {
     __HAL_SPI_ENABLE(&spi_handle_);
   }
 
+  void PollMillisecond() {
+    // We might have had our LED set high by a NSS fall.  Here we just
+    // clear it again.  That results in a pulse pattern if the SPI bus
+    // is being used.
+    status_led_.write(0);
+  }
+
   void ISR_HandleNssRise() {
-    led2_.write(0);
     // Mark the transfer as completed if we actually started one.
     if (mode_ == kTransfer) {
       end_handler_(current_address_, rx_bytes_);
@@ -141,17 +156,16 @@ class RegisterSPISlave {
   }
 
   void ISR_HandleNssFall() {
-    led2_.write(1);
+    status_led_.write(1);
 
     // Get ready to start receiving the address.
-    mode_ = kWaitingAddress1;
+    mode_ = kWaitingAddress;
 
-    // Queue up our response for the address bytes.
+    // Queue up our response for the address byte.
     *(__IO uint16_t *)spi_->DR = 0x0000;
   }
 
   void ISR_SPI() {
-    led1_.write(1);
     while (spi_->SR & SPI_SR_RXNE) {
       switch (mode_) {
         case kInactive: {
@@ -159,18 +173,10 @@ class RegisterSPISlave {
           (void) ReadRegister(&spi_->DR);
           break;
         }
-        case kWaitingAddress1: {
-          current_address_ = ReadRegister(&spi_->DR) << 8;
-          mode_ = kWaitingAddress2;
-
-          break;
-        }
-        case kWaitingAddress2: {
-          current_address_ |= ReadRegister(&spi_->DR);
-          led1_.write(0);
+        case kWaitingAddress: {
+          current_address_ = ReadRegister(&spi_->DR);
           buffer_ = start_handler_(current_address_);
           ISR_PrepareTx();
-          led1_.write(1);
           mode_ = kTransfer;
 
           break;
@@ -187,7 +193,6 @@ class RegisterSPISlave {
         }
       }
     }
-    led1_.write(0);
   }
 
   void ISR_PrepareTx() {
@@ -279,14 +284,14 @@ class RegisterSPISlave {
   SPI_HandleTypeDef spi_handle_ = {};
   SPI_TypeDef* spi_ = nullptr;
   InterruptIn nss_;
+  DigitalOut status_led_;
 
   StartHandler start_handler_;
   EndHandler end_handler_;
 
   enum Mode {
     kInactive,
-    kWaitingAddress1,
-    kWaitingAddress2,
+    kWaitingAddress,
     kTransfer,
   };
   Mode mode_ = kInactive;
@@ -295,9 +300,6 @@ class RegisterSPISlave {
   Buffer buffer_;
   volatile size_t tx_bytes_ = 0;
   volatile ssize_t rx_bytes_ = 0;
-
-  DigitalOut led1_{PF_0, 1};
-  DigitalOut led2_{PF_1, 1};
 
   static RegisterSPISlave* g_impl_;
 };

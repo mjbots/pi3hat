@@ -20,8 +20,6 @@
 #include "mjlib/base/inplace_function.h"
 #include "mjlib/base/string_span.h"
 
-#include "fw/attitude_reference.h"
-#include "fw/bmi088.h"
 #include "fw/can_bridge.h"
 #include "fw/fdcan.h"
 #include "fw/imu.h"
@@ -32,6 +30,17 @@
 
 namespace fw {
 namespace {
+
+CanBridge::Pins MakeCanPins() {
+  CanBridge::Pins result;
+  result.spi.mosi = PA_7;
+  result.spi.miso = PA_6;
+  result.spi.sclk = PA_5;
+  result.spi.ssel = PA_4;
+  result.spi.status_led = PF_0;
+  result.irq_name = PB_0;
+  return result;
+}
 
 class CanApplication {
  public:
@@ -72,7 +81,7 @@ class CanApplication {
     }()
   };
 
-  CanBridge bridge_{timer_, &can1_, &can2_, PB_0, {}, {}};
+  CanBridge bridge_{timer_, &can1_, &can2_, MakeCanPins(), {}, {}};
 };
 
 
@@ -160,7 +169,7 @@ class AuxApplication {
   };
 
   CanBridge bridge_{
-    timer_, &can1_, nullptr, PB_0,
+    timer_, &can1_, nullptr, MakeCanPins(),
         [this](uint16_t address) {
           return this->ISR_Start(address);
         },
@@ -203,6 +212,9 @@ void SetupClock() {
 }
 
 }
+
+// For use with the debugger.
+volatile uint32_t g_loops_per_ms = 0;
 }
 
 int main(void) {
@@ -216,11 +228,15 @@ int main(void) {
 
   auto run = [&](auto& app) {
     uint32_t last_ms = 0;
+    uint32_t cycles_since_ms = 0;
     while (true) {
       app.Poll();
+      cycles_since_ms++;
       const auto now = timer.read_ms();
       if (now != last_ms) {
         app.PollMillisecond();
+        fw::g_loops_per_ms = cycles_since_ms;
+        cycles_since_ms = 0;
         last_ms = now;
       }
     }

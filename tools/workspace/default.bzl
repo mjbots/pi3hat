@@ -17,6 +17,7 @@
 load("//tools/workspace/bazel_deps:repository.bzl", "bazel_deps_repository")
 load("//tools/workspace/rules_mbed:repository.bzl", "rules_mbed_repository")
 load("//tools/workspace/mjlib:repository.bzl", "mjlib_repository")
+load("//tools/workspace/rpi_bazel:repository.bzl", "rpi_bazel_repository")
 
 def add_default_repositories(excludes = []):
     if "bazel_deps" not in excludes:
@@ -25,3 +26,5 @@ def add_default_repositories(excludes = []):
         rules_mbed_repository()
     if "mjlib" not in excludes:
         mjlib_repository(name = "com_github_mjbots_mjlib")
+    if "rpi_bazel" not in excludes:
+        rpi_bazel_repository(name = "rpi_bazel")

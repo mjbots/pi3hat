@@ -1,21 +1,33 @@
- * flash lights to actually mean something
+ * Get existing functionality working with pi3hat.h
+   * CAN send
+   * CAN receive
+   * RF control
+
+ * Commit checkpoint
+ * LEDs aren't flashing in a useful way yet
+
+ * factor so that CanBridge doesn't own the RegisterSpiSlave, but
+   instead all the things are connected up after at the top level
+
  * AHRS
-   * Do some kind of evaluation / write-up
    * Provide a way to set configurable parameters like noise and gains and rotation
    * Do something better than asserting on NaN... report an error and
      allow for reset?
 
  * Be able to report the firmware version
  * Be able to report errors back
+ * Be able to report CPU utilization back for IMU processor
  * If a packet is sent to a non-existent device, the entire thing
    hangs retransmitting forever
- * Remove high two bytes of CAN id to improve packing efficiency
- * Maybe switch registers to one byte to improve packing efficiency?
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
 
  * Provide 5V pin header for external power
+
+DONE 2020-06-09
+ * r4.2 bringup
+   * Switching to optimized protocol and resolving all TODOs
 
 DONE 2020-04-23
  * r4.1 bringup

@@ -16,6 +16,8 @@
 
 load("@com_github_ARMmbed_mbed-os//:rules.bzl", "mbed_binary")
 
+package(default_visibility = ["//visibility:public"])
+
 mbed_binary(
     name = "pi3_hat",
     srcs = [

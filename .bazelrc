@@ -15,3 +15,12 @@ test --nostart_end_lib
 
 build -c opt
 test -c opt
+
+build:pi --cpu=armeabihf
+test:pi --cpu=armeabihf
+
+build:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
+test:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
+
+build:pi --compiler=clang
+test:pi --compiler=clang

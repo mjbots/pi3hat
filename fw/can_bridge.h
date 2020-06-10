@@ -31,40 +31,54 @@ namespace fw {
 /// cannot be read or written piecemeal.
 ///
 /// 0: Protocol version
-///    byte 0: the constant value 1
+///    byte 0: the constant value 2
 /// 1: Interface type
 ///    byte 0: the constant value 1
-/// 16: Receive status
+/// 2: Receive status
 ///    byte 0-6 - Size of up to 6 received frames.  0 means no frame
 ///      is available.  this size includes the header, so is the total
-///      number of bytes that must be read from register 17 to get a
+///      number of bytes that must be read from register 3 to get a
 ///      complete frame
-/// 17: Received frame: reading this register returns exactly one frame
+/// 3: Received frame: reading this register returns exactly one frame
 ///    from the received queue.
-///   byte 0 - CAN bus (0/1/2) - 0 means this frame is not present
+///   byte 0 (0x00 means no data)
+///     bit 7 - CAN bus
+///     bits 6-0 - size of payload + 1 (1-65)
 ///   byte 1,2,3,4 - CAN ID, MSB first
-///   byte 5 - size of remaining payload
-///   byte 6+ payload
-/// 18: Send a CAN frame
-///   byte 0 - CAN bus (1/2)
+///   byte 5+ payload
+/// 4: Send a CAN frame w/ 4 byte ID
+///   byte 0
+///     bit 7 - CAN bus
+///     bit 6-0 - size of payload
 ///   byte 1,2,3,4 - CAN ID, MSB first
-///   byte 5 - size of remaining payload
-///   byte 6+ payload
+///   byte 5+ payload
+/// 5: Send a CAN frame w/ 2 byte ID
+///   byte 0
+///     bit 7 - CAN bus
+///     byte 6-0 - size of payload
+///   byte 1, 2 - CAN ID
+///   byte 3+ payload
 
 class CanBridge {
  public:
   static constexpr int kMaxSpiFrameSize = 70;
   static constexpr int kBufferItems = 6;
 
+  struct Pins {
+    RegisterSPISlave::Pins spi;
+    PinName irq_name = NC;
+  };
+
   CanBridge(fw::MillisecondTimer* timer,
             fw::FDCan* can1, fw::FDCan* can2,
-            PinName irq_name,
+            const Pins& pins,
             RegisterSPISlave::StartHandler start_handler,
             RegisterSPISlave::EndHandler end_handler)
       : timer_{timer},
+        pins_{pins},
         can1_{can1},
         can2_{can2},
-        irq_{irq_name, 0},
+        irq_{pins.irq_name, 0},
         start_handler_(start_handler),
         end_handler_(end_handler) {}
 
@@ -89,16 +103,16 @@ class CanBridge {
 
       this_buf->active = true;
 
-      this_buf->data[0] = bus_id;
+      const int size = ParseDlc(can_header_.DataLength);
+
+      this_buf->data[0] = ((bus_id == 2) ? 0x80 : 0x00) | (size + 1);
       const auto id = can_header_.Identifier;
       this_buf->data[1] = (id >> 24) & 0xff;
       this_buf->data[2] = (id >> 16) & 0xff;
       this_buf->data[3] = (id >> 8) & 0xff;
       this_buf->data[4] = (id >> 0) & 0xff;
-      const int size = ParseDlc(can_header_.DataLength);
-      this_buf->data[5] = size;
       this_buf->size = size;
-      std::memcpy(&this_buf->data[6], rx_buffer_, size);
+      std::memcpy(&this_buf->data[5], rx_buffer_, size);
 
       // Insert this item into the receive queue.
       __disable_irq();
@@ -139,6 +153,10 @@ class CanBridge {
     }
   }
 
+  void PollMillisecond() {
+    spi_.PollMillisecond();
+  }
+
   uint8_t queue_size() const {
     return can_rx_queue_[0] ? 1 : 0;
   }
@@ -147,6 +165,7 @@ class CanBridge {
   struct SpiReceiveBuf {
     char data[kMaxSpiFrameSize] = {};
     int size = 0;
+    int address = 0;
     std::atomic<bool> active{false};
     std::atomic<bool> ready_to_send{false};
   };
@@ -158,34 +177,37 @@ class CanBridge {
   };
 
   fw::FDCan::SendResult SendCan(const SpiReceiveBuf* spi) {
-    if (spi->size < 6) {
+    const int min_size = (spi->address == 4) ? 5 : 3;
+    if (spi->size < min_size) {
       // This is not big enough for a header.
       // TODO record an error.
       return fw::FDCan::kSuccess;
     }
-
-    const int can_bus = spi->data[0];
-    if (can_bus != 1 && can_bus != 2) {
-      // TODO Record an error of some sort.
-      return fw::FDCan::kSuccess;
+    const int can_bus = (spi->data[0] & 0x80) ? 1 : 0;
+    const int size = (spi->data[0] & 0x7f);
+    uint32_t id = 0;
+    if (spi->address == 4) {
+      // 4 byte ID
+      id = (u8(spi->data[1]) << 24) |
+          (u8(spi->data[2]) << 16) |
+          (u8(spi->data[3]) << 8) |
+          (u8(spi->data[4]));
+    } else {
+      // 2 byte ID
+      id = (u8(spi->data[1]) << 8) |
+          (u8(spi->data[2]));
     }
-    const uint32_t id =
-        (u8(spi->data[1]) << 24) |
-        (u8(spi->data[2]) << 16) |
-        (u8(spi->data[3]) << 8) |
-        (u8(spi->data[4]));
-    const int size = u8(spi->data[5]);
-    if (size + 6 > spi->size) {
+    if (size + min_size > spi->size) {
       // There is not enough data.  TODO Record an error.
       return fw::FDCan::kSuccess;
     }
 
-    auto* const can = (can_bus == 1) ?
+    auto* const can = (can_bus == 0) ?
         can1_ :
         can2_;
 
     if (can) {
-      return can->Send(id, std::string_view(&spi->data[6], size));
+      return can->Send(id, std::string_view(&spi->data[min_size], size));
     } else {
       return fw::FDCan::kSuccess;
     }
@@ -194,7 +216,7 @@ class CanBridge {
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 0) {
       return {
-        std::string_view("\x01", 1),
+        std::string_view("\x02", 1),
         {},
       };
     }
@@ -204,17 +226,17 @@ class CanBridge {
         {},
       };
     }
-    if (address == 16) {
+    if (address == 2) {
       for (size_t i = 0; i < kBufferItems; i++) {
         const auto item = can_rx_queue_[i];
-        address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 6);
+        address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 5);
       }
       return {
         address16_buf_,
         {},
       };
     }
-    if (address == 17) {
+    if (address == 3) {
       if (!can_rx_queue_[0]) {
         current_can_buf_ = nullptr;
         return { {}, {} };
@@ -231,14 +253,17 @@ class CanBridge {
       }
 
       return {
-        std::string_view(current_can_buf_->data, current_can_buf_->size + 6),
+        std::string_view(current_can_buf_->data, current_can_buf_->size + 5),
         {},
       };
     }
-    if (address == 18) {
+    if (address == 4 || address == 5) {
       current_spi_buf_ = [&]() -> SpiReceiveBuf* {
         for (auto& buf : spi_buf_) {
-          if (!buf.active) { return &buf; }
+          if (!buf.active) {
+            buf.address = address;
+            return &buf;
+          }
         }
         // All our buffers are full.  There must be something wrong on the CAN bus.
         //
@@ -253,7 +278,7 @@ class CanBridge {
 
         return {
           {},
-              mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
+          mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
         };
       }
     }
@@ -277,7 +302,7 @@ class CanBridge {
     }
 
     if (address != 0 && address != 1 &&
-        address != 16 && address != 17 && address != 18) {
+        address != 2 && address != 3 && address != 4 && address != 5) {
       if (end_handler_) {
         end_handler_(address, bytes);
       }
@@ -311,15 +336,16 @@ class CanBridge {
   }
 
   fw::MillisecondTimer* const timer_;
+  const Pins pins_;
   RegisterSPISlave spi_{
     timer_,
-    PA_7, PA_6, PA_5, PA_4,
-        [this](uint16_t address) {
-          return this->ISR_Start(address);
-        },
-        [this](uint16_t address, int bytes) {
-          return this->ISR_End(address, bytes);
-        }};
+    pins_.spi,
+    [this](uint16_t address) {
+      return this->ISR_Start(address);
+    },
+    [this](uint16_t address, int bytes) {
+      return this->ISR_End(address, bytes);
+    }};
 
   fw::FDCan* can1_ = nullptr;
   fw::FDCan* can2_ = nullptr;
