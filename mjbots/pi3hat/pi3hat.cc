@@ -723,6 +723,17 @@ struct DeviceMountingAngle {
   }
 } __attribute__((packed));
 
+struct DeviceSlotData {
+  uint32_t age_ms = 0;
+  uint8_t size = 0;
+  uint8_t data[16] = {};
+} __attribute__((packed));
+
+struct DeviceRfStatus {
+  uint32_t bitfield = 0;
+  uint32_t lock_age_ms = 0;
+} __attribute__((packed));
+
 
 template <typename Spi>
 Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
@@ -777,22 +788,29 @@ class Pi3Hat::Impl {
               mounting_verify.roll_deg);
         });
 
-    // Configure our RF id.
-    primary_spi_.Write(
-        0, 50,
-        reinterpret_cast<const char*>(&config_.rf_id), sizeof(uint32_t));
-    ::usleep(100);
-    uint32_t id_verify = 0;
+    // Configure our RF id if necessary.
+    uint32_t original_id = 0;
     primary_spi_.Read(
         0, 49,
-        reinterpret_cast<char*>(&id_verify), sizeof(id_verify));
-    ThrowIf(
-        config_.rf_id != id_verify,
-        [&]() {
-          return Format("RF Id not set properly (%08x != %08x)",
-                        config_.rf_id,
-                        id_verify);
-        });
+        reinterpret_cast<char*>(&original_id), sizeof(original_id));
+    if (original_id != config_.rf_id) {
+      primary_spi_.Write(
+          0, 50,
+          reinterpret_cast<const char*>(&config_.rf_id), sizeof(uint32_t));
+      // Changing the ID takes at least a few milliseconds.
+      ::usleep(10000);
+      uint32_t id_verify = 0;
+      primary_spi_.Read(
+          0, 49,
+          reinterpret_cast<char*>(&id_verify), sizeof(id_verify));
+      ThrowIf(
+          config_.rf_id != id_verify,
+          [&]() {
+            return Format("RF Id not set properly (%08x != %08x)",
+                          config_.rf_id,
+                          id_verify);
+          });
+    }
   }
 
   DeviceInfo device_info() {
@@ -951,6 +969,60 @@ class Pi3Hat::Impl {
     return result;
   }
 
+  void SendRf(const Span<RfSlot>& slots) {
+    constexpr int kHeaderSize = 5;
+    constexpr int kMaxDataSize = 16;
+    uint8_t buf[kHeaderSize + kMaxDataSize] = {};
+
+    for (size_t i = 0; i < slots.size(); i++) {
+      const auto& slot = slots[i];
+      buf[0] = slot.slot;
+      buf[1] = (slot.priority >> 0) & 0xff;
+      buf[2] = (slot.priority >> 8) & 0xff;
+      buf[3] = (slot.priority >> 16) & 0xff;
+      buf[4] = (slot.priority >> 24) & 0xff;
+      std::memcpy(&buf[kHeaderSize], slot.data, slot.size);
+
+      primary_spi_.Write(
+          0, 51, reinterpret_cast<const char*>(&buf[0]),
+          kHeaderSize + slot.size);
+    }
+  }
+
+  void ReadRf(const Input& input, Output* output) {
+    DeviceRfStatus rf_status;
+    primary_spi_.Read(
+        0, 52, reinterpret_cast<char*>(&rf_status), sizeof(rf_status));
+
+    output->rf_lock_age_ms = rf_status.lock_age_ms;
+
+    const auto bitfield_delta = rf_status.bitfield ^ last_bitfield_;
+    if (bitfield_delta == 0) { return; }
+
+    DeviceSlotData slot_data;
+
+    for (int i = 0; i < 15; i++) {
+      if (output->rx_rf_size >= input.rx_rf.size()) {
+        // No more room.
+        return;
+      }
+
+      if ((bitfield_delta & (3 << (i * 2))) == 0) {
+        continue;
+      }
+
+      last_bitfield_ ^= (bitfield_delta & (3 << (i * 2)));
+
+      primary_spi_.Read(
+          0, 64 + i, reinterpret_cast<char*>(&slot_data), sizeof(slot_data));
+      auto& output_slot = input.rx_rf[output->rx_rf_size++];
+      output_slot.slot = i;
+      output_slot.age_ms = slot_data.age_ms;
+      output_slot.size = slot_data.size;
+      std::memcpy(output_slot.data, slot_data.data, slot_data.size);
+    }
+  }
+
   template <typename Spi>
   int ReadCanFrames(Spi& spi, int cs, int bus_start,
                     const Span<CanFrame>* rx_can, Output* output) {
@@ -1063,9 +1135,11 @@ class Pi3Hat::Impl {
 
     // While those are sending, do our other work.
     if (input.tx_rf.size()) {
+      SendRf(input.tx_rf);
     }
 
     if (input.request_rf) {
+      ReadRf(input, &result);
     }
 
     if (input.request_attitude) {
@@ -1088,6 +1162,9 @@ class Pi3Hat::Impl {
   //
   // It is 1 indexed to match the bus naming.
   std::vector<int> can_packets_[6];
+
+  // To keep track of which RF slots we have processed.
+  uint32_t last_bitfield_ = 0;
 };
 
 Pi3Hat::Pi3Hat(const Configuration& configuration)

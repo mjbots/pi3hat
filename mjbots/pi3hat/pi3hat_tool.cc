@@ -58,6 +58,12 @@ struct Arguments {
         read_can |= (1 << (std::stoi(args.at(++i))));
       } else if (arg == "--can-timeout-ns") {
         can_timeout_ns = std::stoull(args.at(++i));
+      } else if (arg == "--write-rf") {
+        write_rf.push_back(args.at(++i));
+      } else if (arg == "--read-rf") {
+        read_rf = true;
+      } else if (arg == "--read-att") {
+        read_attitude = true;
       } else if (arg == "-r" || arg == "--run") {
         run = true;
       } else {
@@ -71,11 +77,15 @@ struct Arguments {
 
   int spi_speed_hz = -1;
   Euler mounting_deg = {kNaN, kNaN, kNaN};
-  uint32_t rf_id = 0;
+  uint32_t rf_id = 5678;
 
   std::vector<std::string> write_can;
   uint32_t read_can = 0;
   int64_t can_timeout_ns = 0;
+
+  std::vector<std::string> write_rf;
+  bool read_rf = false;
+  bool read_attitude = false;
 };
 
 void DisplayUsage() {
@@ -92,10 +102,14 @@ void DisplayUsage() {
   std::cout << "  --can-timeout-ns T  set the receive timeout\n";
   std::cout << "\n";
   std::cout << "Actions\n";
-  std::cout << "  -c,--write-can  write a CAN frame (can be listed more)\n";
+  std::cout << "  -c,--write-can  write a CAN frame (can be listed 0+)\n";
   std::cout << "     BUS,HEXID,HEXDATA,FLAGS\n";
   std::cout << "        FLAGS - r (expect reply)\n";
   std::cout << "  --read-can BUS  force data to be read from the given bus (1-5)\n";
+  std::cout << "  --write-rf      write an RF slot (can be listed 0+)\n";
+  std::cout << "     SLOT,PRIORITY,DATA\n";
+  std::cout << "  --read-rf       request any RF data\n";
+  std::cout << "  --read-att      request attitude data\n";
   std::cout << "  -r,--run        run a sample high rate cycle\n";
 }
 
@@ -158,37 +172,46 @@ size_t ParseHexData(uint8_t* output, const char* data, size_t size) {
   return bytes;
 }
 
-CanFrame ParseCanString(const std::string& can_string) {
-  size_t pos = 0;
-  size_t next = 0;
+struct MiniTokenizer {
+ public:
+  MiniTokenizer(const std::string& data) : data_(data) {
+    find_next();
+  }
 
-  auto find_next = [&]() {
-    next = can_string.find(',', pos);
+  void find_next() {
+    next = data_.find(',', pos);
     if (next == std::string::npos) {
-      next = can_string.size();
+      next = data_.size();
     }
-  };
+  }
 
-  find_next();
-
-  auto advance = [&]() {
+  void advance() {
     pos = next + 1;
     find_next();
-  };
+  }
+
+  size_t pos = 0;
+  size_t next = 0;
+  std::string data_;
+};
+
+CanFrame ParseCanString(const std::string& can_string) {
+  MiniTokenizer tok{can_string};
 
   CanFrame result;
 
-  result.bus = std::strtoul(&can_string[pos], nullptr, 0);
-  advance();
-  result.id  = std::strtoul(&can_string[pos], nullptr, 16);
-  advance();
-  result.size = ParseHexData(result.data, &can_string[pos], next - pos);
+  result.bus = std::strtoul(&can_string[tok.pos], nullptr, 0);
+  tok.advance();
+  result.id  = std::strtoul(&can_string[tok.pos], nullptr, 16);
+  tok.advance();
+  result.size = ParseHexData(result.data, &can_string[tok.pos],
+                             tok.next - tok.pos);
 
-  if (next < can_string.size()) {
-    advance();
+  if (tok.next < can_string.size()) {
+    tok.advance();
     // Any remaining things are flags
-    for (; pos < can_string.size(); pos++) {
-      switch (std::tolower(can_string[pos])) {
+    for (; tok.pos < can_string.size(); tok.pos++) {
+      switch (std::tolower(can_string[tok.pos])) {
         case 'r': {
           result.expect_reply = true;
           break;
@@ -196,6 +219,20 @@ CanFrame ParseCanString(const std::string& can_string) {
       }
     }
   }
+
+  return result;
+}
+
+RfSlot ParseRfString(const std::string& rf_string) {
+  MiniTokenizer tok{rf_string};
+
+  RfSlot result;
+  result.slot = std::strtoul(&rf_string[tok.pos], nullptr, 0);
+  tok.advance();
+  result.priority = std::strtoul(&rf_string[tok.pos], nullptr, 16);
+  tok.advance();
+  result.size = ParseHexData(result.data, &rf_string[tok.pos],
+                             tok.next - tok.pos);
 
   return result;
 }
@@ -213,31 +250,26 @@ std::string FormatCanFrame(const CanFrame& can_frame) {
   return result;
 }
 
-void DoCan(Pi3Hat* pi3hat, const Arguments& args) {
-  Pi3Hat::Input input;
-  input.request_attitude = false;
-  input.wait_for_attitude = false;
+std::string FormatAttitude(const Attitude& a) {
+  char buf[2048] = {};
+  ::snprintf(
+      buf, sizeof(buf) - 1,
+      "w=%5.3f x=%5.3f y=%5.3f z=%5.3f  dps=(%5.1f,%5.1f,%5.1f) "
+      "a=(%4.1f,%4.1f,%4.1f)",
+      a.attitude.w, a.attitude.x, a.attitude.y, a.attitude.z,
+      a.rate_dps.x, a.rate_dps.y, a.rate_dps.z,
+      a.accel_mps2.x, a.accel_mps2.y, a.accel_mps2.z);
+  return std::string(buf);
+}
 
-  input.force_can_check = args.read_can;
-  std::vector<CanFrame> can_frames;
-  can_frames.resize(args.write_can.size());
-  for (const auto& can_string : args.write_can) {
-    can_frames.push_back(ParseCanString(can_string));
+std::string FormatRf(const RfSlot& r) {
+  char buf[10] = {};
+  std::string result = std::to_string(r.slot) + " ";
+  for (size_t i = 0; i < r.size; i++) {
+    ::snprintf(buf, sizeof(buf) - 1, "%02X", static_cast<int>(r.data[i]));
+    result += std::string(buf);
   }
-  input.tx_can = { &can_frames[0], can_frames.size() };
-
-  std::vector<CanFrame> rx_frames;
-  // Try to make sure we have plenty of room to receive things.
-  rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));
-
-  input.rx_can = { &rx_frames[0], rx_frames.size() };
-
-  const auto result = pi3hat->Cycle(input);
-  CheckError(result.error);
-
-  for (std::size_t i = 0; i < result.rx_can_size; i++) {
-    std::cout << FormatCanFrame(rx_frames.at(i)) << "\n";
-  }
+  return result;
 }
 
 void Run(Pi3Hat* pi3hat) {
@@ -267,20 +299,73 @@ void Run(Pi3Hat* pi3hat) {
     }
 
     {
-      const auto& a = attitude;
       ::snprintf(
           buf, sizeof(buf) - 1,
-          "w=%5.3f x=%5.3f y=%5.3f z=%5.3f  dps=(%5.1f,%5.1f,%5.1f) "
-          "a=(%4.1f,%4.1f,%4.1f)  %5.1f Hz  \r",
-          a.attitude.w, a.attitude.x, a.attitude.y, a.attitude.z,
-          a.rate_dps.x, a.rate_dps.y, a.rate_dps.z,
-          a.accel_mps2.x, a.accel_mps2.y, a.accel_mps2.z,
+          "%s  %5.1f Hz  \r",
+          FormatAttitude(attitude).c_str(),
           1.0 / filtered_period_s);
       std::cout << buf;
       std::cout.flush();
     }
 
     ::usleep(500);
+  }
+}
+
+void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
+  Pi3Hat::Input input;
+  Attitude attitude;
+  input.attitude = &attitude;
+  if (args.read_attitude) {
+    input.request_attitude = true;
+    input.wait_for_attitude = true;
+  }
+  if (args.read_rf) {
+    input.request_rf = true;
+  }
+  input.force_can_check = args.read_can;
+  std::vector<CanFrame> can_frames;
+  for (const auto& can_string : args.write_can) {
+    can_frames.push_back(ParseCanString(can_string));
+  }
+  if (!can_frames.empty()) {
+    input.tx_can = { &can_frames[0], can_frames.size() };
+  }
+
+  // Try to make sure we have plenty of room to receive things.
+  std::vector<CanFrame> rx_frames;
+  rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));
+  input.rx_can = { &rx_frames[0], rx_frames.size() };
+
+  std::vector<RfSlot> rf_slots;
+  for (const auto& rf_string : args.write_rf) {
+    rf_slots.push_back(ParseRfString(rf_string));
+  }
+  if (!rf_slots.empty()) {
+    input.tx_rf = { &rf_slots[0], rf_slots.size() };
+  }
+
+  std::vector<RfSlot> rx_rf_data;
+  rx_rf_data.resize(16);
+  input.rx_rf = { &rx_rf_data[0], rx_rf_data.size() };
+
+  const auto result = pi3hat->Cycle(input);
+  CheckError(result.error);
+
+  for (size_t i = 0; i < result.rx_can_size; i++) {
+    std::cout << "CAN " << FormatCanFrame(rx_frames.at(i)) << "\n";
+  }
+
+  if (args.read_rf) {
+    std::cout << "RFLOCK: " << result.rf_lock_age_ms << "\n";
+  }
+
+  for (size_t i = 0; i < result.rx_rf_size; i++) {
+    std::cout << "RF  " << FormatRf(rx_rf_data.at(i)) << "\n";
+  }
+
+  if (result.attitude_present) {
+    std::cout << "ATT " << FormatAttitude(attitude) << "\n";
   }
 }
 
@@ -294,12 +379,10 @@ int do_main(int argc, char** argv) {
 
   Pi3Hat pi3hat{MakeConfig(args)};
 
-  if (args.read_can != 0 || !args.write_can.empty()) {
-    DoCan(&pi3hat, args);
-  } else if (args.run) {
+  if (args.run) {
     Run(&pi3hat);
   } else {
-    std::cout << "Nothing to do!\n";
+    SingleCycle(&pi3hat, args);
   }
 
   return 0;

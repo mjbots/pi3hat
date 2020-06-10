@@ -302,15 +302,7 @@ void Nrf24l01::Configure() {
         return 6;
       }());
 
-  uint8_t id_buf[5] = {};
-  for (int i = 0; i < options_.address_length; i++) {
-    id_buf[i] = (options_.id >> (i * 8)) & 0xff;
-  }
-  std::string_view id_view{
-    reinterpret_cast<const char*>(&id_buf[0]),
-        static_cast<size_t>(options_.address_length)};
-  VerifyRegister(0x0a,  id_view); // RX_ADDR_P0
-  VerifyRegister(0x10,  id_view); // TX_ADDR
+  SelectId(options_.id);
   VerifyRegister(
       0x1c,
       (options_.dynamic_payload_length  ||
@@ -327,6 +319,18 @@ void Nrf24l01::Configure() {
   if (options_.ptx == 0) {
     ce_.write(1);
   }
+}
+
+void Nrf24l01::SelectId(uint64_t id) {
+  uint8_t id_buf[5] = {};
+  for (int i = 0; i < options_.address_length; i++) {
+    id_buf[i] = (id >> (i * 8)) & 0xff;
+  }
+  std::string_view id_view{
+    reinterpret_cast<const char*>(&id_buf[0]),
+        static_cast<size_t>(options_.address_length)};
+  VerifyRegister(0x0a,  id_view); // RX_ADDR_P0
+  VerifyRegister(0x10,  id_view); // TX_ADDR
 }
 
 uint8_t Nrf24l01::GetConfig() const {

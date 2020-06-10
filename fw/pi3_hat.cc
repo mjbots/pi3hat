@@ -93,7 +93,8 @@ class CanApplication {
 ///
 /// B. An IMU with the SPI mapping as per the Imu class.
 ///
-/// C. A spread spectrum RF transceiver as per TODO.
+/// C. A spread spectrum RF transceiver as per the RfTransceiver
+/// class.
 ///
 /// D. A microphone.
 class AuxApplication {

@@ -77,6 +77,9 @@ class Nrf24l01 {
   /// Switch to one of the possible 125 channels (0-124)
   void SelectRfChannel(uint8_t);
 
+  /// Switch to a different shockburst ID.
+  void SelectId(uint64_t id);
+
   /// Return true if there is data available to read.
   bool is_data_ready();
 

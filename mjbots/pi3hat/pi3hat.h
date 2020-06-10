@@ -96,6 +96,7 @@ struct RfSlot {
   uint32_t priority = 0;
   uint8_t size = 0;
   uint8_t data[16] = {};
+  uint32_t age_ms = 0;
 };
 
 class Error : public std::runtime_error {
@@ -151,7 +152,7 @@ class Pi3Hat {
     /// spend writing as well.
     uint32_t timeout_ns = 0;
 
-    bool request_attitude = true;
+    bool request_attitude = false;
     // If no new attitude is available, wait for it.
     bool wait_for_attitude = false;
 
@@ -173,6 +174,9 @@ class Pi3Hat {
     bool attitude_present = false;
     size_t rx_can_size = 0;
     size_t rx_rf_size = 0;
+
+    // This will only be updated if 'Input::request_rf' is true
+    uint32_t rf_lock_age_ms = 0;
   };
 
   /// Do some or all of the following:
