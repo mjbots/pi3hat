@@ -1,13 +1,11 @@
- * Get existing functionality working with pi3hat.h
-   * CAN send
-   * CAN receive
-   * RF control
-
  * Commit checkpoint
  * LEDs aren't flashing in a useful way yet
 
  * factor so that CanBridge doesn't own the RegisterSpiSlave, but
    instead all the things are connected up after at the top level
+ * Make pi3hat_tool --run use the arguments passed in for everything
+ * Test performance of --run in terms of cycles per second
+ * Measure how fast I can run the IMU, make it configurable
 
  * AHRS
    * Provide a way to set configurable parameters like noise and gains and rotation
@@ -24,6 +22,9 @@
    servos, for instance can be sent with a 1 byte SPI command.
 
  * Provide 5V pin header for external power
+
+DONE 2020-06-10
+ * Got RF working in a basic way
 
 DONE 2020-06-09
  * r4.2 bringup
