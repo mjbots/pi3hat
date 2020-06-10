@@ -44,7 +44,7 @@ void Imu::DoImu() {
 
   attitude_reference_->ProcessMeasurement(
       period_s_,
-      (M_PI / 180.0f) * data.rate_dps,
+      (static_cast<float>(M_PI) / 180.0f) * data.rate_dps,
       data.accel_mps2);
 
   AttitudeRegister& my_att = imu_data.attitude;
@@ -54,7 +54,8 @@ void Imu::DoImu() {
   my_att.x = att.x();
   my_att.y = att.y();
   my_att.z = att.z();
-  const Point3D rate_dps = (180.0f / M_PI) * attitude_reference_->rate_rps();
+  const Point3D rate_dps = (180.0f / static_cast<float>(M_PI)) *
+                           attitude_reference_->rate_rps();
   my_att.x_dps = rate_dps.x();
   my_att.y_dps = rate_dps.y();
   my_att.z_dps = rate_dps.z();
@@ -62,7 +63,8 @@ void Imu::DoImu() {
   my_att.a_x_mps2 = a_mps2.x();
   my_att.a_y_mps2 = a_mps2.y();
   my_att.a_z_mps2 = a_mps2.z();
-  const Point3D bias_dps = (180.0f / M_PI) * attitude_reference_->bias_rps();
+  const Point3D bias_dps = (180.0f / static_cast<float>(M_PI)) *
+                           attitude_reference_->bias_rps();
   my_att.bias_x_dps = bias_dps.x();
   my_att.bias_y_dps = bias_dps.y();
   my_att.bias_z_dps = bias_dps.z();
@@ -73,7 +75,8 @@ void Imu::DoImu() {
   my_att.uncertainty_y = attitude_uncertainty(2);
   my_att.uncertainty_z = attitude_uncertainty(3);
   const Eigen::Vector3f bias_uncertainty_dps =
-      (180.0f / M_PI) * attitude_reference_->bias_uncertainty_rps();
+      (180.0f / static_cast<float>(M_PI)) *
+      attitude_reference_->bias_uncertainty_rps();
   my_att.uncertainty_bias_x_dps = bias_uncertainty_dps.x();
   my_att.uncertainty_bias_y_dps = bias_uncertainty_dps.y();
   my_att.uncertainty_bias_z_dps = bias_uncertainty_dps.z();

@@ -24,20 +24,23 @@
 namespace fw {
 
 inline float WrapNegPiToPi(float value) {
-  if (value >= -M_PI && value <= M_PI) { return value; }
-  if (value > 0.0) {
-    return std::fmod(value + M_PI, 2 * M_PI) - M_PI;
+  if (value >= static_cast<float>(-M_PI) &&
+      value <= static_cast<float>(M_PI)) { return value; }
+  if (value > 0.0f) {
+    return std::fmod(value + static_cast<float>(M_PI),
+                     static_cast<float>(2 * M_PI)) - static_cast<float>(M_PI);
   } else {
-    return std::fmod(value - M_PI, 2 * M_PI) + M_PI;
+    return std::fmod(value - static_cast<float>(M_PI),
+                     static_cast<float>(2 * M_PI)) + static_cast<float>(M_PI);
   }
 }
 
 inline float Radians(float value) {
-  return M_PI * value / 180.0f;
+  return static_cast<float>(M_PI) * value / 180.0f;
 }
 
 inline float Degrees(float value) {
-  return 180.0 * value / M_PI;
+  return 180.0f * value / static_cast<float>(M_PI);
 }
 
 }

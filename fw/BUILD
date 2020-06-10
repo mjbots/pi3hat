@@ -18,6 +18,11 @@ load("@com_github_ARMmbed_mbed-os//:rules.bzl", "mbed_binary")
 
 package(default_visibility = ["//visibility:public"])
 
+COPTS = [
+    "-Werror",
+    "-Wdouble-promotion",
+]
+
 mbed_binary(
     name = "pi3_hat",
     srcs = [
@@ -59,6 +64,7 @@ mbed_binary(
         "@com_github_mjbots_mjlib//mjlib/micro:static_vector",
         "@eigen",
     ],
+    copts = COPTS,
 )
 
 OCD = (
