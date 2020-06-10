@@ -93,6 +93,13 @@ void Imu::DoImu() {
   if (old_imu_data) {
     old_imu_data->active.store(false);
   }
+
+  const auto this_error = attitude_reference_->error();
+  if (this_error != AttitudeReference::Error::kNone) {
+    my_att.last_error = static_cast<uint32_t>(this_error);
+    my_att.error_count++;
+    reset_estimator_.store(true);
+  }
 }
 
 }

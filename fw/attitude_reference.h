@@ -41,6 +41,7 @@ class AttitudeReference {
   };
 
   using Filter = UkfFilter<float, kNumStates>;
+  using Error = Filter::Error;
 
   struct Options {
     float process_noise_gyro_rps = (5e-4f * 5e-4f);
@@ -79,6 +80,8 @@ class AttitudeReference {
              options.process_noise_bias_rps,
              options.process_noise_bias_rps).finished())} {
   }
+
+  Filter::Error error() const { return ukf_.error(); }
 
   void ProcessMeasurement(float delta_s,
                           const Point3D& rate_B_rps,

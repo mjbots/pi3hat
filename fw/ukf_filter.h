@@ -32,6 +32,12 @@ class UkfFilter {
   typedef Eigen::Matrix<_Scalar, _NumStates, 1> State;
   typedef Eigen::Matrix<_Scalar, _NumStates, _NumStates> Covariance;
 
+  enum Error {
+    kNone = 0,
+    kNanState,
+    kNanMeasurement,
+  };
+
   UkfFilter(const State& initial_state,
             const Covariance& initial_covariance,
             const Covariance& process_noise)
@@ -39,6 +45,8 @@ class UkfFilter {
         covariance_(initial_covariance),
         process_noise_(process_noise) {
   }
+
+  Error error() const { return error_; }
 
   const State& state() const { return state_; }
   State& state() { return state_; }
@@ -71,8 +79,13 @@ class UkfFilter {
     Pminus *= (1.0 / N);
     Pminus += dt_s * process_noise_;
 
-    for (size_t i = 0; i < _NumStates; i++) {
-      MJ_ASSERT(std::isfinite(xhatminus[i]));
+    if (error_ == kNone) {
+      for (size_t i = 0; i < _NumStates; i++) {
+        if (!std::isfinite(xhatminus[i])) {
+          error_ = kNanState;
+          break;
+        }
+      }
     }
 
     state_ = xhatminus;
@@ -144,8 +157,13 @@ class UkfFilter {
     State xplus = state_ + K * (measurement - yhat);
     Covariance Pplus = covariance_ - ((K * Py) * K.transpose());
 
-    for (size_t i = 0; i < _NumStates; i++) {
-      MJ_ASSERT(std::isfinite(xplus[i]));
+    if (error_ == kNone) {
+      for (size_t i = 0; i < _NumStates; i++) {
+        if (!std::isfinite(xplus[i])) {
+          error_ = kNanMeasurement;
+          break;
+        }
+      }
     }
 
     state_ = xplus;
@@ -179,6 +197,7 @@ class UkfFilter {
   State state_;
   Covariance covariance_;
   Covariance process_noise_;
+  Error error_ = kNone;
 };
 
 }

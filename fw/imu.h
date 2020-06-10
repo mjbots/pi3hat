@@ -86,6 +86,8 @@ class Imu {
     float uncertainty_bias_x_dps = 0;
     float uncertainty_bias_y_dps = 0;
     float uncertainty_bias_z_dps = 0;
+    uint32_t error_count = 0;
+    uint32_t last_error = 0;
   } __attribute__((packed));
 
   struct MountingAngle {
