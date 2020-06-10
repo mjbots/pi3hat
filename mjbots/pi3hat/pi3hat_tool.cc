@@ -332,6 +332,8 @@ void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
     input.tx_can = { &can_frames[0], can_frames.size() };
   }
 
+  input.timeout_ns = args.can_timeout_ns;
+
   // Try to make sure we have plenty of room to receive things.
   std::vector<CanFrame> rx_frames;
   rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));
