@@ -707,18 +707,20 @@ struct DeviceAttitudeData {
   uint8_t padding[4] = {};
 } __attribute__((packed));
 
-struct DeviceMountingAngle {
+struct DeviceImuConfiguration {
   float yaw_deg = 0;
   float pitch_deg = 0;
   float roll_deg = 0;
+  uint32_t rate_hz = 0;
 
-  bool operator==(const DeviceMountingAngle& rhs) const {
+  bool operator==(const DeviceImuConfiguration& rhs) const {
     return yaw_deg == rhs.yaw_deg &&
         pitch_deg == rhs.pitch_deg &&
-        roll_deg == rhs.roll_deg;
+        roll_deg == rhs.roll_deg &&
+        rate_hz == rhs.rate_hz;
   }
 
-  bool operator!=(const DeviceMountingAngle& rhs) const {
+  bool operator!=(const DeviceImuConfiguration& rhs) const {
     return !(*this == rhs);
   }
 } __attribute__((packed));
@@ -786,35 +788,48 @@ class Pi3Hat::Impl {
             return options;
           }()} {
 
-    DeviceMountingAngle device_mounting;
-    device_mounting.yaw_deg = configuration.mounting_deg.yaw;
-    device_mounting.pitch_deg = configuration.mounting_deg.pitch;
-    device_mounting.roll_deg = configuration.mounting_deg.roll;
-
-    primary_spi_.Write(
-        0, 36,
-        reinterpret_cast<const char*>(&device_mounting),
-        sizeof(device_mounting));
-
-    // Give it some time to work.
-    ::usleep(100);
-    DeviceMountingAngle mounting_verify;
+    // See if we need to update the IMU configuration.
+    DeviceImuConfiguration original_imu_configuration;
     primary_spi_.Read(
         0, 35,
-        reinterpret_cast<char*>(&mounting_verify),
-        sizeof(mounting_verify));
-    ThrowIf(
-        device_mounting != mounting_verify,
-        [&]() {
-          return Format(
-              "Mounting angle not set properly (%f,%f,%f) != (%f,%f,%f)",
-              device_mounting.yaw_deg,
-              device_mounting.pitch_deg,
-              device_mounting.roll_deg,
-              mounting_verify.yaw_deg,
-              mounting_verify.pitch_deg,
-              mounting_verify.roll_deg);
-        });
+        reinterpret_cast<char*>(&original_imu_configuration),
+        sizeof(original_imu_configuration));
+
+    DeviceImuConfiguration desired_imu;
+    desired_imu.yaw_deg = configuration.mounting_deg.yaw;
+    desired_imu.pitch_deg = configuration.mounting_deg.pitch;
+    desired_imu.roll_deg = configuration.mounting_deg.roll;
+    desired_imu.rate_hz =
+        std::min<uint32_t>(1000, configuration.attitude_rate_hz);
+
+    if (desired_imu != original_imu_configuration) {
+      primary_spi_.Write(
+          0, 36,
+          reinterpret_cast<const char*>(&desired_imu),
+          sizeof(desired_imu));
+
+      // Give it some time to work.
+      ::usleep(100);
+      DeviceImuConfiguration config_verify;
+      primary_spi_.Read(
+          0, 35,
+          reinterpret_cast<char*>(&config_verify),
+          sizeof(config_verify));
+      ThrowIf(
+          desired_imu != config_verify,
+          [&]() {
+            return Format(
+                "IMU config not set properly (%f,%f,%f) %d != (%f,%f,%f) %d",
+                desired_imu.yaw_deg,
+                desired_imu.pitch_deg,
+                desired_imu.roll_deg,
+                desired_imu.rate_hz,
+                config_verify.yaw_deg,
+                config_verify.pitch_deg,
+                config_verify.roll_deg,
+                config_verify.rate_hz);
+          });
+    }
 
     // Configure our RF id if necessary.
     uint32_t original_id = 0;

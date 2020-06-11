@@ -20,6 +20,7 @@
 
 #include "mbed.h"
 
+#include "mjlib/base/assert.h"
 #include "mjlib/base/string_span.h"
 
 namespace fw {
@@ -293,9 +294,8 @@ class Bmi088::Impl {
   uint32_t last_read_ = 0;
 };
 
-Bmi088::Bmi088(mjlib::micro::Pool* pool, MillisecondTimer* timer,
-               const Options& options)
-    : impl_(pool, timer, options) {}
+Bmi088::Bmi088(MillisecondTimer* timer, const Options& options)
+    : impl_(timer, options) {}
 
 Bmi088::~Bmi088() {}
 

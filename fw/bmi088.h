@@ -18,7 +18,7 @@
 
 #include "PinNames.h"
 
-#include "mjlib/micro/pool_ptr.h"
+#include "mjlib/micro/static_ptr.h"
 
 #include "fw/millisecond_timer.h"
 
@@ -43,7 +43,7 @@ class Bmi088 {
     Options() {}
   };
 
-  Bmi088(mjlib::micro::Pool*, MillisecondTimer*, const Options& = Options());
+  Bmi088(MillisecondTimer*, const Options& = Options());
   ~Bmi088();
 
   struct SetupData {
@@ -63,7 +63,7 @@ class Bmi088 {
 
  private:
   class Impl;
-  mjlib::micro::PoolPtr<Impl> impl_;
+  mjlib::micro::StaticPtr<Impl, 1024> impl_;
 };
 
 }

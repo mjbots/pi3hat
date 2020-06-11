@@ -34,8 +34,6 @@ int64_t GetNow() {
       static_cast<int64_t>(ts.tv_nsec);
 }
 
-const auto kNaN = std::numeric_limits<double>::quiet_NaN();
-
 struct Arguments {
   Arguments(const std::vector<std::string>& args) {
     for (size_t i = 0; i < args.size(); i++) {
@@ -50,6 +48,8 @@ struct Arguments {
         mounting_deg.pitch = std::stod(args.at(++i));
       } else if (arg == "--mount-r") {
         mounting_deg.roll = std::stod(args.at(++i));
+      } else if (arg == "--attitude-rate") {
+        attitude_rate_hz = std::stol(args.at(++i));
       } else if (arg == "--rf-id") {
         rf_id = std::stoul(args.at(++i));
       } else if (arg == "-c" || arg == "--write-can") {
@@ -80,7 +80,8 @@ struct Arguments {
   bool run = false;
 
   int spi_speed_hz = -1;
-  Euler mounting_deg = {kNaN, kNaN, kNaN};
+  Euler mounting_deg = {0., 0., 0.};
+  uint32_t attitude_rate_hz = 400;
   uint32_t rf_id = 5678;
 
   std::vector<std::string> write_can;
@@ -105,6 +106,7 @@ void DisplayUsage() {
   std::cout << "  --mount-y DEG       set the mounting yaw angle\n";
   std::cout << "  --mount-p DEG       set the mounting pitch angle\n";
   std::cout << "  --mount-r DEG       set the mounting roll angle\n";
+  std::cout << "  --attitude-rate HZ  set the attitude rate\n";
   std::cout << "  --rf-id ID          set the RF id\n";
   std::cout << "  --can-timeout-ns T  set the receive timeout\n";
   std::cout << "\n";
@@ -127,16 +129,11 @@ Pi3Hat::Configuration MakeConfig(const Arguments& args) {
   if (args.spi_speed_hz >= 0) {
     config.spi_speed_hz = args.spi_speed_hz;
   }
-  if (std::isfinite(args.mounting_deg.yaw) ||
-      std::isfinite(args.mounting_deg.roll) ||
-      std::isfinite(args.mounting_deg.pitch)) {
-    config.mounting_deg.yaw =
-        std::isfinite(args.mounting_deg.yaw) ? args.mounting_deg.yaw : 0.0;
-    config.mounting_deg.pitch =
-        std::isfinite(args.mounting_deg.pitch) ? args.mounting_deg.pitch : 0.0;
-    config.mounting_deg.roll =
-        std::isfinite(args.mounting_deg.roll) ? args.mounting_deg.roll : 0.0;
-  }
+  config.mounting_deg.yaw = args.mounting_deg.yaw;
+  config.mounting_deg.pitch = args.mounting_deg.pitch;
+  config.mounting_deg.roll = args.mounting_deg.roll;
+  config.attitude_rate_hz = args.attitude_rate_hz;
+
   if (args.rf_id != 0) {
     config.rf_id = args.rf_id;
   }

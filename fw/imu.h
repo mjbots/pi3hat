@@ -36,10 +36,10 @@ namespace fw {
 ///     bytes: The contents of the 'ImuRegister' structure
 ///  34: Attitude data
 ///     bytes: The contents of the 'AttitudeRegister' structure
-///  35: Read mounting angle
-///     bytes: The contents of the 'MountingAngle' structure
-///  36: Write mounting angle
-///     bytes: The contents of the 'MountingAngle' structure
+///  35: Read configuration
+///     bytes: The contents of the 'Configuration' structure
+///  36: Write configuration
+///     bytes: The contents of the 'Configuration' structure
 class Imu {
  public:
   struct ImuRegister {
@@ -90,10 +90,11 @@ class Imu {
     uint32_t last_error = 0;
   } __attribute__((packed));
 
-  struct MountingAngle {
+  struct Configuration {
     float yaw_deg = 0;
     float pitch_deg = 0;
     float roll_deg = 0;
+    uint32_t rate_hz = 400;
 
     Quaternion quaternion() {
       return Quaternion::FromEuler(
@@ -102,13 +103,14 @@ class Imu {
           Radians(roll_deg));
     }
 
-    bool operator==(const MountingAngle& rhs) const {
+    bool operator==(const Configuration& rhs) const {
       return yaw_deg == rhs.yaw_deg &&
           pitch_deg == rhs.pitch_deg &&
-          roll_deg == rhs.roll_deg;
+          roll_deg == rhs.roll_deg &&
+          rate_hz == rhs.rate_hz;
     }
 
-    bool operator!=(const MountingAngle& rhs) const {
+    bool operator!=(const Configuration& rhs) const {
       return !(*this == rhs);
     }
   } __attribute__((packed));
@@ -117,12 +119,13 @@ class Imu {
       : pool_(pool),
         timer_(timer),
         irq_(irq_name, 0) {
+    ConfigureBmi088();
     attitude_reference_.emplace();
 
     // We do this here after everything has been initialized.
     next_imu_sample_ = timer_->read_us();
 
-    setup_data_ = imu_.setup_data();
+    setup_data_ = imu_->setup_data();
   }
 
   void Poll() {
@@ -187,8 +190,8 @@ class Imu {
     if (address == 35) {
       return {
         std::string_view(
-            reinterpret_cast<const char*>(&spi_mounting_),
-            sizeof(spi_mounting_)),
+            reinterpret_cast<const char*>(&spi_config_),
+            sizeof(spi_config_)),
         {},
       };
     }
@@ -196,8 +199,8 @@ class Imu {
       return {
         {},
         mjlib::base::string_span(
-            reinterpret_cast<char*>(&spi_mounting_shadow_),
-            sizeof(spi_mounting_shadow_)),
+            reinterpret_cast<char*>(&spi_config_shadow_),
+            sizeof(spi_config_shadow_)),
       };
     }
     return {};
@@ -205,18 +208,39 @@ class Imu {
 
   void ISR_End(uint16_t address, int bytes) {
     if (address == 36 &&
-        bytes == sizeof(spi_mounting_shadow_)) {
-      if (spi_mounting_ != spi_mounting_shadow_) {
-        spi_mounting_ = spi_mounting_shadow_;
+        bytes == sizeof(spi_config_shadow_)) {
+      if (spi_config_ != spi_config_shadow_) {
+        spi_config_ = spi_config_shadow_;
         // This is a data race, but we're about to throw away our entire
         // estimator, so who cares?
-        mounting_ = spi_mounting_.quaternion();
+        mounting_ = spi_config_.quaternion();
         reset_estimator_.store(true);
       }
     }
   }
 
  private:
+  void ConfigureBmi088() {
+    imu_.emplace(timer_, [&]() {
+        Bmi088::Options options;
+        options.mosi = PB_15;
+        options.miso = PB_14;
+        options.sck = PB_13;
+        options.acc_cs = PA_9;
+        options.gyro_cs = PB_12;
+        options.acc_int = PA_10;
+        options.gyro_int = PA_8;
+
+        options.rate_hz = spi_config_.rate_hz;
+        options.gyro_max_dps = 1000;
+        options.accel_max_g = 6;
+
+        return options;
+      }());
+    period_s_ = 1.0f / static_cast<float>(imu_->setup_data().rate_hz);
+    us_step_ = 1000000 / imu_->setup_data().rate_hz;
+  };
+
   void ISR_GetImuData() {
     // If we have something, release it.
     if (imu_in_isr_) {
@@ -236,30 +260,14 @@ class Imu {
   MillisecondTimer* const timer_;
   DigitalOut irq_;
 
-  Bmi088 imu_{pool_, timer_, []() {
-      Bmi088::Options options;
-      options.mosi = PB_15;
-      options.miso = PB_14;
-      options.sck = PB_13;
-      options.acc_cs = PA_9;
-      options.gyro_cs = PB_12;
-      options.acc_int = PA_10;
-      options.gyro_int = PA_8;
-
-      options.rate_hz = 400;
-      options.gyro_max_dps = 1000;
-      options.accel_max_g = 6;
-
-      return options;
-    }()
-  };
-  const float period_s_ = 1.0f / static_cast<float>(imu_.setup_data().rate_hz);
-  const uint32_t us_step_ = 1000000 / imu_.setup_data().rate_hz;
+  std::optional<Bmi088> imu_;
+  float period_s_ = 0.0;
+  uint32_t us_step_ = 0;
   uint32_t next_imu_sample_ = 0;
 
-  MountingAngle spi_mounting_{0, 90, -90};
-  MountingAngle spi_mounting_shadow_;
-  Quaternion mounting_ = spi_mounting_.quaternion();
+  Configuration spi_config_{0, 90, -90, 400};
+  Configuration spi_config_shadow_;
+  Quaternion mounting_ = spi_config_.quaternion();
 
   struct ImuData {
     ImuRegister imu;

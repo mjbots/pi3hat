@@ -124,6 +124,11 @@ class Pi3Hat {
     // All attitude data will be transformed by this mounting angle.
     Euler mounting_deg;
 
+    // Only a fixed set of rates are achievable.  Valid values are
+    // 100, 200, 400, 1000.  Selecting a higher rate than you need to
+    // sample at will result in more noise.
+    uint32_t attitude_rate_hz = 400;
+
     // RF communication will be with a transmitter having this ID.
     uint32_t rf_id = 5678;
   };
