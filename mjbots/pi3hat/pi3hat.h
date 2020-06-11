@@ -166,7 +166,7 @@ class Pi3Hat {
     // If no new attitude is available, wait for it.
     bool wait_for_attitude = false;
 
-    bool request_rf = true;
+    bool request_rf = false;
 
     // A bitmask indicating CAN buses to check for data even if no
     // replies are expected.
