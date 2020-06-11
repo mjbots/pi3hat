@@ -920,7 +920,7 @@ class Pi3Hat::Impl {
     int spi_address = 0;
     int spi_size = 0;
 
-    buf[0] = ((cpu_bus == 2) ? 0x80 : 0x00) | (can_frame.size  & 0x7f);
+    buf[0] = ((cpu_bus == 1) ? 0x80 : 0x00) | (can_frame.size  & 0x7f);
 
     if (can_frame.id <= 0xffff) {
       // We'll use the 2 byte ID formulation, cmd 5
@@ -1008,6 +1008,7 @@ class Pi3Hat::Impl {
         offset++;
 
         SendCanPacket(can_packet);
+        any_sent = true;
       }
 
       if (!any_sent) { break; }
