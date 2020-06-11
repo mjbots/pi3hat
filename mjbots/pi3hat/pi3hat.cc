@@ -740,6 +740,11 @@ struct DeviceDeviceInfo {
   uint8_t serial_number[12] = {};
 } __attribute__((packed));
 
+struct DevicePerformance {
+  uint32_t cycles_per_ms = 0;
+  uint32_t min_cycles_per_ms = 0;
+} __attribute__((packed));
+
 template <typename Spi>
 Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
   DeviceDeviceInfo di;
@@ -750,6 +755,17 @@ Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
   result.dirty = di.dirty != 0;
   std::memcpy(&result.serial_number[0], &di.serial_number[0],
               sizeof(di.serial_number));
+  return result;
+}
+
+template <typename Spi>
+Pi3Hat::PerformanceInfo GetPerformance(Spi* spi, int cs) {
+  DevicePerformance dp;
+  spi->Read(cs, 100, reinterpret_cast<char*>(&dp), sizeof(dp));
+
+  Pi3Hat::PerformanceInfo result;
+  result.cycles_per_ms = dp.cycles_per_ms;
+  result.min_cycles_per_ms = dp.min_cycles_per_ms;
   return result;
 }
 }
@@ -831,6 +847,15 @@ class Pi3Hat::Impl {
     result.can1 = GetProcessorInfo(&aux_spi_, 0);
     result.can2 = GetProcessorInfo(&aux_spi_, 1);
     result.aux = GetProcessorInfo(&primary_spi_, 0);
+    return result;
+  }
+
+  DevicePerformance device_performance() {
+    DevicePerformance result;
+    // Now get the device information from all three processors.
+    result.can1 = GetPerformance(&aux_spi_, 0);
+    result.can2 = GetPerformance(&aux_spi_, 1);
+    result.aux = GetPerformance(&primary_spi_, 0);
     return result;
   }
 
@@ -1193,6 +1218,10 @@ Pi3Hat::Output Pi3Hat::Cycle(const Input& input) {
 
 Pi3Hat::DeviceInfo Pi3Hat::device_info() {
   return impl_->device_info();
+}
+
+Pi3Hat::DevicePerformance Pi3Hat::device_performance() {
+  return impl_->device_performance();
 }
 
 }

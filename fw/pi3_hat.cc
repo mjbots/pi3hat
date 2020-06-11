@@ -21,6 +21,7 @@
 #include "mjlib/base/string_span.h"
 
 #include "fw/can_bridge.h"
+#include "fw/cpu_meter.h"
 #include "fw/device_info.h"
 #include "fw/fdcan.h"
 #include "fw/imu.h"
@@ -55,10 +56,12 @@ class CanApplication {
       : timer_(timer) {}
 
   void Poll() {
+    cpu_meter_.Poll();
     bridge_.Poll();
   }
 
   void PollMillisecond() {
+    cpu_meter_.PollMillisecond();
     spi_.PollMillisecond();
   }
 
@@ -89,6 +92,7 @@ class CanApplication {
     }()
   };
 
+  CpuMeter cpu_meter_;
   CanBridge bridge_{timer_, &can1_, &can2_, MakeCanPins()};
   DeviceInfo device_info_;
 
@@ -96,6 +100,9 @@ class CanApplication {
     timer_,
     MakeSpiPins(),
     [this](uint16_t address) {
+      if (CpuMeter::IsSpiAddress(address)) {
+        return cpu_meter_.ISR_Start(address);
+      }
       if (CanBridge::IsSpiAddress(address)) {
         return bridge_.ISR_Start(address);
       }
@@ -105,6 +112,9 @@ class CanApplication {
       return RegisterSPISlave::Buffer();
     },
     [this](uint16_t address, int bytes) {
+      if (CpuMeter::IsSpiAddress(address)) {
+        cpu_meter_.ISR_End(address, bytes);
+      }
       if (CanBridge::IsSpiAddress(address)) {
         bridge_.ISR_End(address, bytes);
       }
@@ -135,12 +145,14 @@ class AuxApplication {
   }
 
   void Poll() {
+    cpu_meter_.Poll();
     bridge_.Poll();
     imu_.Poll();
     rf_.Poll();
   }
 
   void PollMillisecond() {
+    cpu_meter_.PollMillisecond();
     spi_.PollMillisecond();
     imu_.PollMillisecond();
     rf_.PollMillisecond();
@@ -160,6 +172,9 @@ class AuxApplication {
     }
     if (Microphone::IsSpiAddress(address)) {
       return microphone_.ISR_Start(address);
+    }
+    if (CpuMeter::IsSpiAddress(address)) {
+      return cpu_meter_.ISR_Start(address);
     }
     if (address == 96) {
       // This is a multiplexing register which allows clients to
@@ -195,6 +210,9 @@ class AuxApplication {
     if (DeviceInfo::IsSpiAddress(address)) {
       device_info_.ISR_End(address, bytes);
     }
+    if (CpuMeter::IsSpiAddress(address)) {
+      cpu_meter_.ISR_End(address, bytes);
+    }
   }
 
   mjlib::micro::Pool* const pool_;
@@ -213,6 +231,7 @@ class AuxApplication {
     }()
   };
 
+  CpuMeter cpu_meter_;
   CanBridge bridge_{timer_, &can1_, nullptr, MakeCanPins()};
 
   DigitalOut can_shdn_{PC_6, 0};
@@ -262,9 +281,6 @@ void SetupClock() {
 }
 
 }
-
-// For use with the debugger.
-volatile uint32_t g_loops_per_ms = 0;
 }
 
 int main(void) {
@@ -278,15 +294,11 @@ int main(void) {
 
   auto run = [&](auto& app) {
     uint32_t last_ms = 0;
-    uint32_t cycles_since_ms = 0;
     while (true) {
       app.Poll();
-      cycles_since_ms++;
       const auto now = timer.read_ms();
       if (now != last_ms) {
         app.PollMillisecond();
-        fw::g_loops_per_ms = cycles_since_ms;
-        cycles_since_ms = 0;
         last_ms = now;
       }
     }

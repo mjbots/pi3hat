@@ -66,6 +66,8 @@ struct Arguments {
         read_attitude = true;
       } else if (arg == "--info") {
         info = true;
+      } else if (arg == "--performance") {
+        performance = true;
       } else if (arg == "-r" || arg == "--run") {
         run = true;
       } else {
@@ -90,6 +92,7 @@ struct Arguments {
   bool read_attitude = false;
 
   bool info = false;
+  bool performance = false;
 };
 
 void DisplayUsage() {
@@ -115,6 +118,7 @@ void DisplayUsage() {
   std::cout << "  --read-rf       request any RF data\n";
   std::cout << "  --read-att      request attitude data\n";
   std::cout << "  --info          display device info\n";
+  std::cout << "  --performance   print runtime performance\n";
   std::cout << "  -r,--run        run a sample high rate cycle\n";
 }
 
@@ -335,6 +339,19 @@ void DoInfo(Pi3Hat* pi3hat) {
   std::cout << "AUX:  " << FormatProcessorInfo(di.aux) << "\n";
 }
 
+std::string FormatPerformance(const Pi3Hat::PerformanceInfo& p) {
+  return
+      "average:" + std::to_string(p.cycles_per_ms) + " " +
+      "min:" + std::to_string(p.min_cycles_per_ms);
+}
+
+void DoPerformance(Pi3Hat* pi3hat) {
+  const auto dp = pi3hat->device_performance();
+  std::cout << "CAN1: " << FormatPerformance(dp.can1) << "\n";
+  std::cout << "CAN2: " << FormatPerformance(dp.can2) << "\n";
+  std::cout << "AUX:  " << FormatPerformance(dp.aux) << "\n";
+}
+
 void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
   Pi3Hat::Input input;
   Attitude attitude;
@@ -408,6 +425,8 @@ int do_main(int argc, char** argv) {
     Run(&pi3hat);
   } else if (args.info) {
     DoInfo(&pi3hat);
+  } else if (args.performance) {
+    DoPerformance(&pi3hat);
   } else {
     SingleCycle(&pi3hat, args);
   }

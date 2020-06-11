@@ -207,6 +207,19 @@ class Pi3Hat {
 
   DeviceInfo device_info();
 
+  struct PerformanceInfo {
+    uint32_t cycles_per_ms = 0;
+    uint32_t min_cycles_per_ms = 0;
+  };
+
+  struct DevicePerformance {
+    PerformanceInfo can1;
+    PerformanceInfo can2;
+    PerformanceInfo aux;
+  };
+
+  DevicePerformance device_performance();
+
  private:
   class Impl;
   Impl* const impl_;

@@ -41,6 +41,7 @@ mbed_binary(
         "bmi088.cc",
         "bmi088.h",
         "can_bridge.h",
+        "cpu_meter.h",
         "device_info.h",
         "euler.h",
         "fdcan.cc",
