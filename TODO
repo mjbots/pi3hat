@@ -1,14 +1,12 @@
+ * When multiple CAN packets were queued up for rx on one interface,
+   it didn't appear to report all of them
+ * Need to be able to specify *which* ID we are expecting the reply from
+
  * Make pi3hat_tool --run use the arguments passed in for everything
  * Test performance of --run in terms of cycles per second
- * Measure how fast I can run the IMU, make it configurable
 
- * AHRS
-   * Provide a way to set configurable parameters like noise and gains and rotation
-   * Do something better than asserting on NaN... report an error and
-     allow for reset?
+ * Request attitude in parallel with CAN
 
- * Be able to report errors back
- * Be able to report CPU utilization back for IMU processor
  * If a packet is sent to a non-existent device, the entire thing
    hangs retransmitting forever
 
@@ -17,8 +15,12 @@
 
  * Provide 5V pin header for external power
 
+DONE 2020-06-11
+ * Tested on a full 4 buses
+
 DONE 2020-06-10
  * Got RF working in a basic way
+ * Implemented many features
 
 DONE 2020-06-09
  * r4.2 bringup
