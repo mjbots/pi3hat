@@ -92,7 +92,7 @@ class RfTransceiver {
   }
 
   static bool IsSpiAddress(uint16_t address) {
-    return address >= 48 && address <= 52;
+    return address >= 48 && address <= 79;
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
