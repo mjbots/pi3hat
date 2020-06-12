@@ -281,24 +281,66 @@ std::string FormatRf(const RfSlot& r) {
   return result;
 }
 
-void Run(Pi3Hat* pi3hat) {
-  Pi3Hat::Input input;
+struct Input {
+  Input(const Arguments& args) {
+    auto& pi = pi3hat_input;
+    pi.attitude = &attitude;
+    if (args.read_attitude) {
+      pi.request_attitude = true;
+      pi.wait_for_attitude = true;
+    }
+    if (args.read_rf) {
+      pi.request_rf = true;
+    }
+    pi.force_can_check = args.read_can;
+    for (const auto& can_string : args.write_can) {
+      can_frames.push_back(ParseCanString(can_string));
+    }
+    if (!can_frames.empty()) {
+      pi.tx_can = { &can_frames[0], can_frames.size() };
+    }
+
+    pi.timeout_ns = args.can_timeout_ns;
+
+    // Try to make sure we have plenty of room to receive things.
+    rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));
+    pi.rx_can = { &rx_frames[0], rx_frames.size() };
+
+    for (const auto& rf_string : args.write_rf) {
+      rf_slots.push_back(ParseRfString(rf_string));
+    }
+    if (!rf_slots.empty()) {
+      pi.tx_rf = { &rf_slots[0], rf_slots.size() };
+    }
+
+    rx_rf_data.resize(16);
+    pi.rx_rf = { &rx_rf_data[0], rx_rf_data.size() };
+
+  }
+
+  // We alias our pointers into the input structure.
+  Input(const Input&) = delete;
+  Input& operator=(const Input&) = delete;
+
+  Pi3Hat::Input pi3hat_input;
+
   Attitude attitude;
-  input.request_attitude = true;
-  input.wait_for_attitude = true;
-  input.attitude = &attitude;
+  std::vector<CanFrame> can_frames;
+  std::vector<CanFrame> rx_frames;
+  std::vector<RfSlot> rf_slots;
+  std::vector<RfSlot> rx_rf_data;
+};
+
+void Run(Pi3Hat* pi3hat, const Arguments& args) {
+  Input input{args};
+
   char buf[2048] = {};
   double filtered_period_s = 0.0;
   int64_t old_now = GetNow();
 
-
   while (true) {
-    // For now, we'll just ask for attitude in a blocking manner.
-    const auto result = pi3hat->Cycle(input);
+    const auto result = pi3hat->Cycle(input.pi3hat_input);
     CheckError(result.error);
-    if (!result.attitude_present) {
-      throw std::runtime_error("Missing attitude");
-    }
 
     {
       const auto now = GetNow();
@@ -308,17 +350,20 @@ void Run(Pi3Hat* pi3hat) {
       old_now = now;
     }
 
+    if (result.attitude_present) {
+      std::cout << FormatAttitude(input.attitude) << " ";
+    }
+
     {
       ::snprintf(
           buf, sizeof(buf) - 1,
-          "%s  %5.1f Hz  \r",
-          FormatAttitude(attitude).c_str(),
+          "%5.1f Hz  \r",
           1.0 / filtered_period_s);
       std::cout << buf;
       std::cout.flush();
     }
 
-    ::usleep(500);
+    ::usleep(50);
   }
 }
 
@@ -350,49 +395,13 @@ void DoPerformance(Pi3Hat* pi3hat) {
 }
 
 void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
-  Pi3Hat::Input input;
-  Attitude attitude;
-  input.attitude = &attitude;
-  if (args.read_attitude) {
-    input.request_attitude = true;
-    input.wait_for_attitude = true;
-  }
-  if (args.read_rf) {
-    input.request_rf = true;
-  }
-  input.force_can_check = args.read_can;
-  std::vector<CanFrame> can_frames;
-  for (const auto& can_string : args.write_can) {
-    can_frames.push_back(ParseCanString(can_string));
-  }
-  if (!can_frames.empty()) {
-    input.tx_can = { &can_frames[0], can_frames.size() };
-  }
+  Input input{args};
 
-  input.timeout_ns = args.can_timeout_ns;
-
-  // Try to make sure we have plenty of room to receive things.
-  std::vector<CanFrame> rx_frames;
-  rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));
-  input.rx_can = { &rx_frames[0], rx_frames.size() };
-
-  std::vector<RfSlot> rf_slots;
-  for (const auto& rf_string : args.write_rf) {
-    rf_slots.push_back(ParseRfString(rf_string));
-  }
-  if (!rf_slots.empty()) {
-    input.tx_rf = { &rf_slots[0], rf_slots.size() };
-  }
-
-  std::vector<RfSlot> rx_rf_data;
-  rx_rf_data.resize(16);
-  input.rx_rf = { &rx_rf_data[0], rx_rf_data.size() };
-
-  const auto result = pi3hat->Cycle(input);
+  const auto result = pi3hat->Cycle(input.pi3hat_input);
   CheckError(result.error);
 
   for (size_t i = 0; i < result.rx_can_size; i++) {
-    std::cout << "CAN " << FormatCanFrame(rx_frames.at(i)) << "\n";
+    std::cout << "CAN " << FormatCanFrame(input.rx_frames.at(i)) << "\n";
   }
 
   if (args.read_rf) {
@@ -400,11 +409,11 @@ void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
   }
 
   for (size_t i = 0; i < result.rx_rf_size; i++) {
-    std::cout << "RF  " << FormatRf(rx_rf_data.at(i)) << "\n";
+    std::cout << "RF  " << FormatRf(input.rx_rf_data.at(i)) << "\n";
   }
 
   if (result.attitude_present) {
-    std::cout << "ATT " << FormatAttitude(attitude) << "\n";
+    std::cout << "ATT " << FormatAttitude(input.attitude) << "\n";
   }
 }
 
@@ -419,7 +428,7 @@ int do_main(int argc, char** argv) {
   Pi3Hat pi3hat{MakeConfig(args)};
 
   if (args.run) {
-    Run(&pi3hat);
+    Run(&pi3hat, args);
   } else if (args.info) {
     DoInfo(&pi3hat);
   } else if (args.performance) {
