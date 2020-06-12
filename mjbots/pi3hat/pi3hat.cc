@@ -575,17 +575,36 @@ class AuxSpi {
     size_t offset = 0;
     while (offset < size) {
       while (spi_->stat & AUXSPI_STAT_TX_FULL);
-      const uint32_t data_value = 0
-                                  | (0 << 29) // CS
-                                  | (8 << 24) // data width
-                                  | (data[offset] << 16) // data
-                                  ;
-      if (offset + 1 == size) {
+
+      const size_t remaining = size - offset;
+      const size_t to_write = std::min<size_t>(remaining, 3);
+
+      // The Auxiliary SPI controller inserts a small dead time
+      // between each FIFO entry, even if the FIFO is all full up.
+      // Thus, we work to minimize this by using all 3 available bytes
+      // of each FIFO entry when possible.
+      const uint32_t data_value =
+          0
+          | (0 << 29) // CS
+          | ((to_write * 8) << 24) // data width
+          | [&]() {
+        if (to_write == 1) {
+          return data[offset] << 16;
+        } else if (to_write == 2) {
+          return (data[offset] << 16) | (data[offset + 1] << 8);
+        } else if (to_write == 3) {
+          return (data[offset] << 16) | (data[offset + 1] << 8) | data[offset + 2];
+        }
+        // We should never get here.
+        return 0;
+      }();
+
+      if (offset + to_write == size) {
         spi_->io = data_value;
       } else {
         spi_->txhold = data_value;
       }
-      offset++;
+      offset += to_write;
     }
 
     // Discard anything in the RX fifo.
@@ -632,16 +651,17 @@ class AuxSpi {
     while (remaining_read) {
       // Make sure we don't write more than we have read spots remaining
       // so that we can never overflow the RX fifo.
-      const bool can_write = (remaining_read - remaining_write) < 3;
+      const bool can_write = (remaining_read - remaining_write) < 9;
       if (can_write &&
           remaining_write && (spi_->stat & AUXSPI_STAT_TX_FULL) == 0) {
+        const size_t to_read = std::min<size_t>(remaining_read, 3);
         const uint32_t to_write =
             0
             | (0 << 29) // CS
-            | (8 << 24) // data width
+            | ((8 * to_read) << 24) // data width
             | (0) // data
             ;
-        remaining_write--;
+        remaining_write -= to_read;
         if (remaining_write == 0) {
           spi_->io = to_write;
         } else {
@@ -650,9 +670,20 @@ class AuxSpi {
       }
 
       if (remaining_read && (spi_->stat & AUXSPI_STAT_RX_EMPTY) == 0) {
-        *ptr = spi_->io & 0xff;
-        ptr++;
-        remaining_read--;
+        const uint32_t value = spi_->io;
+
+        const size_t byte_count = std::min<size_t>(remaining_read, 3);
+        if (byte_count == 1) {
+          *ptr++ = value & 0xff;
+        } else if (byte_count == 2) {
+          *ptr++ = (value >> 8) & 0xff;
+          *ptr++ = (value >> 0) & 0xff;
+        } else if (byte_count == 3) {
+          *ptr++ = (value >> 16) & 0xff;
+          *ptr++ = (value >> 8) & 0xff;
+          *ptr++ = (value >> 0) & 0xff;
+        }
+        remaining_read -= byte_count;
       }
     }
   }
