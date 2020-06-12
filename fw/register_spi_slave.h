@@ -59,17 +59,27 @@ class RegisterSPISlave {
     PinName sclk = NC;
     PinName ssel = NC;
     PinName status_led = NC;
+
+    DMA_Channel_TypeDef* rx_dma = DMA1_Channel2;
+    DMA_Channel_TypeDef* tx_dma = DMA1_Channel1;
   };
 
   RegisterSPISlave(fw::MillisecondTimer* timer,
                    const Pins& pins,
                    StartHandler start_handler, EndHandler end_handler)
       : timer_{timer},
+        dma_rx_{pins.rx_dma},
+        dma_tx_{pins.tx_dma},
         nss_{pins.ssel},
         status_led_{pins.status_led, 1},
         start_handler_(start_handler),
         end_handler_(end_handler) {
     g_impl_ = this;
+
+    __HAL_RCC_DMAMUX1_CLK_ENABLE();
+    __HAL_RCC_DMA1_CLK_ENABLE();
+    __HAL_RCC_DMA2_CLK_ENABLE();
+
     spi_ = [&]() {
       const auto spi_mosi = pinmap_peripheral(pins.mosi, PinMap_SPI_MOSI);
       const auto spi_miso = pinmap_peripheral(pins.miso, PinMap_SPI_MISO);
@@ -80,6 +90,49 @@ class RegisterSPISlave {
     }();
 
     MJ_ASSERT(spi_ != nullptr);
+
+    const auto channel_index = [&](DMA_Channel_TypeDef* channel) -> uint32_t {
+      if (channel < DMA2_Channel1) {
+        return ((u32(channel) - u32(DMA1_Channel1)) /
+                (u32(DMA1_Channel2) - u32(DMA1_Channel1))) << 2;
+      }
+      return ((u32(channel) - u32(DMA2_Channel1)) /
+              (u32(DMA2_Channel2) - u32(DMA2_Channel1))) << 2;
+    };
+
+    const auto select_dmamux = [&](DMA_Channel_TypeDef* channel) {
+      const auto base = (channel < DMA2_Channel1) ? DMAMUX1_Channel0 :
+#if defined (STM32G471xx) || defined (STM32G473xx) || defined (STM32G474xx) || defined (STM32G483xx) || defined (STM32G484xx)
+      DMAMUX1_Channel8;
+#elif defined (STM32G431xx) || defined (STM32G441xx) || defined (STM32GBK1CB)
+      DMAMUX1_Channel6;
+#else
+      DMAMUX1_Channel7;
+#endif /* STM32G4x1xx) */
+      return reinterpret_cast<DMAMUX_Channel_TypeDef*>(
+          u32(base) + (channel_index(channel) >> 2U) *
+          (u32(DMAMUX1_Channel1) - u32(DMAMUX1_Channel0)));
+    };
+
+    dmamux_rx_ = select_dmamux(dma_rx_);
+    dmamux_tx_ = select_dmamux(dma_tx_);
+
+    dma_rx_->CCR =
+        DMA_PERIPH_TO_MEMORY |
+        DMA_PINC_DISABLE |
+        DMA_MINC_ENABLE |
+        DMA_PDATAALIGN_BYTE |
+        DMA_MDATAALIGN_BYTE |
+        DMA_PRIORITY_HIGH;
+    dma_tx_->CCR =
+        DMA_MEMORY_TO_PERIPH |
+        DMA_PINC_DISABLE |
+        DMA_MINC_ENABLE |
+        DMA_PDATAALIGN_BYTE |
+        DMA_MDATAALIGN_BYTE |
+        DMA_PRIORITY_HIGH;
+    dmamux_rx_->CCR = GetSpiRxRequest(spi_) & DMAMUX_CxCR_DMAREQ_ID;
+    dmamux_tx_->CCR = GetSpiTxRequest(spi_) & DMAMUX_CxCR_DMAREQ_ID;
 
     pinmap_pinout(pins.mosi, PinMap_SPI_MOSI);
     pinmap_pinout(pins.miso, PinMap_SPI_MISO);
@@ -140,12 +193,25 @@ class RegisterSPISlave {
   }
 
   void ISR_HandleNssRise() {
+    // Stop all DMA and figure out how much was transferred.
+    dma_tx_->CCR &= ~(DMA_CCR_EN);
+    dma_rx_->CCR &= ~(DMA_CCR_EN);
+    spi_->CR2 &= ~(SPI_CR2_TXDMAEN | SPI_CR2_RXDMAEN);
+    // TODO: Clear any errors.
+
+    // Figure out how many we transferred.
+    const size_t rx_bytes = [&]() {
+      if (static_cast<int>(buffer_.tx.size()) > buffer_.rx.size()) {
+        return buffer_.tx.size() - dma_tx_->CNDTR;
+      } else {
+        return buffer_.rx.size() - dma_rx_->CNDTR;
+      }
+    }();
+
     // Mark the transfer as completed if we actually started one.
     if (mode_ == kTransfer) {
-      end_handler_(current_address_, rx_bytes_);
+      end_handler_(current_address_, rx_bytes);
     }
-    tx_bytes_ = 0;
-    rx_bytes_ = 0;
 
     // We need to flush out the peripheral's FIFOs and get it ready to
     // start again.  Sigh... ST provides no way to do this aside from
@@ -166,6 +232,8 @@ class RegisterSPISlave {
   }
 
   void ISR_SPI() {
+    if (mode_ == kTransfer) { return; }
+
     while (spi_->SR & SPI_SR_RXNE) {
       switch (mode_) {
         case kInactive: {
@@ -176,33 +244,42 @@ class RegisterSPISlave {
         case kWaitingAddress: {
           current_address_ = ReadRegister(&spi_->DR);
           buffer_ = start_handler_(current_address_);
-          ISR_PrepareTx();
+          ISR_StartDMA();
           mode_ = kTransfer;
 
           break;
         }
         case kTransfer: {
-          const auto this_byte = ReadRegister(&spi_->DR);
-          if (rx_bytes_ < buffer_.rx.size()) {
-            buffer_.rx[rx_bytes_] = this_byte;
-          }
-          rx_bytes_++;
-          ISR_PrepareTx();
-
           break;
         }
       }
     }
   }
 
-  void ISR_PrepareTx() {
-    while (spi_->SR & SPI_SR_TXE) {
-      const size_t this_offset = tx_bytes_++;
-      const auto this_byte =
-          (this_offset < buffer_.tx.size()) ?
-          buffer_.tx[this_offset] : 0;
-      WriteRegister(&spi_->DR, this_byte);
+  void ISR_StartDMA() {
+    uint32_t en = 0;
+
+    dma_tx_->CNDTR = buffer_.tx.size();
+
+    if (buffer_.tx.size()) {
+      en |= SPI_CR2_TXDMAEN;
+
+      dma_tx_->CPAR = u32(&spi_->DR);
+      dma_tx_->CMAR = u32(&buffer_.tx[0]);
+      dma_tx_->CCR |= DMA_CCR_EN;
     }
+
+    dma_rx_->CNDTR = buffer_.rx.size();
+
+    if (buffer_.rx.size()) {
+      en |= SPI_CR2_RXDMAEN;
+
+      dma_rx_->CPAR = u32(&spi_->DR);
+      dma_rx_->CMAR = u32(&buffer_.rx[0]);
+      dma_rx_->CCR |= DMA_CCR_EN;
+    }
+
+    spi_->CR2 |= en;
   }
 
   template <typename T>
@@ -275,6 +352,24 @@ class RegisterSPISlave {
     mbed_die();
   }
 
+  uint32_t GetSpiTxRequest(SPI_TypeDef* spi) {
+    switch (u32(spi)) {
+      case SPI_1: return DMA_REQUEST_SPI1_TX;
+      case SPI_2: return DMA_REQUEST_SPI2_TX;
+      case SPI_3: return DMA_REQUEST_SPI3_TX;
+    }
+    mbed_die();
+  }
+
+  uint32_t GetSpiRxRequest(SPI_TypeDef* spi) {
+    switch (u32(spi)) {
+      case SPI_1: return DMA_REQUEST_SPI1_RX;
+      case SPI_2: return DMA_REQUEST_SPI2_RX;
+      case SPI_3: return DMA_REQUEST_SPI3_RX;
+    }
+    mbed_die();
+  }
+
   template <typename T>
   static uint32_t u32(T value) {
     return reinterpret_cast<uint32_t>(value);
@@ -283,6 +378,12 @@ class RegisterSPISlave {
   fw::MillisecondTimer* const timer_;
   SPI_HandleTypeDef spi_handle_ = {};
   SPI_TypeDef* spi_ = nullptr;
+
+  DMA_Channel_TypeDef* const dma_rx_;
+  DMA_Channel_TypeDef* const dma_tx_;
+  DMAMUX_Channel_TypeDef* dmamux_rx_ = nullptr;
+  DMAMUX_Channel_TypeDef* dmamux_tx_ = nullptr;
+
   InterruptIn nss_;
   DigitalOut status_led_;
 
@@ -298,8 +399,6 @@ class RegisterSPISlave {
   uint16_t current_address_ = 0;
 
   Buffer buffer_;
-  volatile size_t tx_bytes_ = 0;
-  volatile ssize_t rx_bytes_ = 0;
 
   static RegisterSPISlave* g_impl_;
 };
