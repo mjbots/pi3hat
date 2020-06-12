@@ -1,14 +1,5 @@
- * When multiple CAN packets were queued up for rx on one interface,
-   it didn't appear to report all of them
- * Need to be able to specify *which* ID we are expecting the reply from
-
- * Make pi3hat_tool --run use the arguments passed in for everything
- * Test performance of --run in terms of cycles per second
-
- * Request attitude in parallel with CAN
-
- * If a packet is sent to a non-existent device, the entire thing
-   hangs retransmitting forever
+ * Support configuring CAN devices
+ * Implement SPI DMA on STM32 to allow for higher frequency
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
@@ -16,7 +7,7 @@
  * Provide 5V pin header for external power
 
 DONE 2020-06-11
- * Tested on a full 4 buses
+ * Tested on full 4 buses
 
 DONE 2020-06-10
  * Got RF working in a basic way
