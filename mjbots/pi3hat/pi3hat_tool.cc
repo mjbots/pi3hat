@@ -16,6 +16,7 @@
 #include <unistd.h>
 
 #include <cmath>
+#include <fstream>
 #include <iostream>
 #include <limits>
 #include <string>
@@ -70,6 +71,8 @@ struct Arguments {
         performance = true;
       } else if (arg == "-r" || arg == "--run") {
         run = true;
+      } else if (arg == "--time-log") {
+        time_log = args.at(++i);
       } else {
         throw std::runtime_error("Unknown argument: " + arg);
       }
@@ -78,6 +81,7 @@ struct Arguments {
 
   bool help = false;
   bool run = false;
+  std::string time_log;
 
   int spi_speed_hz = -1;
   Euler mounting_deg = {0., 0., 0.};
@@ -122,6 +126,7 @@ void DisplayUsage() {
   std::cout << "  --info          display device info\n";
   std::cout << "  --performance   print runtime performance\n";
   std::cout << "  -r,--run        run a sample high rate cycle\n";
+  std::cout << "  --time-log F    when running, write a delta-t log\n";
 }
 
 Pi3Hat::Configuration MakeConfig(const Arguments& args) {
@@ -334,6 +339,11 @@ struct Input {
 void Run(Pi3Hat* pi3hat, const Arguments& args) {
   Input input{args};
 
+  std::unique_ptr<std::ofstream> time_of;
+  if (!args.time_log.empty()) {
+    time_of = std::make_unique<std::ofstream>(args.time_log);
+  }
+
   char buf[2048] = {};
   double filtered_period_s = 0.0;
   int64_t old_now = GetNow();
@@ -344,10 +354,19 @@ void Run(Pi3Hat* pi3hat, const Arguments& args) {
 
     {
       const auto now = GetNow();
-      const double delta_s = (now - old_now) * 1e-9;
+      const auto delta_ns = now - old_now;
+      const double delta_s = delta_ns * 1e-9;
       const double alpha = 0.98;
       filtered_period_s = alpha * filtered_period_s + (1.0 - alpha) * delta_s;
       old_now = now;
+
+      if (time_of) {
+        *time_of << delta_ns << "\n";
+      }
+    }
+
+    if (input.pi3hat_input.wait_for_attitude && !result.attitude_present) {
+      throw std::runtime_error("Missing attitude data");
     }
 
     if (result.attitude_present) {

@@ -338,6 +338,10 @@ class PrimarySpi {
   PrimarySpi(const PrimarySpi&) = delete;
   PrimarySpi& operator=(const PrimarySpi&) = delete;
 
+  Rpi3Gpio* gpio() {
+    return gpio_.get();
+  }
+
   void Write(int cs, int address, const char* data, size_t size) {
     BusyWaitUs(options_.cs_hold_us);
     Rpi3Gpio::ActiveLow cs_holder(gpio_.get(), kSpi0CS[cs]);
@@ -878,6 +882,17 @@ class Pi3Hat::Impl {
     device_attitude_ = {};
 
     // Busy loop until we get something.
+    if (wait) {
+      char buf[2] = {};
+      do {
+        primary_spi_.Read(0, 96, buf, sizeof(buf));
+        if (buf[1] == 1) { break; }
+        // If we spam the STM32 too hard, then it doesn't have any
+        // cycles left to actually work on the IMU.
+        ::usleep(50);
+      } while (true);
+    }
+
     do {
       primary_spi_.Read(
           0, 34,
@@ -1202,6 +1217,12 @@ class Pi3Hat::Impl {
     }
 
     ReadCan(input, expected_replies, &result);
+
+    primary_spi_.gpio()->SetGpioMode(13, Rpi3Gpio::OUTPUT);
+    static bool debug_toggle = false;
+    primary_spi_.gpio()->SetGpioOutput(13, debug_toggle);
+    debug_toggle = !debug_toggle;
+
     return result;
   }
 
