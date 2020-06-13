@@ -478,6 +478,8 @@ class AuxSpi {
     Options() {}
   };
 
+  static constexpr int kPack = 3;
+
   AuxSpi(const Options& options = Options()) {
     fd_ = ::open("/dev/mem", O_RDWR | O_SYNC);
     ThrowIfErrno(fd_ < 0, "rpi3_aux_spi: could not open /dev/mem");
@@ -518,7 +520,7 @@ class AuxSpi {
     spi_->cntl0 = (
         0
         | (clkdiv << 20)
-        | (7 << 17) // chip select defaults
+        | (0 << 17) // chip select defaults
         | (0 << 16) // post-input mode
         | (0 << 15) // variable CS
         | (1 << 14) // variable width
@@ -534,7 +536,7 @@ class AuxSpi {
 
     spi_->cntl1 = (
         0
-        | (7 << 8) // CS high time
+        | (0 << 8) // CS high time
         | (0 << 7) // tx empty IRQ
         | (0 << 6) // done IRQ
         | (1 << 1) // shift in MS first
@@ -577,7 +579,7 @@ class AuxSpi {
       while (spi_->stat & AUXSPI_STAT_TX_FULL);
 
       const size_t remaining = size - offset;
-      const size_t to_write = std::min<size_t>(remaining, 3);
+      const size_t to_write = std::min<size_t>(remaining, kPack);
 
       // The Auxiliary SPI controller inserts a small dead time
       // between each FIFO entry, even if the FIFO is all full up.
@@ -651,10 +653,12 @@ class AuxSpi {
     while (remaining_read) {
       // Make sure we don't write more than we have read spots remaining
       // so that we can never overflow the RX fifo.
-      const bool can_write = (remaining_read - remaining_write) < 9;
-      if (can_write &&
-          remaining_write && (spi_->stat & AUXSPI_STAT_TX_FULL) == 0) {
-        const size_t to_read = std::min<size_t>(remaining_read, 3);
+      const bool can_write = (remaining_read - remaining_write) < (3 * kPack);
+      const uint32_t cur_stat = spi_->stat;
+      const bool tx_full = (cur_stat & AUXSPI_STAT_TX_FULL) != 0;
+
+      if (can_write && remaining_write && !tx_full) {
+        const size_t to_read = std::min<size_t>(remaining_write, kPack);
         const uint32_t to_write =
             0
             | (0 << 29) // CS
@@ -672,16 +676,16 @@ class AuxSpi {
       if (remaining_read && (spi_->stat & AUXSPI_STAT_RX_EMPTY) == 0) {
         const uint32_t value = spi_->io;
 
-        const size_t byte_count = std::min<size_t>(remaining_read, 3);
-        if (byte_count == 1) {
-          *ptr++ = value & 0xff;
-        } else if (byte_count == 2) {
-          *ptr++ = (value >> 8) & 0xff;
-          *ptr++ = (value >> 0) & 0xff;
-        } else if (byte_count == 3) {
-          *ptr++ = (value >> 16) & 0xff;
-          *ptr++ = (value >> 8) & 0xff;
-          *ptr++ = (value >> 0) & 0xff;
+        const size_t byte_count = std::min<size_t>(remaining_read, kPack);
+        switch (byte_count) {
+          case 3:
+            *ptr++ = (value >> 16) & 0xff;
+            // fall through
+          case 2:
+            *ptr++ = (value >> 8) & 0xff;
+            // fall through
+          case 1:
+            *ptr++ = (value >> 0) & 0xff;
         }
         remaining_read -= byte_count;
       }
@@ -920,7 +924,7 @@ class Pi3Hat::Impl {
         if (buf[1] == 1) { break; }
         // If we spam the STM32 too hard, then it doesn't have any
         // cycles left to actually work on the IMU.
-        ::usleep(50);
+        BusyWaitUs(20);
       } while (true);
     }
 
@@ -1186,29 +1190,41 @@ class Pi3Hat::Impl {
       expected_replies.count[5],
     };
 
+    const bool to_check[] = {
+      bus_replies[0] || input.force_can_check & 0x06,
+      bus_replies[1] || input.force_can_check & 0x18,
+      bus_replies[2] || input.force_can_check & 0x20,
+    };
+
     const auto start_now = GetNow();
+    int64_t last_reply = start_now;
 
     while (true) {
+      bool any_found = false;
       // Then check for CAN responses as necessary.
-      if ((input.force_can_check & 0x06) || bus_replies[0]) {
-        bus_replies[0] -=
-            ReadCanFrames(aux_spi_, 0, 1, &input.rx_can, output);
+      if (to_check[0]) {
+        const int count = ReadCanFrames(aux_spi_, 0, 1, &input.rx_can, output);
+        bus_replies[0] -= count;
+        if (count) {
+          last_reply = GetNow();
+          any_found = true;
+        }
       }
-      if (input.force_can_check & 0x18 || bus_replies[1]) {
-        bus_replies[1] -=
-            ReadCanFrames(aux_spi_, 1, 3, &input.rx_can, output);
+      if (to_check[1]) {
+        const int count = ReadCanFrames(aux_spi_, 1, 3, &input.rx_can, output);
+        bus_replies[1] -= count;
+        if (count) {
+          last_reply = GetNow();
+          any_found = true;
+        }
       }
-      if ((input.force_can_check & 0x20) || bus_replies[2]) {
-        bus_replies[2] -=
-            ReadCanFrames(primary_spi_, 0, 5, &input.rx_can, output);
-      }
-
-      if (bus_replies[0] <= 0 &&
-          bus_replies[1] <= 0 &&
-          bus_replies[2] <= 0) {
-        // We've read all the replies we are expecting and have polled
-        // everything at least once if requested.
-        return;
+      if (to_check[2]) {
+        const int count = ReadCanFrames(primary_spi_, 0, 5, &input.rx_can, output);
+        bus_replies[2] -= count;
+        if (count) {
+          last_reply = GetNow();
+          any_found = true;
+        }
       }
 
       if (output->rx_can_size >= input.rx_can.size()) {
@@ -1219,9 +1235,28 @@ class Pi3Hat::Impl {
 
       const auto cur_now = GetNow();
       const auto delta_ns = cur_now - start_now;
-      if (delta_ns > input.timeout_ns) {
+      const auto since_last_ns = cur_now - last_reply;
+
+      if (bus_replies[0] <= 0 &&
+          bus_replies[1] <= 0 &&
+          bus_replies[2] <= 0 &&
+          delta_ns > input.min_tx_wait_ns &&
+          since_last_ns > input.rx_extra_wait_ns) {
+        // We've read all the replies we are expecting and have polled
+        // everything at least once if requested.
+        return;
+      }
+
+      if (delta_ns > input.timeout_ns && !
+          (delta_ns < input.min_tx_wait_ns ||
+           since_last_ns < input.rx_extra_wait_ns)) {
         // The timeout has expired.
         return;
+      }
+
+      if (!any_found) {
+        // Give the controllers a chance to rest.
+        BusyWaitUs(20);
       }
     }
   }

@@ -59,6 +59,10 @@ struct Arguments {
         read_can |= (1 << (std::stoi(args.at(++i))));
       } else if (arg == "--can-timeout-ns") {
         can_timeout_ns = std::stoull(args.at(++i));
+      } else if (arg == "--can-min-tx-wait-ns") {
+        can_min_tx_wait_ns = std::stoull(args.at(++i));
+      } else if (arg == "--can-rx-extra-wait-ns") {
+        can_rx_extra_wait_ns = std::stoull(args.at(++i));
       } else if (arg == "--write-rf") {
         write_rf.push_back(args.at(++i));
       } else if (arg == "--read-rf") {
@@ -91,6 +95,8 @@ struct Arguments {
   std::vector<std::string> write_can;
   uint32_t read_can = 0;
   int64_t can_timeout_ns = 0;
+  int64_t can_min_tx_wait_ns = 200000;
+  int64_t can_rx_extra_wait_ns = 40000;
 
   std::vector<std::string> write_rf;
   bool read_rf = false;
@@ -113,6 +119,7 @@ void DisplayUsage() {
   std::cout << "  --attitude-rate HZ  set the attitude rate\n";
   std::cout << "  --rf-id ID          set the RF id\n";
   std::cout << "  --can-timeout-ns T  set the receive timeout\n";
+  std::cout << "  --can-min-wait-ns T set the receive timeout\n";
   std::cout << "\n";
   std::cout << "Actions\n";
   std::cout << "  -c,--write-can  write a CAN frame (can be listed 0+)\n";
@@ -306,6 +313,8 @@ struct Input {
     }
 
     pi.timeout_ns = args.can_timeout_ns;
+    pi.min_tx_wait_ns = args.can_min_tx_wait_ns;
+    pi.rx_extra_wait_ns = args.can_rx_extra_wait_ns;
 
     // Try to make sure we have plenty of room to receive things.
     rx_frames.resize(std::max<size_t>(can_frames.size() * 2, 20u));

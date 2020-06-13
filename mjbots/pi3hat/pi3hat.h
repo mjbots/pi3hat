@@ -157,6 +157,14 @@ class Pi3Hat {
     /// spend writing as well.
     uint32_t timeout_ns = 0;
 
+    /// When waiting for CAN replies, guarantee to wait for at least
+    /// this many nanoseconds after the final transmission is sent
+    /// over SPI (not necessarily over the CAN bus).
+    uint32_t min_tx_wait_ns = 200000;
+
+    /// After each succesful receipt, wait this much longer for more.
+    uint32_t rx_extra_wait_ns = 40000;
+
     bool request_attitude = false;
 
     // If true, then the bias and uncertainty information will be
