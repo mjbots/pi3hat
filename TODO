@@ -1,10 +1,13 @@
  * Support configuring CAN devices
- * Implement SPI DMA on STM32 to allow for higher frequency
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
 
  * Provide 5V pin header for external power
+
+DONE 2020-06-12
+ * Implemented DMA
+ * Troubleshooted timing irregularities
 
 DONE 2020-06-11
  * Tested on full 4 buses
