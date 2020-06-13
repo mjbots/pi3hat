@@ -234,7 +234,7 @@ class RegisterSPISlave {
   void ISR_SPI() {
     if (mode_ == kTransfer) { return; }
 
-    while (spi_->SR & SPI_SR_RXNE) {
+    if (spi_->SR & SPI_SR_RXNE) {
       switch (mode_) {
         case kInactive: {
           // Just ignore this.
