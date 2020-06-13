@@ -178,11 +178,6 @@ class RegisterSPISlave {
     init.NSSPMode = SPI_NSS_PULSE_DISABLE;
 
     HAL_SPI_Init(&spi_handle_);
-
-    // Enable the RXNE interrupt.
-    spi_->CR2 |= SPI_CR2_RXNEIE;
-
-    __HAL_SPI_ENABLE(&spi_handle_);
   }
 
   void PollMillisecond() {
@@ -224,6 +219,11 @@ class RegisterSPISlave {
   void ISR_HandleNssFall() {
     status_led_.write(0);
 
+    __HAL_SPI_ENABLE(&spi_handle_);
+
+    // Enable the RXNE interrupt.
+    spi_->CR2 |= SPI_CR2_RXNEIE;
+
     // Get ready to start receiving the address.
     mode_ = kWaitingAddress;
 
@@ -246,6 +246,9 @@ class RegisterSPISlave {
           buffer_ = start_handler_(current_address_);
           ISR_StartDMA();
           mode_ = kTransfer;
+
+          // We won't be using the SPI interrupts going forward.
+          spi_->CR2 &= ~SPI_CR2_RXNEIE;
 
           break;
         }
