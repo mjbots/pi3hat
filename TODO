@@ -1,4 +1,9 @@
  * Support configuring CAN devices
+ * Report CAN state and error flags
+
+ * In one instance, saw the CAN stm32 get hung in some way that caused
+   _tool -r to run very slow and use the timeout, despite single
+   instance appearing to get all the responses
 
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
