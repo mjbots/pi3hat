@@ -9,6 +9,7 @@ provides the following:
  * 4x independent 5Mbps CAN-FD buses
  * 1x 125kbps CAN bus
  * A 1kHz IMU and attitude reference system
+ * A spread spectrum nrf24l01 interface
 
 # Pinouts #
 
@@ -37,6 +38,20 @@ necessary.
 * Pin 2: CANL
 * Pin 3: Ground
 
+## J3 ##
+
+This 8 pin connector allows a nrf24l01 module to be connected.
+
+Pin 1 is closest to the J3 label.
+
+* Pin 1: IRQ
+* Pin 2: MISO
+* Pin 3: MOSI
+* Pin 4: SCK
+* Pin 5: CS
+* Pin 6: CE
+* Pin 7: 3.3V
+* Pin 8: GND
 
 # Usage  with client-side C++ library#
 
@@ -89,7 +104,8 @@ to a SPI bus on the Raspberry Pi:
   * Pin 29: IRQ  (BCM 5)
 
 * *Processor 3*: This processor provides the low-speed CAN interface,
-  the IMU, and the undocumented nrf24l01 logic.  It is connected to the Raspberry Pi SPI0 bus, CS0.
+  the IMU, and the nrf24l01 logic.  It is connected to the Raspberry
+  Pi SPI0 bus, CS0.
 
   * Pin 21: MISO (BCM 9)
   * Pin 19: MOSI (BCM 10)
@@ -221,3 +237,59 @@ These addresses are present only on processor 3.
   * uint32t _rate Hz_
 * *36* Write configuration
   * The same structure as for address 35.
+
+# RF Register Mapping #
+
+If a nrf24l01 module is attached, the pi3hat implements a spread
+spectrum receiver.  This receiver must be configured with the same ID
+as the transmitter for communication to take place.
+
+Each "slot" is transmitted independently and repeatedly according to
+the given bitmask schedule.  The individual RF frames occur at 50Hz,
+and each bit in the bitmask controls whether the data should be sent
+in that particular frame.  So 0xaaaaaaaa would result in the data
+being sent every other frame.
+
+* *48* Protocol version: A constant byte 0x11
+* *49* Read ID
+  * byte 0-3: Common RF ID
+* *50* Write ID
+* *51* Set data for transmission
+  * byte 0: Slot number (0-15)
+  * byte 1-4: Transmission schedule (little endian)
+  * byte 5+: Data
+* *52* Read status
+  * byte 0-3: uint32 rx slot counter, 2 bits per slot (little endian)
+    * each time new data is received from the transmitter, the 2 bit
+      counter for that slot is incremented
+  * byte 4-7: uint32 age since last lock from tx (little endian)
+* *64-79* Read data from remote transmitter
+  * byte 0-3: uint32 age in ms (little endian)
+  * byte 4: size (0-16)
+  * byte 5-20: data
+
+
+# Optional Raspberry Pi SD card image #
+
+The optional Raspberry Pi with SD card comes with RealtimePi flashed
+on it from https://github.com/guysoft/RealtimePi/releases
+Additionally, it is configured to present as a 5GHz wifi access point.
+The SSID is MjMech-xxxxxx, and the password is "WalkingRobots".  The
+user name and password are the default for the rpi, pi/raspberry
+
+The IP address is 192.168.16.47, you can ssh to it from linux:
+
+```
+ssh pi@192.168.16.47
+```
+
+In the home directory is a copy of the compiled `pi3hat_tool`, you can
+run it:
+
+```
+pi@realtimepi:~ $  sudo bash
+
+root@realtimepi:/home/pi# ./pi3hat_tool --read-att
+```
+
+Which will then display the current attitude information.
