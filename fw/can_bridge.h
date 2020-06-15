@@ -35,7 +35,7 @@ namespace fw {
 /// 1: Interface type
 ///    byte 0: the constant value 1
 /// 2: Receive status
-///    byte 0-6 - Size of up to 6 received frames.  0 means no frame
+///    byte 0-5 - Size of up to 6 received frames.  0 means no frame
 ///      is available.  this size includes the header, so is the total
 ///      number of bytes that must be read from register 3 to get a
 ///      complete frame
