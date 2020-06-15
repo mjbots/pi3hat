@@ -21,3 +21,20 @@ https://www.apache.org/licenses/LICENSE-2.0
 * docs/ - Reference documentation
 * mjbots/pi3hat/ - Client side C++ library
 * tools/ - bazel build configuration
+
+# FAQ #
+
+* Will this work on a Raspberry Pi 4?
+
+A: Likely, however, to achieve optimal performance you will want to
+use the `preempt_rt` kernel.  The only pre-built `preempt_rt` kernels
+are 4.19 or later.  Currently 4.19 `preempt_rt` kernels have
+undiagnosed timing or throttling issues and aren't recommended.
+
+This will be updated when those issues have been resolved and testing
+has been done on a pi 4.
+
+* Will this work on **insert random board here**?
+
+A: Maybe?  If it has the same pinout as a Raspberry Pi, can can be
+powered through the GPIO header with 5V 2.5A then there is a chance.
