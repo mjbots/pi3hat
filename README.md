@@ -49,4 +49,10 @@ has been done on a pi 4.
 * Will this work on **insert random board here**?
 
 A: Maybe?  If it has the same pinout as a Raspberry Pi, can can be
-powered through the GPIO header with 5V 2.5A then there is a chance.
+powered through the GPIO header with 5V @ 2.5A then there is a chance.
+
+* Can I use the Raspberry Pi Camera?
+
+A: If you install a higher GPIO riser then it is possible.  Samtec
+ESW-120-12-G-D works.  You can install one yourself, or contact
+info@mjbots.com to get one fitted at the factory.
