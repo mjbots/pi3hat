@@ -24,7 +24,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 
 # FAQ #
 
-* How do I get the best timing performance?
+## How do I get the best timing performance? ##
 
 A: We recommend using the following configuration:
  * A `preempt_rt` linux kernel (
@@ -36,7 +36,7 @@ http://unofficialpi.org/Distros/RealtimePi/nightly/old/2019-05-14_2019-04-08-rea
  * `chrt 99` to run the process at the maximum real time priority
  * `mlockall` to prevent linux from swapping any part of the process
 
-* Will this work on a Raspberry Pi 4?
+## Will this work on a Raspberry Pi 4? ##
 
 A: Likely, however, to achieve optimal performance you will want to
 use the `preempt_rt` kernel.  The only pre-built `preempt_rt` kernels
@@ -46,12 +46,12 @@ have undiagnosed timing or throttling issues and aren't recommended.
 This will be updated when those issues have been resolved and testing
 has been done on a pi 4.
 
-* Will this work on **insert random board here**?
+## Will this work on **insert random board here**? ##
 
 A: Maybe?  If it has the same pinout as a Raspberry Pi, can can be
 powered through the GPIO header with 5V @ 2.5A then there is a chance.
 
-* Can I use the Raspberry Pi Camera?
+## Can I use the Raspberry Pi Camera? ##
 
 A: If you install a higher GPIO riser then it is possible.  Samtec
 ESW-120-12-G-D works.  You can install one yourself, or contact
