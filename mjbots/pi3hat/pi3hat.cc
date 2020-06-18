@@ -44,16 +44,6 @@ namespace {
 ///////////////////////////////////////////////
 /// Random utility functions
 
-void write_u8(volatile uint32_t& address, uint8_t value) {
-  volatile uint8_t* u8_addr = reinterpret_cast<volatile uint8_t*>(&address);
-  *u8_addr = value;
-}
-
-uint8_t read_u8(volatile uint32_t& address) {
-  volatile uint8_t* u8_addr = reinterpret_cast<volatile uint8_t*>(&address);
-  return *u8_addr;
-}
-
 size_t RoundUpDlc(size_t value) {
   if (value == 0) { return 0; }
   if (value == 1) { return 1; }
