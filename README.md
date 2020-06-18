@@ -32,6 +32,8 @@ A: We recommend using the following configuration:
  * `chrt 99` to run the process at the maximum real time priority
  * `mlockall` to prevent linux from swapping any part of the process
 
+These are demonstrated in the `--realtime` option of `pi3hat_tool`.
+
 ## Will this work on a Raspberry Pi 4? ##
 
 A: Despite the name `pi3hat`, yes it works just fine on a Raspberry Pi

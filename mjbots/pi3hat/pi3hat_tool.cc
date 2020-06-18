@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <sched.h>
+#include <sys/mman.h>
+
 #include <time.h>
 #include <unistd.h>
 
@@ -63,6 +66,10 @@ struct Arguments {
         can_min_tx_wait_ns = std::stoull(args.at(++i));
       } else if (arg == "--can-rx-extra-wait-ns") {
         can_rx_extra_wait_ns = std::stoull(args.at(++i));
+      } else if (arg == "--time-log") {
+        time_log = args.at(++i);
+      } else if (arg == "--realtime") {
+        realtime = std::stoull(args.at(++i));
       } else if (arg == "--write-rf") {
         write_rf.push_back(args.at(++i));
       } else if (arg == "--read-rf") {
@@ -75,8 +82,6 @@ struct Arguments {
         performance = true;
       } else if (arg == "-r" || arg == "--run") {
         run = true;
-      } else if (arg == "--time-log") {
-        time_log = args.at(++i);
       } else {
         throw std::runtime_error("Unknown argument: " + arg);
       }
@@ -97,6 +102,7 @@ struct Arguments {
   int64_t can_timeout_ns = 0;
   int64_t can_min_tx_wait_ns = 200000;
   int64_t can_rx_extra_wait_ns = 40000;
+  int realtime = -1;
 
   std::vector<std::string> write_rf;
   bool read_rf = false;
@@ -120,6 +126,7 @@ void DisplayUsage() {
   std::cout << "  --rf-id ID          set the RF id\n";
   std::cout << "  --can-timeout-ns T  set the receive timeout\n";
   std::cout << "  --can-min-wait-ns T set the receive timeout\n";
+  std::cout << "  --realtime CPU      run in a realtime configuration on a CPU\n";
   std::cout << "\n";
   std::cout << "Actions\n";
   std::cout << "  -c,--write-can  write a CAN frame (can be listed 0+)\n";
@@ -445,6 +452,37 @@ void SingleCycle(Pi3Hat* pi3hat, const Arguments& args) {
   }
 }
 
+void ConfigureRealtime(const Arguments& args) {
+  {
+    cpu_set_t cpuset = {};
+    CPU_ZERO(&cpuset);
+    CPU_SET(args.realtime, &cpuset);
+
+    const int r = ::sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
+    if (r < 0) {
+      throw std::runtime_error("Error setting CPU affinity");
+    }
+
+    std::cout << "Affinity set to " << args.realtime << "\n";
+  }
+
+  {
+    struct sched_param params = {};
+    params.sched_priority = 10;
+    const int r = ::sched_setscheduler(0, SCHED_RR, &params);
+    if (r < 0) {
+      throw std::runtime_error("Error setting realtime scheduler");
+    }
+  }
+
+  {
+    const int r = ::mlockall(MCL_CURRENT | MCL_FUTURE);
+    if (r < 0) {
+      throw std::runtime_error("Error locking memory");
+    }
+  }
+}
+
 int do_main(int argc, char** argv) {
   Arguments args({argv + 1, argv + argc});
 
@@ -454,6 +492,10 @@ int do_main(int argc, char** argv) {
   }
 
   Pi3Hat pi3hat{MakeConfig(args)};
+
+  if (args.realtime >= 0) {
+    ConfigureRealtime(args);
+  }
 
   if (args.run) {
     Run(&pi3hat, args);
