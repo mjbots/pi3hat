@@ -21,6 +21,7 @@ cc_library(
     hdrs = ["pi3hat.h"],
     srcs = ["pi3hat.cc"],
     deps = ["@raspberrypi-firmware"],
+    features = ["dbg"],
 )
 
 cc_binary(
