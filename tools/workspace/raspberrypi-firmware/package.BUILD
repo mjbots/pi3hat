@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2018 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -17,25 +17,12 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "libpi3hat",
-    hdrs = ["pi3hat.h"],
-    srcs = ["pi3hat.cc"],
-    deps = ["@raspberrypi-firmware"],
-)
-
-cc_binary(
-    name = "pi3hat_tool",
-    srcs = ["pi3hat_tool.cc"],
-    deps = [
-        ":libpi3hat",
-        "@org_llvm_libcxx//:libcxx",
-    ],
-)
-
-filegroup(
-    name = "pi3hat",
-    srcs = [
-        ":libpi3hat",
-        ":pi3hat_tool",
+    name = "raspberrypi-firmware",
+    hdrs = glob(["hardfp/opt/vc/include/**/*.h"]),
+    srcs = glob(["hardfp/opt/vc/lib/*.so"]),
+    includes = [
+        "hardfp/opt/vc/include",
+        "hardfp/opt/vc/include/interface/vcos",
+        "hardfp/opt/vc/include/interface/mmal",
     ],
 )

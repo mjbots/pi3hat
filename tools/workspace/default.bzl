@@ -17,6 +17,7 @@
 load("//tools/workspace/bazel_deps:repository.bzl", "bazel_deps_repository")
 load("//tools/workspace/rules_mbed:repository.bzl", "rules_mbed_repository")
 load("//tools/workspace/mjlib:repository.bzl", "mjlib_repository")
+load("//tools/workspace/raspberrypi-firmware:repository.bzl", "raspberrypi_firmware_repository")
 load("//tools/workspace/rpi_bazel:repository.bzl", "rpi_bazel_repository")
 
 def add_default_repositories(excludes = []):
@@ -26,5 +27,7 @@ def add_default_repositories(excludes = []):
         rules_mbed_repository()
     if "mjlib" not in excludes:
         mjlib_repository(name = "com_github_mjbots_mjlib")
+    if "raspberrypi-firmware" not in excludes:
+        raspberrypi_firmware_repository(name = "raspberrypi-firmware")
     if "rpi_bazel" not in excludes:
         rpi_bazel_repository(name = "rpi_bazel")

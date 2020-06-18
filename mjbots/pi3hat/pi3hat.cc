@@ -29,6 +29,8 @@
 #include <string>
 #include <vector>
 
+#include <bcm_host.h>
+
 char g_data_block[4096] = {};
 
 void copy_data(void* ptr) {
@@ -204,7 +206,6 @@ class SystemMmap {
 
 class Rpi3Gpio {
  public:
-  static constexpr uint32_t RASPI_23_PERI_BASE = 0x3F000000;
   static constexpr uint32_t GPIO_BASE          = 0x00200000;
 
   // static constexpr uint32_t INPUT = 0;
@@ -217,7 +218,7 @@ class Rpi3Gpio {
   // static constexpr uint32_t ALT_5 = 2;
 
   Rpi3Gpio(int dev_mem_fd)
-      : mmap_(dev_mem_fd, 4096, RASPI_23_PERI_BASE + GPIO_BASE),
+      : mmap_(dev_mem_fd, 4096, bcm_host_get_peripheral_address() + GPIO_BASE),
         gpio_(reinterpret_cast<volatile uint32_t*>(mmap_.ptr())) {}
 
   void SetGpioMode(uint32_t gpio, uint32_t function) {
@@ -261,7 +262,6 @@ class Rpi3Gpio {
 };
 
 
-constexpr uint32_t RASPI_23_PERI_BASE = 0x3F000000;
 constexpr uint32_t kSpi0CS0 = 8;
 constexpr uint32_t kSpi0CS1 = 7;
 constexpr uint32_t kSpi0CS[] = {kSpi0CS0, kSpi0CS1};
@@ -291,7 +291,8 @@ class PrimarySpi {
     fd_ = ::open("/dev/mem", O_RDWR | O_SYNC);
     ThrowIfErrno(fd_ < 0, "pi3hat: could not open /dev/mem");
 
-    spi_mmap_ = SystemMmap(fd_, 4096, RASPI_23_PERI_BASE + SPI_BASE);
+    spi_mmap_ = SystemMmap(
+        fd_, 4096, bcm_host_get_peripheral_address() + SPI_BASE);
     spi_ = reinterpret_cast<volatile Bcm2835Spi*>(
         static_cast<char*>(spi_mmap_.ptr()));
 
@@ -321,7 +322,7 @@ class PrimarySpi {
         | (0 << 8) // DMAEN
         | (0 << 7) // TA
         | (0 << 6) // CSPOL
-        | (3 << 4) // CLEAR
+        | (0 << 4) // CLEAR
         | (0 << 3) // CPOL
         | (0 << 2) // CPHA
         | (0 << 0) // CS
@@ -347,17 +348,13 @@ class PrimarySpi {
     Rpi3Gpio::ActiveLow cs_holder(gpio_.get(), kSpi0CS[cs]);
     BusyWaitUs(options_.cs_hold_us);
 
-    spi_->cs |= SPI_CS_TA;
+    spi_->cs |= (SPI_CS_TA | (3 << 4));  // CLEAR
 
-    write_u8(spi_->fifo, (address & 0x00ff));
+    spi_->fifo = address & 0xff;
 
-    while ((spi_->cs & SPI_CS_DONE) == 0) {
-      if (spi_->cs & SPI_CS_RXD) {
-        (void) spi_->fifo;
-      }
-    }
-
-    spi_->cs |= SPI_CS_DONE;
+    // We are done when we have received one byte back.
+    while ((spi_->cs & SPI_CS_RXD) == 0);
+    (void) spi_->fifo;
 
     if (size != 0) {
       // Wait our address hold time.
@@ -366,7 +363,7 @@ class PrimarySpi {
       size_t offset = 0;
       while (offset < size) {
         while ((spi_->cs & SPI_CS_TXD) == 0);
-        write_u8(spi_->fifo, data[offset]);
+        spi_->fifo =  data[offset];
         offset++;
       }
 
@@ -386,24 +383,17 @@ class PrimarySpi {
     Rpi3Gpio::ActiveLow cs_holder(gpio_.get(), kSpi0CS[cs]);
     BusyWaitUs(options_.cs_hold_us);
 
-    spi_->cs |= SPI_CS_TA;
+    spi_->cs |= (SPI_CS_TA | (3 << 4));  // CLEAR
 
-    write_u8(spi_->fifo, (address & 0x00ff));
+    spi_->fifo = (address & 0x00ff);
 
-    while ((spi_->cs & SPI_CS_DONE) == 0) {
-      if (spi_->cs & SPI_CS_RXD) {
-        (void) spi_->fifo;
-      }
-    }
+    // We are done when we have received one byte back.
+    while ((spi_->cs & SPI_CS_RXD) == 0);
+    (void) spi_->fifo;
 
     if (size != 0) {
       // Wait our address hold time.
       BusyWaitUs(options_.address_hold_us);
-
-      // Discard the rx fifo.
-      while (spi_->cs & SPI_CS_RXD) {
-        (void) spi_->fifo;
-      }
 
       // Now we write out dummy values, reading values in.
       std::size_t remaining_read = size;
@@ -415,12 +405,12 @@ class PrimarySpi {
         const bool can_write = (remaining_read - remaining_write) < 16;
         if (can_write &&
             remaining_write && (spi_->cs & SPI_CS_TXD) != 0) {
-          write_u8(spi_->fifo, 0);
+          spi_->fifo = 0x00;
           remaining_write--;
         }
 
         if (remaining_read && (spi_->cs & SPI_CS_RXD) != 0) {
-          *ptr = read_u8(spi_->fifo);
+          *ptr = spi_->fifo & 0xff;
           ptr++;
           remaining_read--;
         }
@@ -484,7 +474,8 @@ class AuxSpi {
     fd_ = ::open("/dev/mem", O_RDWR | O_SYNC);
     ThrowIfErrno(fd_ < 0, "rpi3_aux_spi: could not open /dev/mem");
 
-    spi_mmap_ = SystemMmap(fd_, 4096, RASPI_23_PERI_BASE + AUX_BASE);
+    spi_mmap_ = SystemMmap(
+        fd_, 4096, bcm_host_get_peripheral_address() + AUX_BASE);
     auxenb_ = reinterpret_cast<volatile uint32_t*>(
         static_cast<char*>(spi_mmap_.ptr()) + 0x04);
     spi_ = reinterpret_cast<volatile Bcm2835AuxSpi*>(

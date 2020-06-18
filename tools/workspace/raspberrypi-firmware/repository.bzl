@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2018 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,28 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-package(default_visibility = ["//visibility:public"])
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-cc_library(
-    name = "libpi3hat",
-    hdrs = ["pi3hat.h"],
-    srcs = ["pi3hat.cc"],
-    deps = ["@raspberrypi-firmware"],
-)
 
-cc_binary(
-    name = "pi3hat_tool",
-    srcs = ["pi3hat_tool.cc"],
-    deps = [
-        ":libpi3hat",
-        "@org_llvm_libcxx//:libcxx",
-    ],
-)
-
-filegroup(
-    name = "pi3hat",
-    srcs = [
-        ":libpi3hat",
-        ":pi3hat_tool",
-    ],
-)
+def raspberrypi_firmware_repository(name):
+    http_archive(
+        name = name,
+        url = "https://github.com/raspberrypi/firmware/archive/1.20180417.tar.gz",
+        sha256 = "aa3b7dfc9760c4be47f23a6210b6b989cf95b92e695dd4682facccd6c712c3a5",
+        strip_prefix = "firmware-1.20180417",
+        build_file = Label("//tools/workspace/raspberrypi-firmware:package.BUILD"),
+    )
