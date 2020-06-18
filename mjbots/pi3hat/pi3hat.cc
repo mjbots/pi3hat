@@ -808,6 +808,9 @@ class Pi3Hat::Impl {
             return options;
           }()} {
 
+    // Verify the versions of all peripherals we will use.
+    VerifyVersions();
+
     // See if we need to update the IMU configuration.
     DeviceImuConfiguration original_imu_configuration;
     primary_spi_.Read(
@@ -873,6 +876,50 @@ class Pi3Hat::Impl {
                           config_.rf_id,
                           id_verify);
           });
+    }
+  }
+
+  void VerifyVersions() {
+    constexpr int kCanVersion = 0x02;
+    constexpr int kAttitudeVersion = 0x20;
+    constexpr int kRfVersion = 0x10;
+
+    auto read_byte = [&](auto* spi, int cs, int address) {
+      uint8_t data = 0;
+      spi->Read(cs, address, reinterpret_cast<char*>(&data), 1);
+      return data;
+    };
+
+    auto test_can = [&](auto* spi, int cs, const char* name) {
+      const auto version = read_byte(spi, cs, 0);
+      if (version != kCanVersion) {
+        throw std::runtime_error(
+            Format(
+                "Processor '%s' has incorrect CAN SPI version %d != %d",
+                name, version, kCanVersion));
+      }
+    };
+
+    test_can(&primary_spi_, 0, "aux");
+    test_can(&aux_spi_, 0, "can1");
+    test_can(&aux_spi_, 1, "can2");
+
+
+    const auto attitude_version = read_byte(&primary_spi_, 0, 32);
+    if (attitude_version != kAttitudeVersion) {
+      throw std::runtime_error(
+          Format(
+              "Incorrect attitude version %d != %d",
+              attitude_version, kAttitudeVersion));
+    }
+
+
+    const auto rf_version = read_byte(&primary_spi_, 0, 48);
+    if (rf_version != kRfVersion) {
+      throw std::runtime_error(
+          Format(
+              "Incorrect RF version %d != %d",
+              rf_version, kRfVersion));
     }
   }
 

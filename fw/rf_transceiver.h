@@ -24,7 +24,7 @@ namespace fw {
 
 /// Exposes the RF transceiver through the following SPI registers.
 ///  48: Protocol version:
-///   byte0: 0x11
+///   byte0: 0x10
 ///  49: Read ID
 ///   byte0-3: ID
 ///  50: Write ID
