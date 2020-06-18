@@ -27,10 +27,6 @@ https://www.apache.org/licenses/LICENSE-2.0
 ## How do I get the best timing performance? ##
 
 A: We recommend using the following configuration:
- * A `preempt_rt` linux kernel (
-http://unofficialpi.org/Distros/RealtimePi/nightly/old/2019-05-14_2019-04-08-realtimepi-stretch-lite-0.4.0.zip
-   from https://github.com/guysoft/RealtimePi/releases is known to
-   work pretty well)
  * `isolcpus` and `sched_setaffinity` used to keep linux from running
    on the processor interfacing with the pi3hat
  * `chrt 99` to run the process at the maximum real time priority
@@ -38,13 +34,8 @@ http://unofficialpi.org/Distros/RealtimePi/nightly/old/2019-05-14_2019-04-08-rea
 
 ## Will this work on a Raspberry Pi 4? ##
 
-A: Likely, however, to achieve optimal performance you will want to
-use the `preempt_rt` kernel.  The only pre-built `preempt_rt` kernels
-for the pi 4 are 4.19 or later with buster.  Currently those images
-have undiagnosed timing or throttling issues and aren't recommended.
-
-This will be updated when those issues have been resolved and testing
-has been done on a pi 4.
+A: Despite the name `pi3hat`, yes it works just fine on a Raspberry Pi
+4 too.
 
 ## Will this work on **insert random board here**? ##
 
