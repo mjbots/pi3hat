@@ -39,6 +39,12 @@ These are demonstrated in the `--realtime` option of `pi3hat_tool`.
 A: Despite the name `pi3hat`, yes it works just fine on a Raspberry Pi
 4 too.
 
+## Do I need to use the XT 30 input connector? ##
+
+A: Nope.  You can power the Raspberry Pi with through any means.  The
+pi3hat internally only uses the 3.3V output from the Raspberry Pi, and
+the input connector is just an independent mechanism to power the Pi.
+
 ## Will this work on **insert random board here**? ##
 
 A: Maybe?  If it has the same pinout as a Raspberry Pi, can can be
