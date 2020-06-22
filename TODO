@@ -9,6 +9,7 @@
    servos, for instance can be sent with a 1 byte SPI command.
 
  * Provide 5V pin header for external power
+ * Add voltage sensing
 
 DONE 2020-06-12
  * Implemented DMA
