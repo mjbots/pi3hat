@@ -18,6 +18,7 @@
 #include <cmath>
 #include <cstdint>
 #include <cstdlib>
+#include <cstring>
 #include <limits>
 
 /// @file
@@ -303,6 +304,7 @@ class WriteCombiner {
           throw std::logic_error("unreachable");
         }
       }
+      return 0x00;
     }();
 
     if (count <= 3) {
@@ -370,7 +372,8 @@ class MultiplexParser {
 
       if (cmd >= 0x20 && cmd < 0x30) {
         // This is a regular reply of some sort.
-        current_resolution_ = [id = (cmd >> 2) & 0x3]() {
+        const auto id = (cmd >> 2) & 0x03;
+        current_resolution_ = [id]() {
           switch (id) {
             case 0: return Resolution::kInt8;
             case 1: return Resolution::kInt16;

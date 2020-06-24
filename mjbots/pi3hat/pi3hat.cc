@@ -1086,7 +1086,9 @@ class Pi3Hat::Impl {
       bool any_sent = false;
       for (const int bus : { 1, 3, 2, 4 }) {
         auto& offset = bus_offset[bus];
-        if (offset >= can_packets_[bus].size()) { continue; }
+        if (offset >= static_cast<int>(can_packets_[bus].size())) {
+          continue;
+        }
         const auto& can_packet = input.tx_can[can_packets_[bus][offset]];
         offset++;
 
