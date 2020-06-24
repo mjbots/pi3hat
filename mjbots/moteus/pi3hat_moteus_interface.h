@@ -183,7 +183,7 @@ class Pi3HatMoteusInterface {
     for (size_t i = 0; i < output.rx_can_size && i < data_.replies.size(); i++) {
       const auto& can = rx_can_[i];
 
-      data_.replies[i].id = can.id & 0x7f00 >> 8;
+      data_.replies[i].id = (can.id & 0x7f00) >> 8;
       data_.replies[i].result = moteus::ParseQueryResult(can.data, can.size);
       result.query_result_size = i + 1;
     }
