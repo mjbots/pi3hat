@@ -45,8 +45,8 @@ This 8 pin connector allows a nrf24l01 module to be connected.
 Pin 1 is closest to the J3 label.
 
 * Pin 1: IRQ
-* Pin 2: MISO
-* Pin 3: MOSI
+* Pin 2: CIPO
+* Pin 3: COPI
 * Pin 4: SCK
 * Pin 5: CS
 * Pin 6: CE
@@ -88,8 +88,8 @@ to a SPI bus on the Raspberry Pi:
   Raspberry Pi SPI1 bus, CS0.  Those are the following pins on the 40
   pin GPIO header:
 
-  * Pin 35: MISO (BCM 19)
-  * Pin 38: MOSI (BCM 20)
+  * Pin 35: CIPO (BCM 19)
+  * Pin 38: COPI (BCM 20)
   * Pin 40: SCLK (BCM 21)
   * Pin 12: CS   (BCM 18)
   * Pin 37: IRQ  (BCM 26)
@@ -97,8 +97,8 @@ to a SPI bus on the Raspberry Pi:
 * *Processor 2*: This processor provides the CAN-FD interfaces for JC3
   and JC4.  It is connected to the Raspberry Pi SPI1 bus, CS1.  Pins:
 
-  * Pin 35: MISO (BCM 19)
-  * Pin 38: MOSI (BCM 20)
+  * Pin 35: CIPO (BCM 19)
+  * Pin 38: COPI (BCM 20)
   * Pin 40: SCLK (BCM 21)
   * Pin 11: CS   (BCM 17)
   * Pin 29: IRQ  (BCM 5)
@@ -107,8 +107,8 @@ to a SPI bus on the Raspberry Pi:
   the IMU, and the nrf24l01 logic.  It is connected to the Raspberry
   Pi SPI0 bus, CS0.
 
-  * Pin 21: MISO (BCM 9)
-  * Pin 19: MOSI (BCM 10)
+  * Pin 21: CIPO (BCM 9)
+  * Pin 19: COPI (BCM 10)
   * Pin 23: SCLK (BCM 11)
   * Pin 24: CS   (BCM 8)
   * Pin 15: IRQ  (BCM 22)
