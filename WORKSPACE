@@ -16,8 +16,8 @@
 
 workspace(name = "com_github_mjbots_quad_pi3_hat")
 
-BAZEL_VERSION = "1.2.0"
-BAZEL_VERSION_SHA = "34eb178663a9f9c6765db72dd58958cdac64c5f08dd51e5b67e28d466079bd1e"
+BAZEL_VERSION = "3.4.1"
+BAZEL_VERSION_SHA = "1a64c807716e10c872f1618852d95f4893d81667fe6e691ef696489103c9b460"
 
 load("//tools/workspace:default.bzl", "add_default_repositories")
 
