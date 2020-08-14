@@ -44,3 +44,11 @@ mbed_register(
 load("@com_github_mjbots_bazel_deps//tools/workspace:default.bzl",
      bazel_deps_add = "add_default_repositories")
 bazel_deps_add()
+
+load("@moteus//tools/workspace:default.bzl",
+     moteus_add = "add_default_repositories")
+moteus_add()
+
+load("@com_github_mjbots_mjlib//tools/workspace:default.bzl",
+     mjlib_add = "add_default_repositories")
+mjlib_add()

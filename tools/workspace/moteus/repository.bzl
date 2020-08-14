@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2018-2019 Josh Pieper, jjp@pobox.com.
+# Copyright 2018-2020 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,10 +16,10 @@
 
 load("//tools/workspace:github_archive.bzl", "github_archive")
 
-def bazel_deps_repository(name):
+def moteus_repository(name):
     github_archive(
         name = name,
-        repo = "mjbots/bazel_deps",
-        commit = "ce1cbb79f6422cc79334eb7a8932b21c79dd30e2",
-        sha256 = "effa48a0c77dc033f6551099b2fdd07f67e0c31ce35c77725a8126855ad0ae60",
+        repo = "mjbots/moteus",
+        commit = "83031c1cde18db4f08abba84cf2b89b0175dfd10",
+        sha256 = "43c07559eb735ced0dad2152c1139e287477e4779e0ef31787f03681d00d5ebc",
     )
