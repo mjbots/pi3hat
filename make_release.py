@@ -48,6 +48,9 @@ def main():
 
     run(f'cp bazel-bin/fw/pi3_hat.elf {outdir}/{datestr}-pi3hat-{git_hash}.elf')
 
+    run('tools/bazel build --config=pi -c opt //:pi3hat_tools')
+    run(f'cp bazel-bin/pi3hat_tools.tar.bz2 {outdir}/{datestr}-pi3hat_tools-{git_hash}.tar.bz2')
+
     print()
     print('DONE')
 
