@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2018 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,29 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
-filegroup(
-    name = "target",
-    srcs = [
-        "//fw:pi3_hat.bin",
-    ],
-)
 
-filegroup(
-    name = "host",
-    srcs = [
-        "//mjbots/pi3hat",
-        "//mjbots/moteus:moteus_tool",
-    ],
-)
-
-pkg_tar(
-    name = "pi3hat_tools",
-    extension = "tar.bz2",
-    package_dir = "pi3hat_tools",
-    srcs = [
-        "//mjbots/pi3hat:pi3hat_tool",
-        "//mjbots/moteus:moteus_tool",
-    ],
-)
+def rules_pkg_repository(name):
+    http_archive(
+        name = name,
+        urls = [
+            "https://github.com/bazelbuild/rules_pkg/releases/download/0.2.4/rules_pkg-0.2.4.tar.gz",
+        ],
+        sha256 = "4ba8f4ab0ff85f2484287ab06c0d871dcb31cc54d439457d28fd4ae14b18450a",
+    )

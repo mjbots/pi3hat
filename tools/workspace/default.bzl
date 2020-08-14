@@ -20,6 +20,7 @@ load("//tools/workspace/mjlib:repository.bzl", "mjlib_repository")
 load("//tools/workspace/moteus:repository.bzl", "moteus_repository")
 load("//tools/workspace/raspberrypi-firmware:repository.bzl", "raspberrypi_firmware_repository")
 load("//tools/workspace/rpi_bazel:repository.bzl", "rpi_bazel_repository")
+load("//tools/workspace/rules_pkg:repository.bzl", "rules_pkg_repository")
 
 def add_default_repositories(excludes = []):
     if "bazel_deps" not in excludes:
@@ -34,3 +35,5 @@ def add_default_repositories(excludes = []):
         raspberrypi_firmware_repository(name = "raspberrypi-firmware")
     if "rpi_bazel" not in excludes:
         rpi_bazel_repository(name = "rpi_bazel")
+    if "rules_pkg" not in excludes:
+        rules_pkg_repository(name = "rules_pkg")
