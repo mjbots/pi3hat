@@ -23,5 +23,8 @@ filegroup(
 
 filegroup(
     name = "host",
-    srcs = ["//mjbots/pi3hat"],
+    srcs = [
+        "//mjbots/pi3hat",
+        "//mjbots/moteus:moteus_tool",
+    ],
 )
