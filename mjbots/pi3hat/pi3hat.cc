@@ -338,7 +338,7 @@ class PrimarySpi {
     Rpi3Gpio::ActiveLow cs_holder(gpio_.get(), kSpi0CS[cs]);
     BusyWaitUs(options_.cs_hold_us);
 
-    spi_->cs |= (SPI_CS_TA | (3 << 4));  // CLEAR
+    spi_->cs = (spi_->cs | (SPI_CS_TA | (3 << 4)));  // CLEAR
 
     spi_->fifo = address & 0xff;
 
@@ -365,7 +365,7 @@ class PrimarySpi {
       }
     }
 
-    spi_->cs &= ~SPI_CS_TA;
+    spi_->cs = (spi_->cs & (~SPI_CS_TA));
   }
 
   void Read(int cs, int address, char* data, size_t size) {
@@ -373,7 +373,7 @@ class PrimarySpi {
     Rpi3Gpio::ActiveLow cs_holder(gpio_.get(), kSpi0CS[cs]);
     BusyWaitUs(options_.cs_hold_us);
 
-    spi_->cs |= (SPI_CS_TA | (3 << 4));  // CLEAR
+    spi_->cs = (spi_->cs | (SPI_CS_TA | (3 << 4)));  // CLEAR
 
     spi_->fifo = (address & 0x00ff);
 
@@ -407,7 +407,7 @@ class PrimarySpi {
       }
     }
 
-    spi_->cs &= ~SPI_CS_TA;
+    spi_->cs = (spi_->cs & (~SPI_CS_TA));
   }
 
  private:
@@ -485,12 +485,12 @@ class AuxSpi {
     gpio_->SetGpioMode(21, Rpi3Gpio::ALT_4);
 
     // Start by disabling it to try and get to a known good state.
-    *auxenb_ &= ~0x02;
+    *auxenb_ = (*auxenb_ & (~0x02));
 
     BusyWaitUs(10);
 
     // Enable the SPI peripheral.
-    *auxenb_ |= 0x02;  // SPI1 enable
+    *auxenb_ = (*auxenb_ | 0x02);  // SPI1 enable
 
     spi_->cntl1 = 0;
     spi_->cntl0 = (1 << 9); // clear fifos
