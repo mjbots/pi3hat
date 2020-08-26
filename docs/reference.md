@@ -271,17 +271,19 @@ being sent every other frame.
 
 # Optional Raspberry Pi SD card image #
 
-The optional Raspberry Pi with SD card comes with RealtimePi flashed
-on it from https://github.com/guysoft/RealtimePi/releases
-Additionally, it is configured to present as a 5GHz wifi access point.
-The SSID is MjMech-xxxxxx, and the password is "WalkingRobots".  The
-user name and password are the default for the rpi, pi/raspberry
+The optional Raspberry Pi with SD card comes with a non-GUI image
+flashed on it from Raspberry Pi.  Additionally, it is configured to
+present as a 5GHz wifi access point.  The SSID is mjbots-xxxxxx, and
+the password is "WalkingRobots".  The user name and password are the
+default for the rpi, pi/raspberry
 
-The IP address is 192.168.16.47, you can ssh to it from linux:
+The wifi IP address is 192.168.16.47, you can ssh to it from linux:
 
 ```
 ssh pi@192.168.16.47
 ```
+
+The ethernet address is 192.168.17.47.
 
 In the home directory is a copy of the compiled `pi3hat_tool`, you can
 run it:
@@ -289,7 +291,7 @@ run it:
 ```
 pi@realtimepi:~ $  sudo bash
 
-root@realtimepi:/home/pi# ./pi3hat_tool --read-att
+root@realtimepi:/home/pi# ./pi3hat_tools/pi3hat_tool --read-att
 ```
 
 Which will then display the current attitude information.
