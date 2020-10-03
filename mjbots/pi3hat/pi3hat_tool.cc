@@ -12,6 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// @file
+///
+/// NOTE: This file can be compiled manually on a raspberry pi using
+/// the following command line:
+///
+/// g++ -L /opt/vc/lib -I /opt/vc/include -l bcm_host -std=c++11 pi3hat_tool.cc pi3hat.cc -o pi3hat_tool
+
+
 #include <sched.h>
 #include <sys/mman.h>
 
