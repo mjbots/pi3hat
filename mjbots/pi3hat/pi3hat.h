@@ -67,18 +67,30 @@ struct Quaternion {
   double x = 0.0;
   double y = 0.0;
   double z = 0.0;
+
+  Quaternion() {}
+  Quaternion(double w_in, double x_in, double y_in, double z_in)
+      : w(w_in), x(x_in), y(y_in), z(z_in) {}
 };
 
 struct Point3D {
   double x = 0.0;
   double y = 0.0;
   double z = 0.0;
+
+  Point3D() {}
+  Point3D(double x_in, double y_in, double z_in)
+      : x(x_in), y(y_in), z(z_in) {}
 };
 
 struct Euler {
   double yaw = 0.0;
   double pitch = 0.0;
   double roll = 0.0;
+
+  Euler() {}
+  Euler(double yaw_in, double pitch_in, double roll_in)
+      : yaw(yaw_in), pitch(pitch_in), roll(roll_in) {}
 };
 
 struct Attitude {

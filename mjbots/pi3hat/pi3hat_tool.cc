@@ -22,6 +22,7 @@
 #include <fstream>
 #include <iostream>
 #include <limits>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -93,7 +94,7 @@ struct Arguments {
   std::string time_log;
 
   int spi_speed_hz = -1;
-  Euler mounting_deg = {0., 0., 0.};
+  Euler mounting_deg;
   uint32_t attitude_rate_hz = 400;
   uint32_t rf_id = 5678;
 
@@ -357,7 +358,7 @@ void Run(Pi3Hat* pi3hat, const Arguments& args) {
 
   std::unique_ptr<std::ofstream> time_of;
   if (!args.time_log.empty()) {
-    time_of = std::make_unique<std::ofstream>(args.time_log);
+    time_of.reset(new std::ofstream(args.time_log));
   }
 
   char buf[2048] = {};

@@ -18,6 +18,7 @@
 
 #include <errno.h>
 #include <fcntl.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <sys/types.h>
@@ -26,6 +27,8 @@
 #include <unistd.h>
 
 #include <array>
+#include <cstdlib>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -34,7 +37,7 @@
 char g_data_block[4096] = {};
 
 void copy_data(void* ptr) {
-  std::memcpy(g_data_block, ptr, sizeof(g_data_block));
+  ::memcpy(g_data_block, ptr, sizeof(g_data_block));
 }
 
 namespace mjbots {
@@ -286,7 +289,7 @@ class PrimarySpi {
     spi_ = reinterpret_cast<volatile Bcm2835Spi*>(
         static_cast<char*>(spi_mmap_.ptr()));
 
-    gpio_ = std::make_unique<Rpi3Gpio>(fd_);
+    gpio_.reset(new Rpi3Gpio(fd_));
 
     gpio_->SetGpioOutput(kSpi0CS0, true);
     gpio_->SetGpioOutput(kSpi0CS1, true);
@@ -471,7 +474,7 @@ class AuxSpi {
     spi_ = reinterpret_cast<volatile Bcm2835AuxSpi*>(
         static_cast<char*>(spi_mmap_.ptr()) + 0x80);
 
-    gpio_ = std::make_unique<Rpi3Gpio>(fd_);
+    gpio_.reset(new Rpi3Gpio(fd_));
 
     gpio_->SetGpioOutput(kSpi1CS0, true);
     gpio_->SetGpioOutput(kSpi1CS1, true);
@@ -773,10 +776,10 @@ Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
   spi->Read(cs, 97, reinterpret_cast<char*>(&di), sizeof(di));
 
   Pi3Hat::ProcessorInfo result;
-  std::memcpy(&result.git_hash[0], &di.git_hash[0], sizeof(di.git_hash));
+  ::memcpy(&result.git_hash[0], &di.git_hash[0], sizeof(di.git_hash));
   result.dirty = di.dirty != 0;
-  std::memcpy(&result.serial_number[0], &di.serial_number[0],
-              sizeof(di.serial_number));
+  ::memcpy(&result.serial_number[0], &di.serial_number[0],
+           sizeof(di.serial_number));
   return result;
 }
 
@@ -879,33 +882,35 @@ class Pi3Hat::Impl {
     }
   }
 
-  void VerifyVersions() {
+  template <typename Spi>
+  uint8_t ReadByte(Spi* spi, int cs, int address) {
+    uint8_t data = 0;
+    spi->Read(cs, address, reinterpret_cast<char*>(&data), 1);
+    return data;
+  }
+
+  template <typename Spi>
+  void TestCan(Spi* spi, int cs, const char* name) {
     constexpr int kCanVersion = 0x02;
+
+    const auto version = ReadByte(spi, cs, 0);
+    if (version != kCanVersion) {
+      throw std::runtime_error(
+          Format(
+              "Processor '%s' has incorrect CAN SPI version %d != %d",
+              name, version, kCanVersion));
+    }
+  }
+
+  void VerifyVersions() {
     constexpr int kAttitudeVersion = 0x20;
     constexpr int kRfVersion = 0x10;
 
-    auto read_byte = [&](auto* spi, int cs, int address) {
-      uint8_t data = 0;
-      spi->Read(cs, address, reinterpret_cast<char*>(&data), 1);
-      return data;
-    };
+    TestCan(&primary_spi_, 0, "aux");
+    TestCan(&aux_spi_, 0, "can1");
+    TestCan(&aux_spi_, 1, "can2");
 
-    auto test_can = [&](auto* spi, int cs, const char* name) {
-      const auto version = read_byte(spi, cs, 0);
-      if (version != kCanVersion) {
-        throw std::runtime_error(
-            Format(
-                "Processor '%s' has incorrect CAN SPI version %d != %d",
-                name, version, kCanVersion));
-      }
-    };
-
-    test_can(&primary_spi_, 0, "aux");
-    test_can(&aux_spi_, 0, "can1");
-    test_can(&aux_spi_, 1, "can2");
-
-
-    const auto attitude_version = read_byte(&primary_spi_, 0, 32);
+    const auto attitude_version = ReadByte(&primary_spi_, 0, 32);
     if (attitude_version != kAttitudeVersion) {
       throw std::runtime_error(
           Format(
@@ -914,7 +919,7 @@ class Pi3Hat::Impl {
     }
 
 
-    const auto rf_version = read_byte(&primary_spi_, 0, 48);
+    const auto rf_version = ReadByte(&primary_spi_, 0, 48);
     if (rf_version != kRfVersion) {
       throw std::runtime_error(
           Format(
@@ -1005,7 +1010,7 @@ class Pi3Hat::Impl {
       spi_address = 5;
       buf[1] = (can_frame.id >> 8) & 0xff;
       buf[2] = can_frame.id & 0xff;
-      std::memcpy(&buf[3], can_frame.data, can_frame.size);
+      ::memcpy(&buf[3], can_frame.data, can_frame.size);
       for (std::size_t i = 3 + can_frame.size; i < size; i++) {
         buf[i] = 0x50;
       }
@@ -1018,7 +1023,7 @@ class Pi3Hat::Impl {
       buf[2] = (can_frame.id >> 16) & 0xff;
       buf[3] = (can_frame.id >> 8) & 0xff;
       buf[4] = (can_frame.id >> 0) & 0xff;
-      std::memcpy(&buf[5], can_frame.data, can_frame.size);
+      ::memcpy(&buf[5], can_frame.data, can_frame.size);
       for (std::size_t i = 5 + can_frame.size; i < size; i++) {
         buf[i] = 0x50;
       }
@@ -1112,7 +1117,7 @@ class Pi3Hat::Impl {
       buf[2] = (slot.priority >> 8) & 0xff;
       buf[3] = (slot.priority >> 16) & 0xff;
       buf[4] = (slot.priority >> 24) & 0xff;
-      std::memcpy(&buf[kHeaderSize], slot.data, slot.size);
+      ::memcpy(&buf[kHeaderSize], slot.data, slot.size);
 
       primary_spi_.Write(
           0, 51, reinterpret_cast<const char*>(&buf[0]),
@@ -1150,7 +1155,7 @@ class Pi3Hat::Impl {
       output_slot.slot = i;
       output_slot.age_ms = slot_data.age_ms;
       output_slot.size = slot_data.size;
-      std::memcpy(output_slot.data, slot_data.data, slot_data.size);
+      ::memcpy(output_slot.data, slot_data.data, slot_data.size);
     }
   }
 
@@ -1199,7 +1204,7 @@ class Pi3Hat::Impl {
                           (buf[3] << 8) |
                           (buf[4] << 0);
         output_frame.size = size - 5;
-        std::memcpy(output_frame.data, &buf[5], size - 5);
+        ::memcpy(output_frame.data, &buf[5], size - 5);
       }
 
       if (!any_read) {
