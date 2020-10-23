@@ -7,9 +7,6 @@ test --cpu=stm32g4
 build --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
 test --crosstool_top=@com_github_mjbots_rules_mbed//tools/cc_toolchain:toolchain
 
-build --auto_cpu_environment_group=@com_github_mjbots_rules_mbed//tools:cpus
-test --auto_cpu_environment_group=@com_github_mjbots_rules_mbed//tools:cpus
-
 build --nostart_end_lib
 test --nostart_end_lib
 
@@ -25,8 +22,13 @@ test:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
 build:pi --compiler=clang
 test:pi --compiler=clang
 
+build:host --compiler=compiler
+build:host --cpu=k8
+
 build --workspace_status_command=tools/workspace_status.sh
 test --workspace_status_command=tools/workspace_status.sh
 
 build --stamp
 test --stamp
+
+test --test_output=errors

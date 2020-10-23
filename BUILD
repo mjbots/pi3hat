@@ -24,7 +24,7 @@ filegroup(
 )
 
 filegroup(
-    name = "host",
+    name = "pi_target",
     srcs = [
         "//mjbots/pi3hat",
         "//mjbots/moteus:moteus_tool",
@@ -38,5 +38,12 @@ pkg_tar(
     srcs = [
         "//mjbots/pi3hat:pi3hat_tool",
         "//mjbots/moteus:moteus_tool",
+    ],
+)
+
+test_suite(
+    name = "host",
+    tests = [
+        "//mjbots/moteus:test",
     ],
 )

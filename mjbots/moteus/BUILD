@@ -25,3 +25,15 @@ cc_binary(
         "@org_llvm_libcxx//:libcxx",
     ],
 )
+
+cc_test(
+    name = "test",
+    srcs = [
+        "moteus_protocol.h",
+        "test/moteus_protocol_test.cc",
+        "test/test_main.cc",
+    ],
+    deps = [
+        "@boost//:test",
+    ],
+)
