@@ -96,3 +96,17 @@ BOOST_AUTO_TEST_CASE(EmitPositionCommandTest) {
   BOOST_TEST(can_frame.data[13] == 0x04);  // 4x floats
   BOOST_TEST(can_frame.data[14] == 0x24);  // starting at 24 (kd scale)
 }
+
+BOOST_AUTO_TEST_CASE(EmitQueryCommandTest) {
+  WriteCanFrame can_frame;
+
+  QueryCommand cmd;
+  EmitQueryCommand(&can_frame,cmd);
+
+  BOOST_TEST(can_frame.size == 5);
+  BOOST_TEST(can_frame.data[0] == 0x14);
+  BOOST_TEST(can_frame.data[1] == 0x04);
+  BOOST_TEST(can_frame.data[2] == 0x00);
+  BOOST_TEST(can_frame.data[3] == 0x13);
+  BOOST_TEST(can_frame.data[4] == 0x0d);
+}

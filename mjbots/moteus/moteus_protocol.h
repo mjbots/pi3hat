@@ -243,9 +243,11 @@ class WriteCombiner {
  public:
   template <typename T>
   WriteCombiner(WriteCanFrame* frame,
+                int8_t base_command,
                 T start_register,
                 std::array<Resolution, N> resolutions)
       : frame_(frame),
+        base_command_(base_command),
         start_register_(start_register),
         resolutions_(resolutions) {}
 
@@ -281,12 +283,12 @@ class WriteCombiner {
       count++;
     }
 
-    int8_t write_command = [&]() {
+    int8_t write_command = base_command_ + [&]() {
       switch (new_resolution) {
-        case Resolution::kInt8: return Multiplex::kWriteInt8;
-        case Resolution::kInt16: return Multiplex::kWriteInt16;
-        case Resolution::kInt32: return Multiplex::kWriteInt32;
-        case Resolution::kFloat: return Multiplex::kWriteFloat;
+        case Resolution::kInt8: return 0x00;
+        case Resolution::kInt16: return 0x04;
+        case Resolution::kInt32: return 0x08;
+        case Resolution::kFloat: return 0x0c;
         case Resolution::kIgnore: {
           throw std::logic_error("unreachable");
         }
@@ -301,12 +303,16 @@ class WriteCombiner {
       frame_->Write<int8_t>(write_command);
       frame_->Write<int8_t>(count);
     }
+    if ((start_register_ + this_offset) > 127) {
+      throw std::logic_error("unsupported");
+    }
     frame_->Write<int8_t>(start_register_ + this_offset);
     return true;
   }
 
  private:
   WriteCanFrame* const frame_;
+  int8_t base_command_;
   uint32_t start_register_;
   std::array<Resolution, N> resolutions_;
 
@@ -346,7 +352,7 @@ inline void EmitPositionCommand(
 
   // Now we use some heuristics to try and group consecutive registers
   // of the same resolution together into larger writes.
-  WriteCombiner<8> combiner(frame, Register::kCommandPosition, {
+  WriteCombiner<8> combiner(frame, 0x00, Register::kCommandPosition, {
       resolution.position,
           resolution.velocity,
           resolution.feedforward_torque,
@@ -382,6 +388,60 @@ inline void EmitPositionCommand(
     frame->WriteTime(command.watchdog_timeout, resolution.watchdog_timeout);
   }
 }
+
+struct QueryCommand {
+  Resolution mode = Resolution::kInt16;
+  Resolution position = Resolution::kInt16;
+  Resolution velocity = Resolution::kInt16;
+  Resolution torque = Resolution::kInt16;
+  Resolution q_current = Resolution::kIgnore;
+  Resolution d_current = Resolution::kIgnore;
+  Resolution rezero_state = Resolution::kIgnore;
+  Resolution voltage = Resolution::kInt8;
+  Resolution temperature = Resolution::kInt8;
+  Resolution fault = Resolution::kInt8;
+};
+
+inline void EmitQueryCommand(
+    WriteCanFrame* frame,
+    const QueryCommand& command) {
+  {
+    WriteCombiner<6> combiner(frame, 0x10, Register::kMode, {
+        command.mode,
+            command.position,
+            command.velocity,
+            command.torque,
+            command.q_current,
+            command.d_current,
+            });
+    for (int i = 0; i < 6; i++) {
+      combiner.MaybeWrite();
+    }
+  }
+  {
+    WriteCombiner<4> combiner(frame, 0x10, Register::kRezeroState, {
+        command.rezero_state,
+            command.voltage,
+            command.temperature,
+            command.fault});
+    for (int i = 0; i < 4; i++) {
+      combiner.MaybeWrite();
+    }
+  }
+}
+
+struct QueryResult {
+  Mode mode = Mode::kStopped;
+  double position = std::numeric_limits<double>::quiet_NaN();
+  double velocity = std::numeric_limits<double>::quiet_NaN();
+  double torque = std::numeric_limits<double>::quiet_NaN();
+  double q_current = std::numeric_limits<double>::quiet_NaN();
+  double d_current = std::numeric_limits<double>::quiet_NaN();
+  bool rezero_state = false;
+  double voltage = std::numeric_limits<double>::quiet_NaN();
+  double temperature = std::numeric_limits<double>::quiet_NaN();
+  int fault = 0;
+};
 
 }
 }
