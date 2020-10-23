@@ -110,3 +110,42 @@ BOOST_AUTO_TEST_CASE(EmitQueryCommandTest) {
   BOOST_TEST(can_frame.data[3] == 0x13);
   BOOST_TEST(can_frame.data[4] == 0x0d);
 }
+
+BOOST_AUTO_TEST_CASE(ParseQueryResultTest) {
+  WriteCanFrame can_frame;
+  can_frame.size = 5;
+  can_frame.data[0] = 0x23;
+  can_frame.data[1] = 0x00;
+  can_frame.data[2] = 0x01;
+  can_frame.data[3] = 0x02;
+  can_frame.data[4] = 0x03;
+
+  {
+    const auto result = ParseQueryResult(can_frame);
+    BOOST_TEST((result.mode == Mode::kFault));
+    BOOST_TEST(result.position == 0.02);
+    BOOST_TEST(result.velocity == 0.30000000000000004);
+  }
+
+  can_frame.size = 13;
+
+  // Verify we can skip a nop in the middle.
+  can_frame.data[5] = 0x50;
+
+  can_frame.data[6] = 0x24;  // n int16s
+  can_frame.data[7] = 0x02;  // 2 of them
+  can_frame.data[8] = 0x0d;  // starting at voltage
+  can_frame.data[9] = 0x40;  // 6.4V
+  can_frame.data[10] = 0x00;
+  can_frame.data[11] = 0x50; // 8.0C
+  can_frame.data[12] = 0x00;
+
+  {
+    const auto result = ParseQueryResult(can_frame);
+    BOOST_TEST((result.mode == Mode::kFault));
+    BOOST_TEST(result.position == 0.02);
+    BOOST_TEST(result.velocity == 0.30000000000000004);
+    BOOST_TEST(result.voltage == 6.4);
+    BOOST_TEST(result.temperature == 8.0);
+  }
+}

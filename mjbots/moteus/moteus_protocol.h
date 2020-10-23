@@ -320,6 +320,189 @@ class WriteCombiner {
   size_t offset_ = 0;
 };
 
+class MultiplexParser {
+ public:
+  MultiplexParser(const WriteCanFrame* frame)
+      : frame_(frame) {}
+
+  std::tuple<bool, uint32_t, Resolution> next() {
+    if (offset_ >= frame_->size) {
+      // We are done.
+      return std::make_tuple(false, 0, Resolution::kInt8);
+    }
+
+    if (remaining_) {
+      remaining_--;
+      const auto this_register = current_register_++;
+
+      // Do we actually have enough data?
+      if (offset_ + ResolutionSize(current_resolution_) > frame_->size) {
+        return std::make_tuple(false, 0, Resolution::kInt8);
+      }
+
+      return std::make_tuple(true, this_register, current_resolution_);
+    }
+
+    // We need to look for another command.
+    while (offset_ < frame_->size) {
+      const auto cmd = frame_->data[offset_++];
+      if (cmd == Multiplex::kNop) { continue; }
+
+      // We are guaranteed to still need data.
+      if (offset_ >= frame_->size) {
+        // Nope, we are out.
+        break;
+      }
+
+      if (cmd >= 0x20 && cmd < 0x30) {
+        // This is a regular reply of some sort.
+        current_resolution_ = [id = (cmd >> 2) & 0x3]() {
+          switch (id) {
+            case 0: return Resolution::kInt8;
+            case 1: return Resolution::kInt16;
+            case 2: return Resolution::kInt32;
+            case 3: return Resolution::kFloat;
+          }
+          // we cannot reach this point
+          return Resolution::kInt8;
+        }();
+        int count = cmd & 0x03;
+        if (count == 0) {
+          count = frame_->data[offset_++];
+
+          // We still need more data.
+          if (offset_ >= frame_->size) {
+            break;
+          }
+        }
+
+        if (count == 0) {
+          // Empty, guess we can ignore.
+          continue;
+        }
+
+        current_register_ = frame_->data[offset_++];
+        remaining_ = count - 1;
+
+        if (offset_ + ResolutionSize(current_resolution_) > frame_->size) {
+          return std::make_tuple(false, 0, Resolution::kInt8);
+        }
+
+        return std::make_tuple(true, current_register_++, current_resolution_);
+      }
+
+      // For anything else, we'll just assume it is an error of some
+      // sort and stop parsing.
+      offset_ = frame_->size;
+      break;
+    }
+    return std::make_tuple(false, 0, Resolution::kInt8);
+  }
+
+  template <typename T>
+  T Read() {
+    if (offset_ + sizeof(T) > frame_->size) {
+      throw std::runtime_error("overrun");
+    }
+
+    T result = {};
+    std::memcpy(&result, &frame_->data[offset_], sizeof(T));
+    offset_ += sizeof(T);
+    return result;
+  }
+
+  template <typename T>
+  double Nanify(T value) {
+    if (value == std::numeric_limits<T>::min()) {
+      return std::numeric_limits<double>::quiet_NaN();
+    }
+    return value;
+  }
+
+  double ReadMapped(Resolution res,
+                    double int8_scale,
+                    double int16_scale,
+                    double int32_scale) {
+    switch (res) {
+      case Resolution::kInt8: {
+        return Nanify<int8_t>(Read<int8_t>()) * int8_scale;
+      }
+      case Resolution::kInt16: {
+        return Nanify<int16_t>(Read<int16_t>()) * int16_scale;
+      }
+      case Resolution::kInt32: {
+        return Nanify<int32_t>(Read<int32_t>()) * int32_scale;
+      }
+      case Resolution::kFloat: {
+        return Read<float>();
+      }
+      default: {
+        break;
+      }
+    }
+    throw std::logic_error("unreachable");
+  }
+
+  int ReadInt(Resolution res) {
+    return static_cast<int>(ReadMapped(res, 1.0, 1.0, 1.0));
+  }
+
+  double ReadPosition(Resolution res) {
+    return ReadMapped(res, 0.01, 0.0001, 0.00001);
+  }
+
+  double ReadVelocity(Resolution res) {
+    return ReadMapped(res, 0.1, 0.00025, 0.00001);
+  }
+
+  double ReadTorque(Resolution res) {
+    return ReadMapped(res, 0.5, 0.01, 0.001);
+  }
+
+  double ReadPwm(Resolution res) {
+    return ReadMapped(res, 1.0 / 127.0, 1.0 / 32767.0, 1.0 / 2147483647.0);
+  }
+
+  double ReadVoltage(Resolution res) {
+    return ReadMapped(res, 0.5, 0.1, 0.001);
+  }
+
+  double ReadTemperature(Resolution res) {
+    return ReadMapped(res, 1.0, 0.1, 0.001);
+  }
+
+  double ReadTime(Resolution res) {
+    return ReadMapped(res, 0.01, 0.001, 0.000001);
+  }
+
+  double ReadCurrent(Resolution res) {
+    return ReadMapped(res, 1.0, 0.1, 0.001);
+  }
+
+  void Ignore(Resolution res) {
+    offset_ += ResolutionSize(res);
+  }
+
+ private:
+  int ResolutionSize(Resolution res) {
+    switch (res) {
+      case Resolution::kInt8: return 1;
+      case Resolution::kInt16: return 2;
+      case Resolution::kInt32: return 4;
+      case Resolution::kFloat: return 4;
+      default: { break; }
+    }
+    return 1;
+  }
+
+  const WriteCanFrame* const frame_;
+  size_t offset_ = 0;
+
+  int remaining_ = 0;
+  Resolution current_resolution_ = Resolution::kIgnore;
+  uint32_t current_register_ = 0;
+};
+
 struct PositionCommand {
   double position = 0.0;
   double velocity = 0.0;
@@ -442,6 +625,64 @@ struct QueryResult {
   double temperature = std::numeric_limits<double>::quiet_NaN();
   int fault = 0;
 };
+
+inline QueryResult ParseQueryResult(const WriteCanFrame& frame) {
+  MultiplexParser parser(&frame);
+
+  QueryResult result;
+  while (true) {
+    auto entry = parser.next();
+    if (!std::get<0>(entry)) { break; }
+    const auto res = std::get<2>(entry);
+    switch (static_cast<Register>(std::get<1>(entry))) {
+      case Register::kMode: {
+        result.mode = static_cast<Mode>(parser.ReadInt(res));
+        break;
+      }
+      case Register::kPosition: {
+        result.position = parser.ReadPosition(res);
+        break;
+      }
+      case Register::kVelocity: {
+        result.velocity = parser.ReadVelocity(res);
+        break;
+      }
+      case Register::kTorque: {
+        result.torque = parser.ReadTorque(res);
+        break;
+      }
+      case Register::kQCurrent: {
+        result.q_current = parser.ReadCurrent(res);
+        break;
+      }
+      case Register::kDCurrent: {
+        result.d_current = parser.ReadCurrent(res);
+        break;
+      }
+      case Register::kRezeroState: {
+        result.rezero_state = parser.ReadInt(res) != 0;
+        break;
+      }
+      case Register::kVoltage: {
+        result.voltage = parser.ReadVoltage(res);
+        break;
+      }
+      case Register::kTemperature: {
+        result.temperature = parser.ReadTemperature(res);
+        break;
+      }
+      case Register::kFault: {
+        result.fault = parser.ReadInt(res);
+        break;
+      }
+      default: {
+        parser.Ignore(res);
+      }
+    }
+  }
+
+  return result;
+}
 
 }
 }
