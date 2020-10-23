@@ -34,7 +34,8 @@ BOOST_AUTO_TEST_CASE(SaturateTest) {
 }
 
 BOOST_AUTO_TEST_CASE(EmitPositionCommandTest) {
-  WriteCanFrame can_frame;
+  CanFrame f;
+  WriteCanFrame can_frame{&f};
 
   PositionCommand pos;
   PositionResolution res;
@@ -49,13 +50,13 @@ BOOST_AUTO_TEST_CASE(EmitPositionCommandTest) {
 
   EmitPositionCommand(&can_frame, pos, res);
 
-  BOOST_TEST(can_frame.size == 6);
-  BOOST_TEST(can_frame.data[0] == 0x01);
-  BOOST_TEST(can_frame.data[1] == 0x00);
-  BOOST_TEST(can_frame.data[2] == 0x0a);
-  BOOST_TEST(can_frame.data[3] == 0x01);
-  BOOST_TEST(can_frame.data[4] == 0x20);
-  BOOST_TEST(can_frame.data[5] == 0x00);
+  BOOST_TEST(f.size == 6);
+  BOOST_TEST(f.data[0] == 0x01);
+  BOOST_TEST(f.data[1] == 0x00);
+  BOOST_TEST(f.data[2] == 0x0a);
+  BOOST_TEST(f.data[3] == 0x01);
+  BOOST_TEST(f.data[4] == 0x20);
+  BOOST_TEST(f.data[5] == 0x00);
 
   // Now try with more than one register of a different type after.
   res.velocity = Resolution::kInt16;
@@ -74,45 +75,46 @@ BOOST_AUTO_TEST_CASE(EmitPositionCommandTest) {
   pos.stop_position = 1.2;
   pos.watchdog_timeout = 0.5;
 
-  can_frame = {};
+  f = {};
   EmitPositionCommand(&can_frame, pos, res);
-  BOOST_TEST(can_frame.size == 31);
+  BOOST_TEST(f.size == 31);
 
-  BOOST_TEST(can_frame.data[0] == 0x01);
-  BOOST_TEST(can_frame.data[1] == 0x00);
-  BOOST_TEST(can_frame.data[2] == 0x0a);
-  BOOST_TEST(can_frame.data[3] == 0x01);
-  BOOST_TEST(can_frame.data[4] == 0x20);
-  BOOST_TEST(can_frame.data[5] == 0x28);
+  BOOST_TEST(f.data[0] == 0x01);
+  BOOST_TEST(f.data[1] == 0x00);
+  BOOST_TEST(f.data[2] == 0x0a);
+  BOOST_TEST(f.data[3] == 0x01);
+  BOOST_TEST(f.data[4] == 0x20);
+  BOOST_TEST(f.data[5] == 0x28);
 
-  BOOST_TEST(can_frame.data[6] == 0x06);  // write 2 int16
-  BOOST_TEST(can_frame.data[7] == 0x21);  // starting at 21
-  BOOST_TEST(can_frame.data[8] == 0x20);  // velocity 0.2 / 0.00025 = 0x320
-  BOOST_TEST(can_frame.data[9] == 0x03);
-  BOOST_TEST(can_frame.data[10] == 0x9c);  // torque -1.0 / 0.01 = 0xff9c
-  BOOST_TEST(can_frame.data[11] == 0xff);
+  BOOST_TEST(f.data[6] == 0x06);  // write 2 int16
+  BOOST_TEST(f.data[7] == 0x21);  // starting at 21
+  BOOST_TEST(f.data[8] == 0x20);  // velocity 0.2 / 0.00025 = 0x320
+  BOOST_TEST(f.data[9] == 0x03);
+  BOOST_TEST(f.data[10] == 0x9c);  // torque -1.0 / 0.01 = 0xff9c
+  BOOST_TEST(f.data[11] == 0xff);
 
-  BOOST_TEST(can_frame.data[12] == 0x0c);  // write float
-  BOOST_TEST(can_frame.data[13] == 0x04);  // 4x floats
-  BOOST_TEST(can_frame.data[14] == 0x24);  // starting at 24 (kd scale)
+  BOOST_TEST(f.data[12] == 0x0c);  // write float
+  BOOST_TEST(f.data[13] == 0x04);  // 4x floats
+  BOOST_TEST(f.data[14] == 0x24);  // starting at 24 (kd scale)
 }
 
 BOOST_AUTO_TEST_CASE(EmitQueryCommandTest) {
-  WriteCanFrame can_frame;
+  CanFrame f;
+  WriteCanFrame can_frame{&f};
 
   QueryCommand cmd;
   EmitQueryCommand(&can_frame,cmd);
 
-  BOOST_TEST(can_frame.size == 5);
-  BOOST_TEST(can_frame.data[0] == 0x14);
-  BOOST_TEST(can_frame.data[1] == 0x04);
-  BOOST_TEST(can_frame.data[2] == 0x00);
-  BOOST_TEST(can_frame.data[3] == 0x13);
-  BOOST_TEST(can_frame.data[4] == 0x0d);
+  BOOST_TEST(f.size == 5);
+  BOOST_TEST(f.data[0] == 0x14);
+  BOOST_TEST(f.data[1] == 0x04);
+  BOOST_TEST(f.data[2] == 0x00);
+  BOOST_TEST(f.data[3] == 0x13);
+  BOOST_TEST(f.data[4] == 0x0d);
 }
 
 BOOST_AUTO_TEST_CASE(ParseQueryResultTest) {
-  WriteCanFrame can_frame;
+  CanFrame can_frame;
   can_frame.size = 5;
   can_frame.data[0] = 0x23;
   can_frame.data[1] = 0x00;

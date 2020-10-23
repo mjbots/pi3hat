@@ -158,22 +158,29 @@ T Saturate(double value, double scale) {
 
 /// A single CAN-FD frame, with methods to conveniently write encoded
 /// values.
-struct WriteCanFrame {
+struct CanFrame {
   uint8_t data[64] = {};
   size_t size = 0;
+};
+
+class WriteCanFrame {
+ public:
+  WriteCanFrame(CanFrame* frame) : frame_(frame) {}
 
   template <typename T, typename X>
   void Write(X value_in) {
     T value = static_cast<T>(value_in);
-    if (sizeof(value) + size > sizeof(data)) {
+    if (sizeof(value) + frame_->size > sizeof(frame_->data)) {
       throw std::runtime_error("overflow");
     }
 
 #ifndef __ORDER_LITTLE_ENDIAN__
 #error "only little endian architectures supported"
 #endif
-    std::memcpy(&data[size], reinterpret_cast<const char*>(&value), sizeof(value));
-    size += sizeof(value);
+    std::memcpy(&frame_->data[frame_->size],
+                reinterpret_cast<const char*>(&value),
+                sizeof(value));
+    frame_->size += sizeof(value);
   }
 
   void WriteMapped(
@@ -234,6 +241,9 @@ struct WriteCanFrame {
   void WriteTime(float value, Resolution res) {
     WriteMapped(value, 0.01, 0.001, 0.000001, res);
   }
+
+ private:
+  CanFrame* const frame_;
 };
 
 /// Determines how to group registers when encoding them to minimize
@@ -322,7 +332,7 @@ class WriteCombiner {
 
 class MultiplexParser {
  public:
-  MultiplexParser(const WriteCanFrame* frame)
+  MultiplexParser(const CanFrame* frame)
       : frame_(frame) {}
 
   std::tuple<bool, uint32_t, Resolution> next() {
@@ -495,7 +505,7 @@ class MultiplexParser {
     return 1;
   }
 
-  const WriteCanFrame* const frame_;
+  const CanFrame* const frame_;
   size_t offset_ = 0;
 
   int remaining_ = 0;
@@ -626,7 +636,7 @@ struct QueryResult {
   int fault = 0;
 };
 
-inline QueryResult ParseQueryResult(const WriteCanFrame& frame) {
+inline QueryResult ParseQueryResult(const CanFrame& frame) {
   MultiplexParser parser(&frame);
 
   QueryResult result;
