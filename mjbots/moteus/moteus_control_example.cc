@@ -25,6 +25,7 @@
 
 #include <sys/mman.h>
 
+#include <chrono>
 #include <iostream>
 #include <future>
 #include <limits>
@@ -99,42 +100,35 @@ std::pair<double, double> MinMaxVoltage(
   return std::make_pair(rmin, rmax);
 }
 
-void Run(const Arguments& args) {
-  if (args.help) {
-    DisplayUsage();
-    return;
+/// This holds the user-defined control logic.
+class SampleController {
+ public:
+  /// This is called before any control begins, and must return the
+  /// set of servos that are used, along with which bus each is
+  /// attached to.
+  std::map<int, int> servo_bus_map() const {
+    return {
+      { 1, 1 },
+      { 2, 1 },
+      { 3, 1 },
+      { 4, 2 },
+      { 5, 2 },
+      { 6, 2 },
+      { 7, 3 },
+      { 8, 3 },
+      { 9, 3 },
+      { 10, 4 },
+      { 11, 4 },
+      { 12, 4 },
+    };
   }
 
-  moteus::ConfigureRealtime(args.main_cpu);
-  MoteusInterface moteus_interface{[&]() {
-      MoteusInterface::Options options;
-      options.cpu = args.can_cpu;
-      options.servo_bus_map = {
-        { 1, 1 },
-        { 2, 1 },
-        { 3, 1 },
-        { 4, 2 },
-        { 5, 2 },
-        { 6, 2 },
-        { 7, 3 },
-        { 8, 3 },
-        { 9, 3 },
-        { 10, 4 },
-        { 11, 4 },
-        { 12, 4 },
-      };
-      return options;
-    }()};
-
-  std::vector<MoteusInterface::ServoCommand> commands{12};
-  for (size_t i = 0; i < commands.size(); i++) {
-    commands[i].id = i + 1;
-  }
-
-  std::vector<MoteusInterface::ServoReply> replies{commands.size()};
-  std::vector<MoteusInterface::ServoReply> saved_replies;
-
-  {
+  /// This is also called before any control begins.  @p commands will
+  /// be pre-populated with an entry for each servo returned by
+  /// 'servo_bus_map'.  It can be used to perform one-time
+  /// initialization like setting the resolution of commands and
+  /// queries.
+  void Initialize(std::vector<MoteusInterface::ServoCommand>* commands) {
     moteus::PositionResolution res;
     res.position = moteus::Resolution::kInt16;
     res.velocity = moteus::Resolution::kInt16;
@@ -144,10 +138,57 @@ void Run(const Arguments& args) {
     res.maximum_torque = moteus::Resolution::kIgnore;
     res.stop_position = moteus::Resolution::kIgnore;
     res.watchdog_timeout = moteus::Resolution::kIgnore;
-    for (auto& cmd : commands) {
+    for (auto& cmd : *commands) {
       cmd.resolution = res;
     }
   }
+
+  /// This is run at each control cycle.  @p status is the most recent
+  /// status of all servos (note that it is possible for a given
+  /// servo's result to be omitted on some frames).
+  ///
+  /// @p output should hold the desired output.  It will be
+  /// pre-populated with the result of the last command cycle, (or
+  /// Initialize to begin with).
+  void Run(const std::vector<MoteusInterface::ServoReply>& status,
+           std::vector<MoteusInterface::ServoCommand>* output) {
+    cycle_count_++;
+
+    // This is where your control loop would go.
+    for (auto& cmd : *output) {
+      cmd.mode = (cycle_count_ < 5) ? moteus::Mode::kStopped : moteus::Mode::kPosition;
+      cmd.position.position = std::numeric_limits<double>::quiet_NaN();
+      // Leave everything else at the default.
+    }
+  }
+
+ private:
+  uint64_t cycle_count_ = 0;
+};
+
+template <typename Controller>
+void Run(const Arguments& args, Controller* controller) {
+  if (args.help) {
+    DisplayUsage();
+    return;
+  }
+
+  moteus::ConfigureRealtime(args.main_cpu);
+  MoteusInterface::Options moteus_options;
+  moteus_options.cpu = args.can_cpu;
+  moteus_options.servo_bus_map = controller->servo_bus_map();
+  MoteusInterface moteus_interface{moteus_options};
+
+  std::vector<MoteusInterface::ServoCommand> commands;
+  for (const auto& pair : moteus_options.servo_bus_map) {
+    commands.push_back({});
+    commands.back().id = pair.first;
+  }
+
+  std::vector<MoteusInterface::ServoReply> replies{commands.size()};
+  std::vector<MoteusInterface::ServoReply> saved_replies;
+
+  controller->Initialize(&commands);
 
   MoteusInterface::Data moteus_data;
   moteus_data.commands = { commands.data(), commands.size() };
@@ -163,20 +204,24 @@ void Run(const Arguments& args) {
   auto next_status = next_cycle + status_period;
   uint64_t cycle_count = 0;
   double total_margin = 0.0;
+  uint64_t margin_cycles = 0;
 
   // We will run at a fixed cycle time.
   while (true) {
     cycle_count++;
+    margin_cycles++;
     {
       const auto now = std::chrono::steady_clock::now();
       if (now > next_status) {
         const auto volts = MinMaxVoltage(saved_replies);
         std::cout << "Cycles " << cycle_count
-                  << "  margin: " << (total_margin / cycle_count)
+                  << "  margin: " << (total_margin / margin_cycles)
                   << "  volts: " << volts.first << "/" << volts.second
                   << "   \r";
         std::cout.flush();
         next_status += status_period;
+        total_margin = 0;
+        margin_cycles = 0;
       }
 
       int skip_count = 0;
@@ -199,12 +244,7 @@ void Run(const Arguments& args) {
     next_cycle += period;
 
 
-    // TODO: Run control using saved_replies.
-    for (auto& cmd : commands) {
-      cmd.mode = (cycle_count < 5) ? moteus::Mode::kStopped : moteus::Mode::kPosition;
-      cmd.position.position = std::numeric_limits<double>::quiet_NaN();
-      // Leave everything else at the default.
-    }
+    controller->Run(saved_replies, &commands);
 
 
     if (can_result.valid()) {
@@ -239,7 +279,8 @@ int main(int argc, char** argv) {
   // Lock memory for the whole process.
   LockMemory();
 
-  Run(args);
+  SampleController sample_controller;
+  Run(args, &sample_controller);
 
   return 0;
 }
