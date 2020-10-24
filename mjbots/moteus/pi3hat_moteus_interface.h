@@ -18,6 +18,7 @@
 #include <functional>
 #include <memory>
 #include <mutex>
+#include <stdexcept>
 #include <thread>
 #include <vector>
 
@@ -53,16 +54,29 @@ class Pi3HatMoteusInterface {
     thread_.join();
   }
 
+  struct ServoCommand {
+    int id = 0;
+
+    moteus::Mode mode = moteus::Mode::kStopped;
+
+    // For mode = kPosition or kZeroVelocity
+    moteus::PositionCommand position;
+    moteus::PositionResolution resolution;
+
+    moteus::QueryCommand query;
+  };
+
+  struct ServoReply {
+    int id = 0;
+    moteus::QueryResult result;
+  };
+
   // This describes what you would like to do in a given control cycle
   // in terms of sending commands or querying data.
   struct Data {
-    pi3hat::Span<int> servo_ids;
-    pi3hat::Span<moteus::PositionCommand> positions;
-    pi3hat::Span<moteus::PositionResolution> resolutions;
-    pi3hat::Span<moteus::QueryCommand> queries;
+    pi3hat::Span<ServoCommand> commands;
 
-    pi3hat::Span<int> query_ids;
-    pi3hat::Span<moteus::QueryResult> query_results;
+    pi3hat::Span<ServoReply> replies;
   };
 
   struct Output {
@@ -78,16 +92,6 @@ class Pi3HatMoteusInterface {
   /// All memory pointed to by @p data must remain valid until the
   /// callback is invoked.
   void Cycle(const Data& data, CallbackFunction callback) {
-    // We require all the input structures to have the same size.
-    if ((data.servo_ids.size() !=
-         data.positions.size()) ||
-        (data.servo_ids.size() !=
-         data.resolutions.size()) ||
-        (data.servo_ids.size() !=
-         data.queries.size())) {
-      throw std::logic_error("invalid input");
-    }
-
     std::lock_guard<std::mutex> lock(mutex_);
     if (active_) {
       throw std::logic_error(
@@ -130,18 +134,19 @@ class Pi3HatMoteusInterface {
   }
 
   Output CHILD_Cycle() {
-    tx_can_.resize(data_.servo_ids.size());
-    for (size_t i = 0; i < data_.servo_ids.size(); i++) {
-      const auto& query = data_.queries[i];
-      const auto servo_id = data_.servo_ids[i];
+    tx_can_.resize(data_.commands.size());
+    int out_idx = 0;
+    for (const auto& cmd : data_.commands) {
+      const auto& query = cmd.query;
 
-      auto& can = tx_can_[i];
+      auto& can = tx_can_[out_idx++];
+
       can.expect_reply = query.any_set();
-      can.id = servo_id | (can.expect_reply ? 0x8000 : 0x0000);
+      can.id = cmd.id | (can.expect_reply ? 0x8000 : 0x0000);
       can.size = 0;
 
       can.bus = [&]() {
-        const auto it = options_.servo_bus_map.find(servo_id);
+        const auto it = options_.servo_bus_map.find(cmd.id);
         if (it == options_.servo_bus_map.end()) {
           return 1;
         }
@@ -149,11 +154,24 @@ class Pi3HatMoteusInterface {
       }();
 
       moteus::WriteCanFrame write_frame(can.data, &can.size);
-      moteus::EmitPositionCommand(&write_frame, data_.positions[i], data_.resolutions[i]);
-      moteus::EmitQueryCommand(&write_frame, data_.queries[i]);
+      switch (cmd.mode) {
+        case Mode::kStopped: {
+          moteus::EmitStopCommand(&write_frame);
+          break;
+        }
+        case Mode::kPosition:
+        case Mode::kZeroVelocity: {
+          moteus::EmitPositionCommand(&write_frame, cmd.position, cmd.resolution);
+          break;
+        }
+        default: {
+          throw std::logic_error("unsupported mode");
+        }
+      }
+      moteus::EmitQueryCommand(&write_frame, cmd.query);
     }
 
-    rx_can_.resize(data_.servo_ids.size() * 2);
+    rx_can_.resize(data_.commands.size() * 2);
 
     pi3hat::Pi3Hat::Input input;
     input.tx_can = { tx_can_.data(), tx_can_.size() };
@@ -162,11 +180,11 @@ class Pi3HatMoteusInterface {
     Output result;
 
     const auto output = pi3hat_->Cycle(input);
-    for (size_t i = 0; i < output.rx_can_size && i < data_.query_ids.size(); i++) {
+    for (size_t i = 0; i < output.rx_can_size && i < data_.replies.size(); i++) {
       const auto& can = rx_can_[i];
 
-      data_.query_ids[i] = can.id & 0x7f00 >> 8;
-      data_.query_results[i] = moteus::ParseQueryResult(can.data, can.size);
+      data_.replies[i].id = can.id & 0x7f00 >> 8;
+      data_.replies[i].result = moteus::ParseQueryResult(can.data, can.size);
       result.query_result_size = i + 1;
     }
 

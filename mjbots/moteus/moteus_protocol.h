@@ -540,6 +540,12 @@ struct PositionResolution {
   Resolution watchdog_timeout = Resolution::kFloat;
 };
 
+inline void EmitStopCommand(WriteCanFrame* frame) {
+  frame->Write<int8_t>(Multiplex::kWriteInt8 | 0x01);
+  frame->Write<int8_t>(Register::kMode);
+  frame->Write<int8_t>(Mode::kStopped);
+}
+
 inline void EmitPositionCommand(
     WriteCanFrame* frame,
     const PositionCommand& command, const PositionResolution& resolution) {

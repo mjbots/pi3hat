@@ -86,13 +86,14 @@ void LockMemory() {
   }
 }
 
-std::pair<double, double> MinMaxVoltage(const std::vector<moteus::QueryResult>& r) {
+std::pair<double, double> MinMaxVoltage(
+    const std::vector<MoteusInterface::ServoReply>& r) {
   double rmin = std::numeric_limits<double>::infinity();
   double rmax = -std::numeric_limits<double>::infinity();
 
   for (const auto& i : r) {
-    if (i.voltage > rmax) { rmax = i.voltage; }
-    if (i.voltage < rmin) { rmin = i.voltage; }
+    if (i.result.voltage > rmax) { rmax = i.result.voltage; }
+    if (i.result.voltage < rmin) { rmin = i.result.voltage; }
   }
 
   return std::make_pair(rmin, rmax);
@@ -125,17 +126,13 @@ void Run(const Arguments& args) {
       return options;
     }()};
 
-  std::vector<int> servo_ids = { 1, 2, 4, 5, 7, 8, 10, 11  };
-  const auto servo_count = servo_ids.size();
-  std::vector<moteus::PositionCommand> position_commands{servo_count};
-  std::vector<moteus::PositionResolution> position_resolutions;
-  std::vector<moteus::QueryCommand> queries{servo_count};
+  std::vector<MoteusInterface::ServoCommand> commands{12};
+  for (size_t i = 0; i < commands.size(); i++) {
+    commands[i].id = i + 1;
+  }
 
-  std::vector<int> query_ids;
-  query_ids.resize(servo_count);
-  std::vector<moteus::QueryResult> query_results{servo_count};
-  std::vector<int> saved_ids;
-  std::vector<moteus::QueryResult> saved_results;
+  std::vector<MoteusInterface::ServoReply> replies{commands.size()};
+  std::vector<MoteusInterface::ServoReply> saved_replies;
 
   {
     moteus::PositionResolution res;
@@ -147,16 +144,14 @@ void Run(const Arguments& args) {
     res.maximum_torque = moteus::Resolution::kIgnore;
     res.stop_position = moteus::Resolution::kIgnore;
     res.watchdog_timeout = moteus::Resolution::kIgnore;
-    position_resolutions.assign(servo_count, res);
+    for (auto& cmd : commands) {
+      cmd.resolution = res;
+    }
   }
 
   MoteusInterface::Data moteus_data;
-  moteus_data.servo_ids = { servo_ids.data(), servo_ids.size() };
-  moteus_data.positions = { position_commands.data(), position_commands.size() };
-  moteus_data.resolutions = { position_resolutions.data(), position_resolutions.size() };
-  moteus_data.queries = { queries.data(), queries.size() };
-  moteus_data.query_ids = { query_ids.data(), query_ids.size() };
-  moteus_data.query_results = { query_results.data(), query_results.size() };
+  moteus_data.commands = { commands.data(), commands.size() };
+  moteus_data.replies = { replies.data(), replies.size() };
 
   std::future<MoteusInterface::Output> can_result;
 
@@ -175,7 +170,7 @@ void Run(const Arguments& args) {
     {
       const auto now = std::chrono::steady_clock::now();
       if (now > next_status) {
-        const auto volts = MinMaxVoltage(saved_results);
+        const auto volts = MinMaxVoltage(saved_replies);
         std::cout << "Cycles " << cycle_count
                   << "  margin: " << (total_margin / cycle_count)
                   << "  volts: " << volts.first << "/" << volts.second
@@ -204,9 +199,10 @@ void Run(const Arguments& args) {
     next_cycle += period;
 
 
-    // TODO: Run control using saved_results.
-    for (auto& pos : position_commands) {
-      pos.position = std::numeric_limits<double>::quiet_NaN();
+    // TODO: Run control using saved_replies.
+    for (auto& cmd : commands) {
+      cmd.mode = (cycle_count < 5) ? moteus::Mode::kStopped : moteus::Mode::kPosition;
+      cmd.position.position = std::numeric_limits<double>::quiet_NaN();
       // Leave everything else at the default.
     }
 
@@ -218,12 +214,9 @@ void Run(const Arguments& args) {
 
       // We copy out the results we just got out.
       const auto rx_count = current_values.query_result_size;
-      saved_results.resize(rx_count);
-      saved_ids.resize(rx_count);
-      std::copy(query_ids.begin(), query_ids.begin() + rx_count,
-                saved_ids.begin());
-      std::copy(query_results.begin(), query_results.begin() + rx_count,
-                saved_results.begin());
+      saved_replies.resize(rx_count);
+      std::copy(replies.begin(), replies.begin() + rx_count,
+                saved_replies.begin());
     }
 
     // Then we can immediately ask them to be used again.
