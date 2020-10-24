@@ -156,31 +156,30 @@ T Saturate(double value, double scale) {
   return static_cast<T>(scaled);
 }
 
-/// A single CAN-FD frame, with methods to conveniently write encoded
-/// values.
 struct CanFrame {
   uint8_t data[64] = {};
-  size_t size = 0;
+  uint8_t size = 0;
 };
 
 class WriteCanFrame {
  public:
-  WriteCanFrame(CanFrame* frame) : frame_(frame) {}
+  WriteCanFrame(CanFrame* frame) : data_(&frame->data[0]), size_(&frame->size) {}
+  WriteCanFrame(uint8_t* data, uint8_t* size) : data_(data), size_(size) {}
 
   template <typename T, typename X>
   void Write(X value_in) {
     T value = static_cast<T>(value_in);
-    if (sizeof(value) + frame_->size > sizeof(frame_->data)) {
+    if (sizeof(value) + *size_ > 64) {
       throw std::runtime_error("overflow");
     }
 
 #ifndef __ORDER_LITTLE_ENDIAN__
 #error "only little endian architectures supported"
 #endif
-    std::memcpy(&frame_->data[frame_->size],
+    std::memcpy(&data_[*size_],
                 reinterpret_cast<const char*>(&value),
                 sizeof(value));
-    frame_->size += sizeof(value);
+    *size_ += sizeof(value);
   }
 
   void WriteMapped(
@@ -243,7 +242,8 @@ class WriteCanFrame {
   }
 
  private:
-  CanFrame* const frame_;
+  uint8_t* const data_;
+  uint8_t* const size_;
 };
 
 /// Determines how to group registers when encoding them to minimize
@@ -333,10 +333,14 @@ class WriteCombiner {
 class MultiplexParser {
  public:
   MultiplexParser(const CanFrame* frame)
-      : frame_(frame) {}
+      : data_(&frame->data[0]),
+        size_(frame->size) {}
+  MultiplexParser(const uint8_t* data, uint8_t size)
+      : data_(data),
+        size_(size) {}
 
   std::tuple<bool, uint32_t, Resolution> next() {
-    if (offset_ >= frame_->size) {
+    if (offset_ >= size_) {
       // We are done.
       return std::make_tuple(false, 0, Resolution::kInt8);
     }
@@ -346,7 +350,7 @@ class MultiplexParser {
       const auto this_register = current_register_++;
 
       // Do we actually have enough data?
-      if (offset_ + ResolutionSize(current_resolution_) > frame_->size) {
+      if (offset_ + ResolutionSize(current_resolution_) > size_) {
         return std::make_tuple(false, 0, Resolution::kInt8);
       }
 
@@ -354,12 +358,12 @@ class MultiplexParser {
     }
 
     // We need to look for another command.
-    while (offset_ < frame_->size) {
-      const auto cmd = frame_->data[offset_++];
+    while (offset_ < size_) {
+      const auto cmd = data_[offset_++];
       if (cmd == Multiplex::kNop) { continue; }
 
       // We are guaranteed to still need data.
-      if (offset_ >= frame_->size) {
+      if (offset_ >= size_) {
         // Nope, we are out.
         break;
       }
@@ -378,10 +382,10 @@ class MultiplexParser {
         }();
         int count = cmd & 0x03;
         if (count == 0) {
-          count = frame_->data[offset_++];
+          count = data_[offset_++];
 
           // We still need more data.
-          if (offset_ >= frame_->size) {
+          if (offset_ >= size_) {
             break;
           }
         }
@@ -391,10 +395,10 @@ class MultiplexParser {
           continue;
         }
 
-        current_register_ = frame_->data[offset_++];
+        current_register_ = data_[offset_++];
         remaining_ = count - 1;
 
-        if (offset_ + ResolutionSize(current_resolution_) > frame_->size) {
+        if (offset_ + ResolutionSize(current_resolution_) > size_) {
           return std::make_tuple(false, 0, Resolution::kInt8);
         }
 
@@ -403,7 +407,7 @@ class MultiplexParser {
 
       // For anything else, we'll just assume it is an error of some
       // sort and stop parsing.
-      offset_ = frame_->size;
+      offset_ = size_;
       break;
     }
     return std::make_tuple(false, 0, Resolution::kInt8);
@@ -411,12 +415,12 @@ class MultiplexParser {
 
   template <typename T>
   T Read() {
-    if (offset_ + sizeof(T) > frame_->size) {
+    if (offset_ + sizeof(T) > size_) {
       throw std::runtime_error("overrun");
     }
 
     T result = {};
-    std::memcpy(&result, &frame_->data[offset_], sizeof(T));
+    std::memcpy(&result, &data_[offset_], sizeof(T));
     offset_ += sizeof(T);
     return result;
   }
@@ -505,7 +509,8 @@ class MultiplexParser {
     return 1;
   }
 
-  const CanFrame* const frame_;
+  const uint8_t* const data_;
+  const uint8_t size_;
   size_t offset_ = 0;
 
   int remaining_ = 0;
@@ -593,6 +598,19 @@ struct QueryCommand {
   Resolution voltage = Resolution::kInt8;
   Resolution temperature = Resolution::kInt8;
   Resolution fault = Resolution::kInt8;
+
+  bool any_set() const {
+    return mode != Resolution::kIgnore ||
+        position != Resolution::kIgnore ||
+        velocity != Resolution::kIgnore ||
+        torque != Resolution::kIgnore ||
+        q_current != Resolution::kIgnore ||
+        d_current != Resolution::kIgnore ||
+        rezero_state != Resolution::kIgnore ||
+        voltage != Resolution::kIgnore ||
+        temperature != Resolution::kIgnore ||
+        fault != Resolution::kIgnore;
+  }
 };
 
 inline void EmitQueryCommand(
@@ -636,8 +654,8 @@ struct QueryResult {
   int fault = 0;
 };
 
-inline QueryResult ParseQueryResult(const CanFrame& frame) {
-  MultiplexParser parser(&frame);
+inline QueryResult ParseQueryResult(const uint8_t* data, size_t size) {
+  MultiplexParser parser(data, size);
 
   QueryResult result;
   while (true) {

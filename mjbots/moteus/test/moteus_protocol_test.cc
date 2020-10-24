@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(ParseQueryResultTest) {
   can_frame.data[4] = 0x03;
 
   {
-    const auto result = ParseQueryResult(can_frame);
+    const auto result = ParseQueryResult(can_frame.data, can_frame.size);
     BOOST_TEST((result.mode == Mode::kFault));
     BOOST_TEST(result.position == 0.02);
     BOOST_TEST(result.velocity == 0.30000000000000004);
@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(ParseQueryResultTest) {
   can_frame.data[12] = 0x00;
 
   {
-    const auto result = ParseQueryResult(can_frame);
+    const auto result = ParseQueryResult(can_frame.data, can_frame.size);
     BOOST_TEST((result.mode == Mode::kFault));
     BOOST_TEST(result.position == 0.02);
     BOOST_TEST(result.velocity == 0.30000000000000004);
