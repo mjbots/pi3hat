@@ -26,6 +26,18 @@ cc_binary(
     ],
 )
 
+cc_binary(
+    name = "moteus_control_example",
+    srcs = [
+        "moteus_control_example.cc",
+        "moteus_protocol.h",
+    ],
+    deps = [
+        "//mjbots/pi3hat:libpi3hat",
+        "@org_llvm_libcxx//:libcxx",
+    ],
+)
+
 cc_test(
     name = "test",
     srcs = [

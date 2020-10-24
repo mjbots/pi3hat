@@ -38,6 +38,7 @@ pkg_tar(
     srcs = [
         "//mjbots/pi3hat:pi3hat_tool",
         "//mjbots/moteus:moteus_tool",
+        "//mjbots/moteus:moteus_control_example",
     ],
 )
 
