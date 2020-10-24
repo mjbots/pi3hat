@@ -23,7 +23,6 @@
 /// multiple translation units or structured for longer term
 /// maintenance.
 
-#include <sched.h>
 #include <sys/mman.h>
 
 #include <condition_variable>
@@ -36,10 +35,12 @@
 #include <thread>
 #include <vector>
 
-#include "mjbots/pi3hat/pi3hat.h"
 #include "mjbots/moteus/moteus_protocol.h"
+#include "mjbots/moteus/pi3hat_moteus_interface.h"
 
 using namespace mjbots;
+
+using MoteusInterface = moteus::Pi3HatMoteusInterface;
 
 namespace {
 struct Arguments {
@@ -86,197 +87,6 @@ void LockMemory() {
   }
 }
 
-void ConfigureRealtime(int cpu) {
-  {
-    cpu_set_t cpuset = {};
-    CPU_ZERO(&cpuset);
-    CPU_SET(cpu, &cpuset);
-
-    const int r = ::sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
-    if (r < 0) {
-      throw std::runtime_error("Error setting CPU affinity");
-    }
-
-    std::cout << "Affinity set to " << cpu << "\n";
-  }
-
-  {
-    struct sched_param params = {};
-    params.sched_priority = 10;
-    const int r = ::sched_setscheduler(0, SCHED_RR, &params);
-    if (r < 0) {
-      throw std::runtime_error("Error setting realtime scheduler");
-    }
-  }
-}
-
-
-/// This class represents the interface to the moteus controllers.
-/// Internally it uses a background thread to operate the pi3hat,
-/// enabling the main thread to perform work while servo communication
-/// is taking place.
-class MoteusInterface {
- public:
-  struct Options {
-    int cpu = -1;
-
-    // If a servo is not present, it is assumed to be on bus 1.
-    std::map<int, int> servo_bus_map;
-  };
-
-  MoteusInterface(const Options& options)
-      : options_(options),
-        thread_(std::bind(&MoteusInterface::CHILD_Run, this)) {
-  }
-
-  ~MoteusInterface() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    done_ = true;
-    condition_.notify_one();
-    thread_.join();
-  }
-
-  // This describes what you would like to do in a given control cycle
-  // in terms of sending commands or querying data.
-  struct Data {
-    pi3hat::Span<int> servo_ids;
-    pi3hat::Span<moteus::PositionCommand> positions;
-    pi3hat::Span<moteus::PositionResolution> resolutions;
-    pi3hat::Span<moteus::QueryCommand> queries;
-
-    pi3hat::Span<int> query_ids;
-    pi3hat::Span<moteus::QueryResult> query_results;
-  };
-
-  struct Output {
-    size_t query_result_size = 0;
-  };
-
-  /// When called, this will schedule a cycle of communication with
-  /// the servos.  The future will be notified when the communication
-  /// cycle has completed.  All memory pointed to by @p data must
-  /// remain valid until the future is set.
-  std::future<Output> Cycle(const Data& data) {
-    // We require all the input structures to have the same size.
-    if ((data.servo_ids.size() !=
-         data.positions.size()) ||
-        (data.servo_ids.size() !=
-         data.resolutions.size()) ||
-        (data.servo_ids.size() !=
-         data.queries.size())) {
-      throw std::logic_error("invalid input");
-    }
-
-    std::lock_guard<std::mutex> lock(mutex_);
-    if (active_) {
-      throw std::logic_error(
-          "Cycle cannot be called until the previous has completed");
-    }
-
-    active_ = true;
-    data_ = data;
-    std::promise<Output> discard;
-    promise_.swap(discard);
-
-    condition_.notify_all();
-
-    return promise_.get_future();
-  }
-
- private:
-  void CHILD_Run() {
-    ConfigureRealtime(options_.cpu);
-
-    pi3hat_.reset(new pi3hat::Pi3Hat({}));
-
-    while (true) {
-      {
-        std::unique_lock<std::mutex> lock(mutex_);
-        if (!active_) {
-          condition_.wait(lock);
-          if (done_) { return; }
-
-          if (!active_) { continue; }
-        }
-      }
-
-      auto output = CHILD_Cycle();
-      {
-        std::unique_lock<std::mutex> lock(mutex_);
-        active_ = false;
-      }
-      promise_.set_value(output);
-    }
-  }
-
-  Output CHILD_Cycle() {
-    tx_can_.resize(data_.servo_ids.size());
-    for (size_t i = 0; i < data_.servo_ids.size(); i++) {
-      const auto& query = data_.queries[i];
-      const auto servo_id = data_.servo_ids[i];
-
-      auto& can = tx_can_[i];
-      can.expect_reply = query.any_set();
-      can.id = servo_id | (can.expect_reply ? 0x8000 : 0x0000);
-      can.size = 0;
-
-      can.bus = [&]() {
-        const auto it = options_.servo_bus_map.find(servo_id);
-        if (it == options_.servo_bus_map.end()) {
-          return 1;
-        }
-        return it->second;
-      }();
-
-      moteus::WriteCanFrame write_frame(can.data, &can.size);
-      moteus::EmitPositionCommand(&write_frame, data_.positions[i], data_.resolutions[i]);
-      moteus::EmitQueryCommand(&write_frame, data_.queries[i]);
-    }
-
-    rx_can_.resize(data_.servo_ids.size() * 2);
-
-    pi3hat::Pi3Hat::Input input;
-    input.tx_can = { tx_can_.data(), tx_can_.size() };
-    input.rx_can = { rx_can_.data(), rx_can_.size() };
-
-    Output result;
-
-    const auto output = pi3hat_->Cycle(input);
-    for (size_t i = 0; i < output.rx_can_size && i < data_.query_ids.size(); i++) {
-      const auto& can = rx_can_[i];
-
-      data_.query_ids[i] = can.id & 0x7f00 >> 8;
-      data_.query_results[i] = moteus::ParseQueryResult(can.data, can.size);
-      result.query_result_size = i + 1;
-    }
-
-    return result;
-  }
-
-  const Options options_;
-
-  std::promise<Output> promise_;
-
-  /// This block of variables are all controlled by the mutex.
-  std::mutex mutex_;
-  std::condition_variable condition_;
-  bool active_ = false;;
-  bool done_ = false;
-  Data data_;
-
-  std::thread thread_;
-
-
-  /// All further variables are only used from within the child thread.
-
-  std::unique_ptr<pi3hat::Pi3Hat> pi3hat_;
-
-  // These are kept persistently so that no memory allocation is
-  // required in steady state.
-  std::vector<pi3hat::CanFrame> tx_can_;
-  std::vector<pi3hat::CanFrame> rx_can_;
-};
-
 std::pair<double, double> MinMaxVoltage(const std::vector<moteus::QueryResult>& r) {
   double rmin = std::numeric_limits<double>::infinity();
   double rmax = -std::numeric_limits<double>::infinity();
@@ -295,7 +105,7 @@ void Run(const Arguments& args) {
     return;
   }
 
-  ConfigureRealtime(args.main_cpu);
+  moteus::ConfigureRealtime(args.main_cpu);
   MoteusInterface moteus_interface{[&]() {
       MoteusInterface::Options options;
       options.cpu = args.can_cpu;
@@ -316,14 +126,15 @@ void Run(const Arguments& args) {
       return options;
     }()};
 
-  std::vector<int> servo_ids = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
-  std::vector<moteus::PositionCommand> position_commands{12};
+  std::vector<int> servo_ids = { 1, 2, 4, 5, 7, 8, 10, 11  };
+  const auto servo_count = servo_ids.size();
+  std::vector<moteus::PositionCommand> position_commands{servo_count};
   std::vector<moteus::PositionResolution> position_resolutions;
-  std::vector<moteus::QueryCommand> queries{12};
+  std::vector<moteus::QueryCommand> queries{servo_count};
 
   std::vector<int> query_ids;
-  query_ids.resize(12);
-  std::vector<moteus::QueryResult> query_results{12};
+  query_ids.resize(servo_count);
+  std::vector<moteus::QueryResult> query_results{servo_count};
   std::vector<int> saved_ids;
   std::vector<moteus::QueryResult> saved_results;
 
@@ -332,12 +143,12 @@ void Run(const Arguments& args) {
     res.position = moteus::Resolution::kInt16;
     res.velocity = moteus::Resolution::kInt16;
     res.feedforward_torque = moteus::Resolution::kInt16;
-    res.kp_scale = moteus::Resolution::kIgnore;
-    res.kd_scale = moteus::Resolution::kIgnore;
+    res.kp_scale = moteus::Resolution::kInt16;
+    res.kd_scale = moteus::Resolution::kInt16;
     res.maximum_torque = moteus::Resolution::kIgnore;
     res.stop_position = moteus::Resolution::kIgnore;
     res.watchdog_timeout = moteus::Resolution::kIgnore;
-    position_resolutions.assign(12, res);
+    position_resolutions.assign(servo_count, res);
   }
 
   MoteusInterface::Data moteus_data;

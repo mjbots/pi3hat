@@ -31,6 +31,8 @@ cc_binary(
     srcs = [
         "moteus_control_example.cc",
         "moteus_protocol.h",
+        "pi3hat_moteus_interface.h",
+        "realtime.h",
     ],
     deps = [
         "//mjbots/pi3hat:libpi3hat",
