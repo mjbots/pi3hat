@@ -14,6 +14,13 @@
 
 #pragma once
 
+#include <condition_variable>
+#include <functional>
+#include <memory>
+#include <mutex>
+#include <thread>
+#include <vector>
+
 #include "mjbots/pi3hat/pi3hat.h"
 
 #include "mjbots/moteus/realtime.h"
@@ -62,11 +69,15 @@ class Pi3HatMoteusInterface {
     size_t query_result_size = 0;
   };
 
+  using CallbackFunction = std::function<void (const Output&)>;
+
   /// When called, this will schedule a cycle of communication with
-  /// the servos.  The future will be notified when the communication
-  /// cycle has completed.  All memory pointed to by @p data must
-  /// remain valid until the future is set.
-  std::future<Output> Cycle(const Data& data) {
+  /// the servos.  The callback will be invoked from an arbitrary
+  /// thread when the communication cycle has completed.
+  ///
+  /// All memory pointed to by @p data must remain valid until the
+  /// callback is invoked.
+  void Cycle(const Data& data, CallbackFunction callback) {
     // We require all the input structures to have the same size.
     if ((data.servo_ids.size() !=
          data.positions.size()) ||
@@ -83,14 +94,11 @@ class Pi3HatMoteusInterface {
           "Cycle cannot be called until the previous has completed");
     }
 
+    callback_ = std::move(callback);
     active_ = true;
     data_ = data;
-    std::promise<Output> discard;
-    promise_.swap(discard);
 
     condition_.notify_all();
-
-    return promise_.get_future();
   }
 
  private:
@@ -111,11 +119,13 @@ class Pi3HatMoteusInterface {
       }
 
       auto output = CHILD_Cycle();
+      CallbackFunction callback_copy;
       {
         std::unique_lock<std::mutex> lock(mutex_);
         active_ = false;
+        std::swap(callback_copy, callback_);
       }
-      promise_.set_value(output);
+      callback_copy(output);
     }
   }
 
@@ -165,13 +175,13 @@ class Pi3HatMoteusInterface {
 
   const Options options_;
 
-  std::promise<Output> promise_;
 
   /// This block of variables are all controlled by the mutex.
   std::mutex mutex_;
   std::condition_variable condition_;
   bool active_ = false;;
   bool done_ = false;
+  CallbackFunction callback_;
   Data data_;
 
   std::thread thread_;

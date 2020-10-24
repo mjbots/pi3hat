@@ -25,7 +25,6 @@
 
 #include <sys/mman.h>
 
-#include <condition_variable>
 #include <iostream>
 #include <future>
 #include <limits>
@@ -228,7 +227,15 @@ void Run(const Arguments& args) {
     }
 
     // Then we can immediately ask them to be used again.
-    can_result = moteus_interface.Cycle(moteus_data);
+    auto promise = std::make_shared<std::promise<MoteusInterface::Output>>();
+    moteus_interface.Cycle(
+        moteus_data,
+        [promise](const MoteusInterface::Output& output) {
+          // This is called from an arbitrary thread, so we just set
+          // the promise value here.
+          promise->set_value(output);
+        });
+    can_result = promise->get_future();
   }
 }
 }
