@@ -42,6 +42,10 @@ class Span {
   bool empty() const { return size_ == 0; }
   T& operator[](size_t i) { return ptr_[i]; }
   T& operator[](size_t i) const { return ptr_[i]; }
+  T* begin() { return ptr_; }
+  T* end() { return ptr_ + size_; }
+  const T* begin() const { return ptr_; }
+  const T* end() const { return ptr_ + size_; }
 
  private:
   T* ptr_;
