@@ -180,12 +180,12 @@ class SampleController {
       }
     } else {
       // Then we make the secondary servo mirror the primary servo.
-      const auto primary = Get(status, 1);
+      const auto primary = Get(status, arguments_.primary_id);
       double primary_pos = primary.position;
       if (!std::isnan(primary_pos) && std::isnan(primary_initial_)) {
         primary_initial_ = primary_pos;
       }
-      double secondary_pos = Get(status, 4).position;
+      double secondary_pos = Get(status, arguments_.secondary_id).position;
       if (!std::isnan(secondary_pos) && std::isnan(secondary_initial_)) {
         secondary_initial_ = secondary_pos;
       }
