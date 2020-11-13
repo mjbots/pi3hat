@@ -85,6 +85,8 @@ struct Arguments {
         read_rf = true;
       } else if (arg == "--read-att") {
         read_attitude = true;
+      } else if (arg == "--read-spi") {
+        read_spi = args.at(++i);
       } else if (arg == "--info") {
         info = true;
       } else if (arg == "--performance") {
@@ -116,6 +118,7 @@ struct Arguments {
   std::vector<std::string> write_rf;
   bool read_rf = false;
   bool read_attitude = false;
+  std::string read_spi;
 
   bool info = false;
   bool performance = false;
@@ -146,6 +149,8 @@ void DisplayUsage() {
   std::cout << "     SLOT,PRIORITY,DATA\n";
   std::cout << "  --read-rf       request any RF data\n";
   std::cout << "  --read-att      request attitude data\n";
+  std::cout << "  --read-spi      read raw SPI data\n";
+  std::cout << "     SPIBUS,ADDRESS,SIZE\n";
   std::cout << "  --info          display device info\n";
   std::cout << "  --performance   print runtime performance\n";
   std::cout << "  -r,--run        run a sample high rate cycle\n";
@@ -172,6 +177,18 @@ void CheckError(int error) {
   if (! error) { return; }
   throw std::runtime_error(
       "Unexpected pi3hat error: " + std::to_string(error));
+}
+
+std::vector<std::string> Split(const std::string& input, const char* delim = ",") {
+  std::vector<std::string> result;
+  size_t pos = 0;
+  while(pos < input.size()) {
+    const size_t next = input.find_first_of(delim, pos);
+    result.push_back(input.substr(pos, next - pos));
+    if (next == std::string::npos) { break; }
+    pos = next + 1;
+  }
+  return result;
 }
 
 int ParseHexNybble(char c) {
@@ -425,6 +442,19 @@ void DoInfo(Pi3Hat* pi3hat) {
   std::cout << "AUX:  " << FormatProcessorInfo(di.aux) << "\n";
 }
 
+void ReadSpi(Pi3Hat* pi3hat, const std::string& command) {
+  const std::vector<std::string> args = Split(command);
+  const auto spi_bus = std::stoi(args.at(0));
+  const auto address = std::stoi(args.at(1));
+  const auto size = std::stoi(args.at(2));
+
+  std::vector<char> data;
+  data.resize(size);
+  pi3hat->ReadSpi(spi_bus, address, &data[0], data.size());
+  std::cout << FormatHexBytes(
+      reinterpret_cast<uint8_t*>(&data[0]), data.size()) << "\n";
+}
+
 std::string FormatPerformance(const Pi3Hat::PerformanceInfo& p) {
   return
       "average:" + std::to_string(p.cycles_per_ms) + " " +
@@ -510,6 +540,8 @@ int do_main(int argc, char** argv) {
     Run(&pi3hat, args);
   } else if (args.info) {
     DoInfo(&pi3hat);
+  } else if (!args.read_spi.empty()) {
+    ReadSpi(&pi3hat, args.read_spi);
   } else if (args.performance) {
     DoPerformance(&pi3hat);
   } else {

@@ -946,6 +946,16 @@ class Pi3Hat::Impl {
     return result;
   }
 
+  void ReadSpi(int spi_bus, int address, char* data, size_t size) {
+    if (spi_bus == 0) {
+      aux_spi_.Read(0, address, data, size);
+    } else if (spi_bus == 1) {
+      aux_spi_.Read(1, address, data, size);
+    } else if (spi_bus == 2) {
+      primary_spi_.Read(0, address, data, size);
+    }
+  }
+
   bool GetAttitude(Attitude* output, bool wait, bool detail) {
     device_attitude_ = {};
 
@@ -1360,6 +1370,10 @@ Pi3Hat::DeviceInfo Pi3Hat::device_info() {
 
 Pi3Hat::DevicePerformance Pi3Hat::device_performance() {
   return impl_->device_performance();
+}
+
+void Pi3Hat::ReadSpi(int spi_bus, int address, char* data, size_t size) {
+  impl_->ReadSpi(spi_bus, address, data, size);
 }
 
 }

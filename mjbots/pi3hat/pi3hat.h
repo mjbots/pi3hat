@@ -249,6 +249,9 @@ class Pi3Hat {
 
   DevicePerformance device_performance();
 
+  /// Read raw SPI data.
+  void ReadSpi(int spi_bus, int address, char* data, size_t size);
+
  private:
   class Impl;
   Impl* const impl_;
