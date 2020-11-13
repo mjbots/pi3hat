@@ -58,6 +58,33 @@ namespace fw {
 ///     byte 6-0 - size of payload
 ///   byte 1, 2 - CAN ID
 ///   byte 3+ payload
+/// 6: Error status
+///   byte 0 - CAN1
+///    bit 7-6 activity
+///    bit 5-3 data last error code
+///    bit 2-0 last error code
+///   byte 1 - CAN1
+///    bit 3 protocol exception
+///    bit 2 bus_off
+///    bit 1 warning status
+///    bit 0 error passive
+///   byte 2 - CAN1 rx error count
+///   byte 3 - CAN1 tx error count
+///   byte 4 - CAN1 reset count
+///   byte 5 - reserved
+///   byte 6 - CAN2
+///    bit 7-6 activity
+///    bit 5-3 data last error code
+///    bit 2-0 last error code
+///   byte 7 - CAN2
+///    bit 3 protocol exception
+///    bit 2 bus_off
+///    bit 1 warning status
+///    bit 0 error passive
+///   byte 8 - CAN1 rx error count
+///   byte 9 - CAN1 tx error count
+///   byte 10 - CAN1 reset count
+///   byte 11 - reserved
 
 class CanBridge {
  public:
@@ -78,7 +105,32 @@ class CanBridge {
         irq_{pins.irq_name, 0} {}
 
   void Poll() {
-    auto can_poll = [&](int bus_id, auto* can) {
+    auto can_poll = [&](int bus_id, auto* can, uint8_t* reset_count) {
+      const auto status = can->status();
+      uint8_t* const can_status = &status_buf_[(bus_id - 1) * 6];
+      can_status[0] = (
+          (status.LastErrorCode << 0) |
+          (status.DataLastErrorCode << 3) |
+          (status.Activity << 6) |
+          0);
+      can_status[1] = (
+          (status.ErrorPassive << 0) |
+          (status.Warning << 1) |
+          (status.BusOff << 2) |
+          (status.ProtocolException << 3) |
+          0);
+
+      const auto error_counters = can->error_counters();
+      can_status[2] = error_counters.RxErrorCnt;
+      can_status[3] = error_counters.TxErrorCnt;
+      can_status[4] = *reset_count;
+
+      if (status.BusOff) {
+        // We need to reset.
+        (*reset_count)++;
+        can->RecoverBusOff();
+      }
+
       const bool rx = can->Poll(&can_header_, rx_buffer_);
       if (!rx) {
         return;
@@ -126,10 +178,10 @@ class CanBridge {
     };
 
     if (can1_) {
-      can_poll(1, can1_);
+      can_poll(1, can1_, &can1_reset_count_);
     }
     if (can2_) {
-      can_poll(2, can2_);
+      can_poll(2, can2_, &can2_reset_count_);
     }
 
     // Look to see if we have anything to send.
@@ -156,7 +208,7 @@ class CanBridge {
   }
 
   static bool IsSpiAddress(uint16_t address) {
-    return address <= 5;
+    return address <= 6;
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
@@ -227,6 +279,13 @@ class CanBridge {
           mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
         };
       }
+    }
+    if (address == 6) {
+      return {
+        std::string_view(reinterpret_cast<const char*>(&status_buf_[0]),
+                         sizeof(status_buf_)),
+        {},
+      };
     }
 
     return { {}, {} };
@@ -341,7 +400,11 @@ class CanBridge {
   FDCAN_RxHeaderTypeDef can_header_ = {};
   char rx_buffer_[64] = {};
 
+  uint8_t can1_reset_count_ = 0;
+  uint8_t can2_reset_count_ = 0;
+
   char address16_buf_[kBufferItems] = {};
+  uint8_t status_buf_[12] = {};
 };
 
 

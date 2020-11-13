@@ -335,9 +335,19 @@ bool FDCan::Poll(FDCAN_RxHeaderTypeDef* header,
   return true;
 }
 
+void FDCan::RecoverBusOff() {
+  hfdcan1_.Instance->CCCR &= ~FDCAN_CCCR_INIT;
+}
+
 FDCAN_ProtocolStatusTypeDef FDCan::status() {
   FDCAN_ProtocolStatusTypeDef result = {};
   HAL_FDCAN_GetProtocolStatus(&hfdcan1_, &result);
+  return result;
+}
+
+FDCAN_ErrorCountersTypeDef FDCan::error_counters() {
+  FDCAN_ErrorCountersTypeDef result = {};
+  HAL_FDCAN_GetErrorCounters(&hfdcan1_, &result);
   return result;
 }
 
