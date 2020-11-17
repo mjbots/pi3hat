@@ -1,0 +1,124 @@
+<!--This work is licensed under a Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA) with Design Exception 1.0-->
+<eagle version="7.1.0">
+<drawing>
+<settings>
+<setting alwaysvectorfont="no"/>
+<setting verticaltext="up"/>
+</settings>
+<grid distance="0.1" unitdist="inch" unit="inch" style="lines" multiple="1" display="no" altdistance="0.01" altunitdist="inch" altunit="inch"/>
+<layers>
+<layer number="1" name="Top" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="16" name="Bottom" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="17" name="Pads" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="18" name="Vias" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="19" name="Unrouted" color="6" fill="1" visible="yes" active="yes"/>
+<layer number="20" name="Dimension" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="21" name="tPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="22" name="bPlace" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="23" name="tOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="24" name="bOrigins" color="15" fill="1" visible="yes" active="yes"/>
+<layer number="25" name="tNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="26" name="bNames" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="27" name="tValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="28" name="bValues" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="29" name="tStop" color="7" fill="3" visible="yes" active="yes"/>
+<layer number="30" name="bStop" color="7" fill="6" visible="no" active="yes"/>
+<layer number="31" name="tCream" color="7" fill="4" visible="yes" active="yes"/>
+<layer number="32" name="bCream" color="7" fill="5" visible="no" active="yes"/>
+<layer number="33" name="tFinish" color="6" fill="3" visible="no" active="yes"/>
+<layer number="34" name="bFinish" color="6" fill="6" visible="no" active="yes"/>
+<layer number="35" name="tGlue" color="7" fill="4" visible="no" active="yes"/>
+<layer number="36" name="bGlue" color="7" fill="5" visible="no" active="yes"/>
+<layer number="37" name="tTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="38" name="bTest" color="7" fill="1" visible="no" active="yes"/>
+<layer number="39" name="tKeepout" color="4" fill="11" visible="yes" active="yes"/>
+<layer number="40" name="bKeepout" color="1" fill="11" visible="yes" active="yes"/>
+<layer number="41" name="tRestrict" color="4" fill="10" visible="yes" active="yes"/>
+<layer number="42" name="bRestrict" color="1" fill="10" visible="yes" active="yes"/>
+<layer number="43" name="vRestrict" color="2" fill="10" visible="yes" active="yes"/>
+<layer number="44" name="Drills" color="7" fill="1" visible="no" active="yes"/>
+<layer number="45" name="Holes" color="7" fill="1" visible="no" active="yes"/>
+<layer number="46" name="Milling" color="3" fill="1" visible="no" active="yes"/>
+<layer number="47" name="Measures" color="7" fill="1" visible="no" active="yes"/>
+<layer number="48" name="Document" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="49" name="Reference" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="51" name="tDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="52" name="bDocu" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="90" name="Modules" color="5" fill="1" visible="yes" active="yes"/>
+<layer number="91" name="Nets" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="92" name="Busses" color="1" fill="1" visible="yes" active="yes"/>
+<layer number="93" name="Pins" color="2" fill="1" visible="yes" active="yes"/>
+<layer number="94" name="Symbols" color="4" fill="1" visible="yes" active="yes"/>
+<layer number="95" name="Names" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="96" name="Values" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="97" name="Info" color="7" fill="1" visible="yes" active="yes"/>
+<layer number="98" name="Guide" color="6" fill="1" visible="yes" active="yes"/>
+</layers>
+<library>
+<packages>
+<package name="INDP125125X600N">
+<wire x1="-6.25" y1="6.25" x2="6.25" y2="6.25" width="0.127" layer="21"/>
+<wire x1="-6.25" y1="-6.25" x2="6.25" y2="-6.25" width="0.127" layer="21"/>
+<wire x1="-6.25" y1="6.25" x2="-6.25" y2="3.05" width="0.127" layer="21"/>
+<wire x1="6.25" y1="6.25" x2="6.25" y2="3.05" width="0.127" layer="21"/>
+<wire x1="6.25" y1="-3.05" x2="6.25" y2="-6.25" width="0.127" layer="21"/>
+<wire x1="-6.25" y1="-3.05" x2="-6.25" y2="-6.25" width="0.127" layer="21"/>
+<wire x1="-6.5" y1="6.5" x2="6.5" y2="6.5" width="0.127" layer="39"/>
+<wire x1="6.5" y1="6.5" x2="6.5" y2="-6.5" width="0.127" layer="39"/>
+<wire x1="6.5" y1="-6.5" x2="-6.5" y2="-6.5" width="0.127" layer="39"/>
+<wire x1="-6.5" y1="-6.5" x2="-6.5" y2="6.5" width="0.127" layer="39"/>
+<text x="-6.55574" y="6.70587" size="1.27112" layer="25">&gt;NAME</text>
+<text x="-6.36196" y="-7.76459" size="1.27239" layer="27">&gt;VALUE</text>
+<smd name="1" x="-4.85" y="0" dx="2.9" dy="5.4" layer="1"/>
+<smd name="2" x="4.85" y="0" dx="2.9" dy="5.4" layer="1"/>
+</package>
+</packages>
+<symbols>
+<symbol name="SRR1260-100M">
+<wire x1="0" y1="5.08" x2="1.27" y2="3.81" width="0.254" layer="94" curve="-90"/>
+<wire x1="0" y1="2.54" x2="1.27" y2="3.81" width="0.254" layer="94" curve="90"/>
+<wire x1="0" y1="2.54" x2="1.27" y2="1.27" width="0.254" layer="94" curve="-90"/>
+<wire x1="0" y1="0" x2="1.27" y2="1.27" width="0.254" layer="94" curve="90"/>
+<wire x1="0" y1="0" x2="1.27" y2="-1.27" width="0.254" layer="94" curve="-90"/>
+<wire x1="0" y1="-2.54" x2="1.27" y2="-1.27" width="0.254" layer="94" curve="90"/>
+<wire x1="0" y1="-2.54" x2="1.27" y2="-3.81" width="0.254" layer="94" curve="-90"/>
+<wire x1="0" y1="-5.08" x2="1.27" y2="-3.81" width="0.254" layer="94" curve="90"/>
+<text x="2.03883" y="5.86165" size="1.78398" layer="95">&gt;NAME</text>
+<text x="1.78169" y="-7.6358" size="1.78169" layer="96">&gt;VALUE</text>
+<wire x1="2.032" y1="4.826" x2="2.032" y2="-5.08" width="0.254" layer="94" style="shortdash"/>
+<wire x1="2.794" y1="4.826" x2="2.794" y2="-5.08" width="0.254" layer="94" style="shortdash"/>
+<pin name="2" x="0" y="7.62" visible="pad" length="short" direction="pas" rot="R270"/>
+<pin name="1" x="0" y="-7.62" visible="pad" length="short" direction="pas" rot="R90"/>
+</symbol>
+</symbols>
+<devicesets>
+<deviceset name="SRR1260-100M" prefix="L">
+<description>Inductor Power Shielded Wirewound 33uH 20% 100KHz 27Q-Factor Ferrite 3A 60mOhm DCR T/R </description>
+<gates>
+<gate name="G$1" symbol="SRR1260-100M" x="0" y="0"/>
+</gates>
+<devices>
+<device name="" package="INDP125125X600N">
+<connects>
+<connect gate="G$1" pin="1" pad="1"/>
+<connect gate="G$1" pin="2" pad="2"/>
+</connects>
+<technologies>
+<technology name="">
+<attribute name="MF" value="Bourns"/>
+<attribute name="Digi-Key_Part_Number" value="SRR1260-100MCT-ND"/>
+<attribute name="Description" value="
+10µH Shielded Wirewound Inductor 5.5A 20mOhm Max Nonstandard
+"/>
+<attribute name="Package" value="Nonstandard Bourns"/>
+<attribute name="Purchase-URL" value="https://pricing.snapeda.com/search/part/SRR1260-100M/?ref=eda"/>
+<attribute name="MP" value="SRR1260-100M"/>
+</technology>
+</technologies>
+</device>
+</devices>
+</deviceset>
+</devicesets>
+</library>
+</drawing>
+</eagle>

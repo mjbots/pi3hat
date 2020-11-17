@@ -8,8 +8,12 @@
  * add "stored procedure" sends, so that all the queries to all
    servos, for instance can be sent with a 1 byte SPI command.
 
- * Provide 5V pin header for external power
- * Add voltage sensing
+DONE 2020-11-17
+ * Switched regulator to MAX17504
+   * changed inductor to meet its guidelines
+ * Removed microphone
+ * Added connector with 3V and 5V power
+ * Added VIN sense resistor connected to aux processor
 
 DONE 2020-06-12
  * Implemented DMA
