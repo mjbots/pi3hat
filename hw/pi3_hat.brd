@@ -175,7 +175,7 @@
 <text x="48.3" y="5.2" size="0.8" layer="25" font="vector">V+</text>
 <text x="48.3" y="3.2" size="0.8" layer="25" font="vector">G</text>
 <text x="7.4" y="3.5" size="0.8" layer="25" font="vector" rot="R180">+5V</text>
-<text x="8.1" y="18.7" size="0.8" layer="25" font="vector">SPI1_CS</text>
+<text x="10.7" y="24" size="0.8" layer="25" font="vector" rot="R270">SPI1_CS</text>
 <text x="9.8" y="20.2" size="0.8" layer="25" font="vector">0</text>
 <text x="9.7" y="22.3" size="0.8" layer="25" font="vector">1</text>
 <text x="7.1" y="53.6" size="0.8" layer="25" font="vector" rot="R90">SPI1</text>
@@ -603,7 +603,8 @@
 <circle x="28" y="22" radius="3.1" width="0.1" layer="21"/>
 <hole x="28" y="14.3" drill="2.75"/>
 <circle x="28" y="14.3" radius="3.1" width="0.1" layer="21"/>
-<wire x1="27.1" y1="2.9" x2="28.3" y2="4.1" width="0.1524" layer="21"/>
+<wire x1="27.6" y1="2.7" x2="28.5" y2="3.6" width="0.1524" layer="21"/>
+<text x="9.7" y="18.3" size="0.8" layer="25" font="vector" rot="R90">G</text>
 </plain>
 <libraries>
 <library name="pinhead">
@@ -1771,7 +1772,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="HOUSEPART" value="" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MF" value="YAGEO" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="RC0603FR-0710KL" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="9.9" y="13.2" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="9.9" y="13.7" size="0.8" layer="25" font="vector" ratio="10"/>
 <attribute name="POPULATE" value="1" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="URL" value="" x="10.5" y="11.6" size="1.778" layer="27" rot="R90" display="off"/>
@@ -2658,7 +2659,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <element name="JP6" library="pinhead" library_urn="urn:adsk.eagle:library:325" package="1X03" package3d_urn="urn:adsk.eagle:package:22458/2" value="" x="7.9" y="14.7" smashed="yes" rot="R90">
 <attribute name="MF" value="MacroFab" x="7.9" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="MF-CON-2.54mm-01x03" x="7.9" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="6.0712" y="10.8138" size="1.27" layer="25" ratio="10" rot="R90"/>
+<attribute name="NAME" x="9.5288" y="18.1862" size="1.27" layer="25" ratio="10" rot="R270"/>
 <attribute name="POPULARITY" value="92" x="7.9" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="POPULATE" value="1" x="7.9" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="VALUE" x="11.075" y="10.89" size="1.27" layer="27" rot="R90"/>
@@ -3082,7 +3083,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 </polygon>
 <via x="37" y="12" extent="1-16" drill="0.35"/>
 <via x="23.3" y="24.5" extent="1-16" drill="0.35"/>
-<via x="23.3" y="12" extent="1-16" drill="0.35"/>
+<via x="23.3" y="12.4" extent="1-16" drill="0.35"/>
 <via x="23.3" y="18.3" extent="1-16" drill="0.35"/>
 <via x="33.5" y="24.5" extent="1-16" drill="0.35"/>
 <via x="33.5" y="18.3" extent="1-16" drill="0.35"/>
