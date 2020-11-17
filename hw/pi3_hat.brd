@@ -2659,7 +2659,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <element name="JP6" library="pinhead" library_urn="urn:adsk.eagle:library:325" package="1X03" package3d_urn="urn:adsk.eagle:package:22458/2" value="" x="7.8" y="14.7" smashed="yes" rot="R90">
 <attribute name="MF" value="MacroFab" x="7.8" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="MF-CON-2.54mm-01x03" x="7.8" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="9.4288" y="18.1862" size="1.27" layer="25" ratio="10" rot="R270"/>
+<attribute name="NAME" x="9.4288" y="18.1862" size="1" layer="25" ratio="10" rot="R270"/>
 <attribute name="POPULARITY" value="92" x="7.8" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="POPULATE" value="1" x="7.8" y="14.7" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="VALUE" x="10.975" y="10.89" size="1.27" layer="27" rot="R90"/>
