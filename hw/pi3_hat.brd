@@ -2332,7 +2332,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="DIELECTRIC" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="HOUSEPART" value="YES" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-0.1uF" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="25.2" y="25.5" size="0.8" layer="25" font="vector" ratio="10" rot="R90"/>
+<attribute name="NAME" x="24.3" y="25.5" size="0.8" layer="25" font="vector" ratio="10" rot="R90"/>
 <attribute name="POPULATE" value="1" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="URL" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
