@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import asyncio
 import pathlib
 import sys
 
@@ -29,7 +30,7 @@ class Pi3HatRouter:
     is recommended that you configure the selected CPU using isolcpus
     so that no other processes use it.
 
-    At constructiont time, you must provide a list of which servo IDs
+    At construction time, you must provide a list of which servo IDs
     are present on which pi3hat bus.  Communication with servos not in
     this list will use bus 1.
     """
@@ -45,7 +46,7 @@ class Pi3HatRouter:
           servo_bus_map: A list of tuples, (bus, [list, of, ids])
         """
 
-        self.servo_bus_map = servo_bus_map
+        self.servo_bus_map = servo_bus_map or []
 
         options = _pi3hat_router.Pi3HatRouterOptions()
         options.cpu = cpu
@@ -53,20 +54,38 @@ class Pi3HatRouter:
 
         self._impl = _pi3hat_router.Pi3HatRouter(options)
 
-    async def cycle(self, commands):
-        input = _pi3hat.Input()
+    def _find_bus(self, destination):
+        for key, value in self.servo_bus_map:
+            if destination in value:
+                return key
+        return 1
 
-        input.tx_can = [_make_single_can(command) for command in commands]
+    def _make_single_can(self, command):
+        result = _pi3hat_router.SingleCan()
+        result.id = command.destination | 0x8000 if command.reply_required else 0x0000
+        result.data = command.data
+        result.bus = self._find_bus(command.destination)
+        result.expect_reply = command.reply_required
+        return result
+
+    async def cycle(self, commands):
+        input = _pi3hat_router.Input()
+
+        input.tx_can = [self._make_single_can(command) for command in commands]
 
         loop = asyncio.get_event_loop()
         future = asyncio.Future(loop=loop)
+
         def handle_output(output):
-            loop.call_soon_threadsafe(fut.set_result, output)
+            loop.call_soon_threadsafe(future.set_result, output)
+
         self._impl.cycle(input, handle_output)
         output = await future
 
         result = []
         for single_rx in output.rx_can:
-            command = [x for x in commands if x.destination == single_rx.id][0]
-            result.append(command.parse(single_rx.data))
+            maybe_command = [x for x in commands if x.destination == (single_rx.id) >> 8]
+            if maybe_command:
+                command = maybe_command[0]
+                result.append(command.parse(single_rx.data))
         return result

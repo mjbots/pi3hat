@@ -18,6 +18,8 @@
 #include <thread>
 
 #include <pybind11/pybind11.h>
+#include <pybind11/functional.h>
+#include <pybind11/stl.h>
 
 #include "mjbots/pi3hat/pi3hat.h"
 #include "mjbots/moteus/realtime.h"
@@ -97,11 +99,13 @@ class Pi3HatRouter {
     pi3hat_.reset(new pi3hat::Pi3Hat(options_));
 
     while (true) {
-      std::unique_lock<std::mutex> lock(mutex_);
-      if (!active_) {
-        condition_.wait(lock);
-        if (done_) { return; }
-        if (!active_) { continue; }
+      {
+        std::unique_lock<std::mutex> lock(mutex_);
+        if (!active_) {
+          condition_.wait(lock);
+          if (done_) { return; }
+          if (!active_) { continue; }
+        }
       }
 
       auto output = CHILD_Cycle();
@@ -172,7 +176,9 @@ PYBIND11_MODULE(_pi3hat_router, m) {
   py::class_<SingleCan>(m, "SingleCan")
       .def(py::init<>())
       .def_readwrite("id", &SingleCan::id)
-      .def_readwrite("data", &SingleCan::data)
+      .def_property("data",
+                    [](const SingleCan& i) { return py::bytes(i.data); },
+                    [](SingleCan& i, const std::string& value) { i.data = value; })
       .def_readwrite("bus", &SingleCan::bus)
       .def_readwrite("expect_reply", &SingleCan::expect_reply)
       ;
