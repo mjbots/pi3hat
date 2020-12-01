@@ -21,8 +21,20 @@ cc_binary(
     srcs = ["moteus_tool_main.cc"],
     deps = [
         "//mjbots/pi3hat:libpi3hat",
-        "@moteus//moteus/tool:moteus_tool_lib",
+        "@moteus//utils:moteus_tool_lib",
         "@org_llvm_libcxx//:libcxx",
+    ],
+)
+
+cc_library(
+    name = "common",
+    hdrs = [
+        "moteus_protocol.h",
+        "pi3hat_moteus_interface.h",
+        "realtime.h",
+    ],
+    deps = [
+        "//mjbots/pi3hat:libpi3hat",
     ],
 )
 
@@ -30,12 +42,9 @@ cc_binary(
     name = "moteus_control_example",
     srcs = [
         "moteus_control_example.cc",
-        "moteus_protocol.h",
-        "pi3hat_moteus_interface.h",
-        "realtime.h",
     ],
     deps = [
-        "//mjbots/pi3hat:libpi3hat",
+        ":common",
         "@org_llvm_libcxx//:libcxx",
     ],
 )
