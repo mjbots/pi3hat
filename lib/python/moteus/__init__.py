@@ -25,5 +25,19 @@ __all__ = [
 from moteus.command import Command
 from moteus.fdcanusb import Fdcanusb
 from moteus.router import Router
-from moteus.moteus import (Controller, Register, Mode, QueryResolution, PositionResolution)
+from moteus.moteus import (Controller, Register, Mode, QueryResolution, PositionResolution, set_router_factory)
 from moteus.pi3hat_router import Pi3HatRouter
+import moteus.moteus
+
+_global_pi3hat = None
+
+def _pi3hat_get_singleton():
+    global _global_pi3hat
+
+    if _global_pi3hat:
+        return _global_pi3hat
+
+    _global_pi3hat = Pi3HatRouter()
+    return _global_pi3hat
+
+set_router_factory(_pi3hat_get_singleton)
