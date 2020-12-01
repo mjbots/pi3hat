@@ -18,22 +18,12 @@ controller."""
 __all__ = [
     'Fdcanusb', 'Router', 'Controller', 'Register',
     'Mode', 'QueryResolution', 'PositionResolution', 'Command',
-    'dummy',
+    'Pi3HatRouter',
 ]
 
-import pathlib
-import sys
-
-VERSION = "0.0.1"
-
-here = str(pathlib.Path(__file__).parent.resolve())
-sys.path.insert(0, here)
-
-import _pi3hat_router
 
 from moteus.command import Command
 from moteus.fdcanusb import Fdcanusb
 from moteus.router import Router
 from moteus.moteus import (Controller, Register, Mode, QueryResolution, PositionResolution)
-
-dummy = _pi3hat_router.dummy
+from moteus.pi3hat_router import Pi3HatRouter

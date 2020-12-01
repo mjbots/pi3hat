@@ -24,6 +24,7 @@ cc_binary(
     deps = [
         "@com_github_pybind_pybind11//:pybind11",
         "//lib/cpp/mjbots/pi3hat:libpi3hat",
+        "//lib/cpp/mjbots/moteus:common",
         "@org_llvm_libcxx//:libcxx",
     ],
     linkshared = True,
@@ -33,5 +34,6 @@ py_library(
     name = "moteus",
     srcs = [
         "__init__.py",
+        "pi3hat_router.py",
     ],
 )

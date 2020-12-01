@@ -1,0 +1,72 @@
+# Copyright 2020 Josh Pieper, jjp@pobox.com.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import pathlib
+import sys
+
+VERSION = "0.0.1"
+
+here = str(pathlib.Path(__file__).parent.resolve())
+sys.path.insert(0, here)
+
+import _pi3hat_router
+
+
+class Pi3HatRouter:
+    """Permits communication using the pi3hat CAN interfaces.  This
+    requires a dedicated Raspberry PI CPU to operate the hardware.  It
+    is recommended that you configure the selected CPU using isolcpus
+    so that no other processes use it.
+
+    At constructiont time, you must provide a list of which servo IDs
+    are present on which pi3hat bus.  Communication with servos not in
+    this list will use bus 1.
+    """
+
+    def __init__(self,
+                 cpu = 3,
+                 spi_speed_hz = 10000000,
+                 servo_bus_map = None):
+        """Args:
+
+          cpu: The device interface will run on this CPU
+          spi_speed_hz: How fast to run the SPI bus
+          servo_bus_map: A list of tuples, (bus, [list, of, ids])
+        """
+
+        self.servo_bus_map = servo_bus_map
+
+        options = _pi3hat_router.Pi3HatRouterOptions()
+        options.cpu = cpu
+        options.spi_speed_hz = spi_speed_hz
+
+        self._impl = _pi3hat_router.Pi3HatRouter(options)
+
+    async def cycle(self, commands):
+        input = _pi3hat.Input()
+
+        input.tx_can = [_make_single_can(command) for command in commands]
+
+        loop = asyncio.get_event_loop()
+        future = asyncio.Future(loop=loop)
+        def handle_output(output):
+            loop.call_soon_threadsafe(fut.set_result, output)
+        self._impl.cycle(input, handle_output)
+        output = await future
+
+        result = []
+        for single_rx in output.rx_can:
+            command = [x for x in commands if x.destination == single_rx.id][0]
+            result.append(command.parse(single_rx.data))
+        return result
