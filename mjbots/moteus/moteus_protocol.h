@@ -528,7 +528,7 @@ struct PositionCommand {
   double kp_scale = 1.0;
   double kd_scale = 1.0;
   double maximum_torque = 0.0;
-  double stop_position = std::numeric_limits<double>::quiet_NaN();;
+  double stop_position = std::numeric_limits<double>::quiet_NaN();
   double watchdog_timeout = 0.0;
 };
 
