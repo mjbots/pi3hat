@@ -16,47 +16,32 @@
 
 package(default_visibility = ["//visibility:public"])
 
-cc_binary(
-    name = "moteus_tool",
-    srcs = ["moteus_tool_main.cc"],
-    deps = [
-        "//mjbots/pi3hat:libpi3hat",
-        "@moteus//utils:moteus_tool_lib",
-        "@org_llvm_libcxx//:libcxx",
-    ],
+cc_library(
+    name = "headers",
+    hdrs = ["pi3hat.h"],
+    include_prefix = "mjbots/pi3hat",
 )
 
 cc_library(
-    name = "common",
-    hdrs = [
-        "moteus_protocol.h",
-        "pi3hat_moteus_interface.h",
-        "realtime.h",
-    ],
-    deps = [
-        "//mjbots/pi3hat:libpi3hat",
-    ],
+    name = "libpi3hat",
+    hdrs = ["pi3hat.h"],
+    srcs = ["pi3hat.cc"],
+    deps = [":headers", "@raspberrypi-firmware//:bcm_host"],
 )
 
 cc_binary(
-    name = "moteus_control_example",
-    srcs = [
-        "moteus_control_example.cc",
-    ],
+    name = "pi3hat_tool",
+    srcs = ["pi3hat_tool.cc"],
     deps = [
-        ":common",
+        ":libpi3hat",
         "@org_llvm_libcxx//:libcxx",
     ],
 )
 
-cc_test(
-    name = "test",
+filegroup(
+    name = "pi3hat",
     srcs = [
-        "moteus_protocol.h",
-        "test/moteus_protocol_test.cc",
-        "test/test_main.cc",
-    ],
-    deps = [
-        "@boost//:test",
+        ":libpi3hat",
+        ":pi3hat_tool",
     ],
 )

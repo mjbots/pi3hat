@@ -26,8 +26,8 @@ filegroup(
 filegroup(
     name = "pi_target",
     srcs = [
-        "//mjbots/pi3hat",
-        "//mjbots/moteus:moteus_tool",
+        "//lib/cpp/mjbots/pi3hat",
+        "//lib/cpp/mjbots/moteus:moteus_tool",
     ],
 )
 
@@ -36,15 +36,15 @@ pkg_tar(
     extension = "tar.bz2",
     package_dir = "pi3hat_tools",
     srcs = [
-        "//mjbots/pi3hat:pi3hat_tool",
-        "//mjbots/moteus:moteus_tool",
-        "//mjbots/moteus:moteus_control_example",
+        "//lib/cpp/mjbots/pi3hat:pi3hat_tool",
+        "//lib/cpp/mjbots/moteus:moteus_tool",
+        "//lib/cpp/mjbots/moteus:moteus_control_example",
     ],
 )
 
 test_suite(
     name = "host",
     tests = [
-        "//mjbots/moteus:test",
+        "//lib/cpp/mjbots/moteus:test",
     ],
 )
