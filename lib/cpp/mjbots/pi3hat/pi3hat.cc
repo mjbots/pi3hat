@@ -811,6 +811,14 @@ class Pi3Hat::Impl {
             return options;
           }()} {
 
+    // Since we directly poke at /dev/mem, nothing good can come of
+    // multiple instances of this class existing at once on the same
+    // system.
+    //
+    // Thus, we use a lock to ensure that at most one copy runs at a
+    // time.
+    LockFile();
+
     // Verify the versions of all peripherals we will use.
     VerifyVersions();
 
@@ -880,6 +888,29 @@ class Pi3Hat::Impl {
                           id_verify);
           });
     }
+  }
+
+  ~Impl() {
+    if (lock_file_fd_ >= 0) {
+      // Who cares about errors here?
+      ::close(lock_file_fd_);
+    }
+  }
+
+  void LockFile() {
+    struct flock lock = {};
+    lock.l_type = F_WRLCK;
+    lock.l_whence = SEEK_SET;
+    lock.l_start = 0;
+    lock.l_len = 0;
+    lock.l_pid = -1;
+
+    lock_file_fd_ = ::open("/tmp/.pi3hat-lock", O_RDWR | O_CREAT,
+                           S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
+    ThrowIfErrno(lock_file_fd_ < 0, "pi3hat: could not open lock file");
+
+    const int ret = ::fcntl(lock_file_fd_, F_SETLK, &lock);
+    ThrowIfErrno(ret < 0, "pi3hat: could not acquire lock, is another process running?");
   }
 
   template <typename Spi>
@@ -1338,6 +1369,9 @@ class Pi3Hat::Impl {
   }
 
   const Configuration config_;
+
+  int lock_file_fd_ = -1;
+
   PrimarySpi primary_spi_;
   AuxSpi aux_spi_;
 
