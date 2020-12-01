@@ -52,3 +52,6 @@ moteus_add()
 load("@com_github_mjbots_mjlib//tools/workspace:default.bzl",
      mjlib_add = "add_default_repositories")
 mjlib_add()
+
+load("@rules_pkg//:deps.bzl", "rules_pkg_dependencies")
+rules_pkg_dependencies()

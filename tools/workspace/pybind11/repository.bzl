@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2018 Josh Pieper, jjp@pobox.com.
+# Copyright 2019 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,14 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("//tools/workspace:github_archive.bzl", "github_archive")
 
 
-def rules_pkg_repository(name):
-    http_archive(
+def pybind11_repository(name):
+    github_archive(
         name = name,
-        urls = [
-            "https://github.com/bazelbuild/rules_pkg/releases/download/0.3.0/rules_pkg-0.3.0.tar.gz",
-        ],
-        sha256 = "6b5969a7acd7b60c02f816773b06fcf32fbe8ba0c7919ccdc2df4f8fb923804a",
+        repo = "pybind/pybind11",
+        commit = "028812ae7eee307dca5f8f69d467af7b92cc41c8",
+        sha256 = "d3f0bfb14b59838b6d42b2b53876007b5043f51c17cb189ae8fa2e2c88ada4f5",
+        build_file = Label("//tools/workspace/pybind11:package.BUILD"),
     )
