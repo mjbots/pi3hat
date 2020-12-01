@@ -29,8 +29,6 @@ inline void ConfigureRealtime(int cpu) {
     if (r < 0) {
       throw std::runtime_error("Error setting CPU affinity");
     }
-
-    std::cout << "Affinity set to " << cpu << "\n";
   }
 
   {
