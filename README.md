@@ -19,7 +19,7 @@ https://www.apache.org/licenses/LICENSE-2.0
 * hw/ - Eagle schematic
 * fw/ - Firmware
 * docs/ - Reference documentation
-* mjbots/pi3hat/ - Client side C++ library
+* lib/ - Client side libraries
 * tools/ - bazel build configuration
 
 # FAQ #
