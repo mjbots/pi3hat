@@ -62,7 +62,7 @@ class Pi3HatRouter:
 
     def _make_single_can(self, command):
         result = _pi3hat_router.SingleCan()
-        result.id = command.destination | 0x8000 if command.reply_required else 0x0000
+        result.id = command.destination | (0x8000 if command.reply_required else 0x0000)
         result.data = command.data
         result.bus = self._find_bus(command.destination)
         result.expect_reply = command.reply_required
