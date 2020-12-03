@@ -1044,7 +1044,7 @@ class Pi3Hat::Impl {
     int spi_address = 0;
     int spi_size = 0;
 
-    buf[0] = ((cpu_bus == 1) ? 0x80 : 0x00) | (can_frame.size  & 0x7f);
+    buf[0] = ((cpu_bus == 1) ? 0x80 : 0x00) | (size & 0x7f);
 
     if (can_frame.id <= 0xffff) {
       // We'll use the 2 byte ID formulation, cmd 5
@@ -1052,7 +1052,7 @@ class Pi3Hat::Impl {
       buf[1] = (can_frame.id >> 8) & 0xff;
       buf[2] = can_frame.id & 0xff;
       ::memcpy(&buf[3], can_frame.data, can_frame.size);
-      for (std::size_t i = 3 + can_frame.size; i < size; i++) {
+      for (std::size_t i = 3 + can_frame.size; i < (3 + size); i++) {
         buf[i] = 0x50;
       }
       spi_size = 3 + size;
@@ -1065,7 +1065,7 @@ class Pi3Hat::Impl {
       buf[3] = (can_frame.id >> 8) & 0xff;
       buf[4] = (can_frame.id >> 0) & 0xff;
       ::memcpy(&buf[5], can_frame.data, can_frame.size);
-      for (std::size_t i = 5 + can_frame.size; i < size; i++) {
+      for (std::size_t i = 5 + can_frame.size; i < (5 + size); i++) {
         buf[i] = 0x50;
       }
       spi_size = 5 + size;
