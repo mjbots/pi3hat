@@ -116,6 +116,14 @@ class Pi3hatWrapper : public mjlib::multiplex::AsioClient {
 
     void async_read_some(mjlib::io::MutableBufferSequence buffers,
                          mjlib::io::ReadHandler handler) override {
+      if (boost::asio::buffer_size(buffers) == 0) {
+        // Post immediately.
+        boost::asio::post(
+            parent_->executor_,
+            std::bind(std::move(handler), mjlib::base::error_code(), 0));
+        return;
+      }
+
       boost::asio::post(
           parent_->child_context_,
           [self=shared_from_this(), buffers,
