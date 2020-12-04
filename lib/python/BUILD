@@ -36,7 +36,7 @@ VER="0.0.1"
 
 genrule(
     name = "bdist_wheel",
-    srcs = ["setup.py", "README.md", ":wheel_tar"],
+    srcs = ["setup.py", ":wheel_tar", "@moteus//lib/python:README.md"],
     outs = [
         "moteus_pi3hat-{ver}-cp37-abi3-linux_armv7l.whl".format(ver=VER),
     ],
@@ -45,7 +45,7 @@ genrule(
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
-        "cp $(location setup.py) $(location README.md) $$BUILDDIR && " +
+        "cp $(location setup.py) $(location @moteus//lib/python:README.md) $$BUILDDIR && " +
         "cd $$BUILDDIR && " +
         "python3 setup.py bdist_wheel " +
         "        --plat-name linux_armv7l " +
