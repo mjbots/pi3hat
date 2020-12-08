@@ -43,4 +43,4 @@ def _pi3hat_get_singleton():
 set_router_factory(_pi3hat_get_singleton)
 
 
-VERSION = "0.1.0"
+VERSION = "0.1.1"

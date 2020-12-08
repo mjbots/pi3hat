@@ -32,7 +32,7 @@ pkg_tar(
     ],
 )
 
-VER="0.1.0"
+VER="0.1.1"
 
 genrule(
     name = "bdist_wheel",
