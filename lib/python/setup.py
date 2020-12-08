@@ -28,7 +28,7 @@ class BinaryDistribution(setuptools.dist.Distribution):
 
 setuptools.setup(
     name = 'moteus-pi3hat',
-    version = '0.1.1',
+    version = '0.1.2',
     description = 'moteus brushless controller library and tools',
     long_description = long_description,
     long_description_content_type = 'text/markdown',
