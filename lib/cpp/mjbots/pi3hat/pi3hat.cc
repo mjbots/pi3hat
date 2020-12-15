@@ -28,7 +28,9 @@
 
 #include <array>
 #include <cstdlib>
+#include <fstream>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -110,6 +112,17 @@ void BusyWaitUs(int64_t us) {
   const auto start = GetNow();
   const auto end = start + us * 1000;
   while (GetNow() <= end);
+}
+
+std::string ReadContents(const std::string& filename) {
+  std::ifstream inf(filename);
+  std::ostringstream ostr;
+  ostr << inf.rdbuf();
+  return ostr.str();
+}
+
+bool StartsWith(const std::string& value, const std::string& maybe_prefix) {
+  return value.substr(0, maybe_prefix.size()) == maybe_prefix;
 }
 
 ///////////////////////////////////////////////
@@ -810,6 +823,15 @@ class Pi3Hat::Impl {
             options.speed_hz = configuration.spi_speed_hz;
             return options;
           }()} {
+
+    // First, look to see if we have a pi3hat attached by looking for
+    // the eeprom data.  This will prevent us from stomping on the SPI
+    // registers if it isn't ours.
+    const auto product_code =
+        ReadContents("/sys/firmware/devicetree/base/hat/product");
+    if (!StartsWith(product_code, "mjbots quad pi3 hat")) {
+      throw std::runtime_error("No pi3hat detected");
+    }
 
     // Since we directly poke at /dev/mem, nothing good can come of
     // multiple instances of this class existing at once on the same
