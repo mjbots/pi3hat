@@ -61,7 +61,7 @@ flexibility.
 
 The easiest way to use the pi3hat is to do so using the C++ library
  provided in this repository at:
- https://github.com/mjbots/pi3hat/blob/master/mjbots/pi3hat/pi3hat.h
+ https://github.com/mjbots/pi3hat/blob/master/lib/cpp/mjbots/pi3hat/pi3hat.h
 
 It consists of a single standalone C++11 header and source file, which
 depends upon nothing but the standard library.  The library provides a
