@@ -28,7 +28,7 @@ class BinaryDistribution(setuptools.dist.Distribution):
 
 setuptools.setup(
     name = 'moteus-pi3hat',
-    version = '0.1.2',
+    version = '0.2.0',
     description = 'moteus brushless controller library and tools',
     long_description = long_description,
     long_description_content_type = 'text/markdown',
@@ -48,6 +48,7 @@ setuptools.setup(
     python_requires = '>=3.7, <4',
     install_requires = [
         'pyserial>=3.5',
+        'python-can>=3.3',
     ],
     include_package_data = True,
     package_data = {

@@ -16,8 +16,11 @@
 controller."""
 
 __all__ = [
-    'Fdcanusb', 'Router', 'Controller', 'Register',
+    'Fdcanusb', 'Router', 'Controller', 'Register', 'Transport',
+    'PythonCan',
     'Mode', 'QueryResolution', 'PositionResolution', 'Command',
+    'TRANSPORT_FACTORIES',
+    'INT8', 'INT16', 'INT32', 'F32', 'IGNORE',
     'Pi3HatRouter',
 ]
 
@@ -25,22 +28,24 @@ __all__ = [
 from moteus.command import Command
 from moteus.fdcanusb import Fdcanusb
 from moteus.router import Router
-from moteus.moteus import (Controller, Register, Mode, QueryResolution, PositionResolution, set_router_factory)
+from moteus.transport import Transport
+from moteus.pythoncan import PythonCan
+from moteus.moteus import (Controller, Register,
+                           Mode, QueryResolution, PositionResolution,
+                           TRANSPORT_FACTORIES)
+from moteus.multiplex import (INT8, INT16, INT32, F32, IGNORE)
+
+
 from moteus.pi3hat_router import Pi3HatRouter
-import moteus.moteus
-
-_global_pi3hat = None
-
-def _pi3hat_get_singleton():
-    global _global_pi3hat
-
-    if _global_pi3hat:
-        return _global_pi3hat
-
-    _global_pi3hat = Pi3HatRouter()
-    return _global_pi3hat
-
-set_router_factory(_pi3hat_get_singleton)
 
 
-VERSION = "0.1.2"
+class Pi3hatFactory():
+    PRIORITY = 5
+
+    def __call__(self):
+        return Pi3HatRouter()
+
+
+TRANSPORT_FACTORIES.append(Pi3hatFactory())
+
+VERSION = "0.2.0"
