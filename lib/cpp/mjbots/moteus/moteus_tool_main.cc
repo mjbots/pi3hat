@@ -24,6 +24,7 @@
 #include "mjlib/io/deadline_timer.h"
 #include "mjlib/io/selector.h"
 #include "mjlib/multiplex/asio_client.h"
+#include "mjlib/multiplex/stream_asio_client_builder.h"
 
 #include "mjbots/pi3hat/pi3hat.h"
 
@@ -452,6 +453,15 @@ int main(int argc, char** argv) {
   mjlib::io::Selector<mjlib::multiplex::AsioClient> client_selector{
     context.get_executor(), "client_type"};
   client_selector.Register<Pi3hatWrapper>("pi3");
+  {
+    mjlib::multiplex::StreamAsioClientBuilder::Options default_stream_options;
+    default_stream_options.stream.type = mjlib::io::StreamFactory::Type::kSerial;
+    default_stream_options.stream.serial_port = "/dev/fdcanusb";
+    default_stream_options.stream.serial_baud = 3000000;
+
+    client_selector.Register<mjlib::multiplex::StreamAsioClientBuilder>(
+        "stream", default_stream_options);
+  }
   client_selector.set_default("pi3");
   return moteus::tool::moteus_tool_main(context, argc, argv, &client_selector);
 }
