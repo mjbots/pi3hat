@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <functional>
+#include <future>
 #include <iostream>
 #include <string>
 #include <thread>
@@ -52,6 +53,12 @@ class Pi3HatRouter {
   Pi3HatRouter(const Options& options)
       : options_(options),
         thread_(std::bind(&Pi3HatRouter::CHILD_Run, this)) {
+    auto future = init_promise_.get_future();
+    auto ep = future.get();
+    if (ep) {
+      thread_.join();
+      std::rethrow_exception(ep);
+    }
   }
 
   ~Pi3HatRouter() {
@@ -95,8 +102,15 @@ class Pi3HatRouter {
   }
 
   void CHILD_Run() {
-    mjbots::moteus::ConfigureRealtime(options_.cpu);
-    pi3hat_.reset(new pi3hat::Pi3Hat(options_));
+    std::exception_ptr ep = nullptr;
+    try {
+      mjbots::moteus::ConfigureRealtime(options_.cpu);
+      pi3hat_.reset(new pi3hat::Pi3Hat(options_));
+    } catch (...) {
+      ep = std::current_exception();
+    }
+    init_promise_.set_value(ep);
+    if (ep) { return; }
 
     while (true) {
       {
@@ -149,6 +163,7 @@ class Pi3HatRouter {
   CallbackFunction callback_;
 
   std::thread thread_;
+  std::promise<std::exception_ptr> init_promise_;
 
   // Used in the child thread.
   std::unique_ptr<pi3hat::Pi3Hat> pi3hat_;
