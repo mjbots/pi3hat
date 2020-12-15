@@ -53,14 +53,31 @@ Pin 1 is closest to the J3 label.
 * Pin 7: 3.3V
 * Pin 8: GND
 
-# Usage  with client-side C++ library#
+# Usage  with client-side libraries #
 
-The pi3hat can be used in two ways, the first being easy but less
-flexible, the second being much harder but giving the user arbitrary
-flexibility.
+## Python ##
 
-The easiest way to use the pi3hat is to do so using the C++ library
- provided in this repository at:
+Simply perform:
+
+```
+pip3 import moteus_pi3hat
+```
+
+Then use the same API documented at:
+https://github.com/mjbots/moteus/tree/main/lib/python
+
+Alternately, the pi3hat transport can be constructed directly using:
+
+```
+import moteus
+
+transport = moteus.Pi3HatRouter()
+```
+
+
+## C++ ##
+
+To use the pi3hat with C++, a library is provided at:
  https://github.com/mjbots/pi3hat/blob/master/lib/cpp/mjbots/pi3hat/pi3hat.h
 
 It consists of a single standalone C++11 header and source file, which
@@ -74,7 +91,7 @@ There is a sample user of this library, `pi3hat_tool` in the same
 directory which provides a simple command line program that exercises
 all of its functionality.
 
-# Board level documentation #
+## Board level documentation ##
 
 If you wish to use the existing linux kernel SPI drivers, or write a
 custom driver, the board theory of operation and SPI register mappings
@@ -115,9 +132,9 @@ to a SPI bus on the Raspberry Pi:
   * Pin 16: IRQ  (BCM 23)
   * Pin 18: IRQ  (BCM 24)
 
-## Debugging connectors ##
+# Debugging connectors #
 
-### JP5 ###
+## JP5 ##
 
 This connector directly breaks out 3 pins from the Raspberry Pi:
 
@@ -125,19 +142,19 @@ This connector directly breaks out 3 pins from the Raspberry Pi:
  * 2: Pin 33 (BCM 13)
  * 3: Ground
 
-### JP4 ###
+## JP4 ##
 
 Reserved debugging connector for processor 1.
 
-### JP3 ###
+## JP3 ##
 
 Reserved debugging connector for processor 2
 
-### JP2 ###
+## JP2 ##
 
 Reserved debugging connector for processor 3
 
-## SPI Protocol ##
+# SPI Protocol #
 
 All of the processors use the same basic SPI protocol, with unique
 registers for each of the various functions.
@@ -238,7 +255,7 @@ These addresses are present only on processor 3.
 * *36* Write configuration
   * The same structure as for address 35.
 
-# RF Register Mapping #
+## RF Register Mapping ##
 
 If a nrf24l01 module is attached, the pi3hat implements a spread
 spectrum receiver.  This receiver must be configured with the same ID
