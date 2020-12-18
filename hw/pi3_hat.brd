@@ -154,7 +154,7 @@
 <wire x1="3.5" y1="0" x2="0" y2="3.5" width="0" layer="20" curve="-90"/>
 <wire x1="53" y1="0" x2="56.5" y2="3.5" width="0" layer="20" curve="90"/>
 <text x="55.5" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">(c) 2020</text>
-<text x="54" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">pi3hat r4.3</text>
+<text x="54" y="14.5" size="1" layer="21" font="vector" ratio="10" rot="R90">pi3hat r4.4</text>
 <wire x1="21.95" y1="25.9" x2="48.5" y2="25.9" width="0.127" layer="21"/>
 <wire x1="48.5" y1="25.9" x2="49.6" y2="24.8" width="0.127" layer="21"/>
 <wire x1="49.6" y1="24.8" x2="49.6" y2="14.8" width="0.127" layer="21"/>
@@ -1727,13 +1727,13 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="POPULATE" value="1" x="9.56" y="8.34" size="1.778" layer="27" display="off"/>
 </element>
 <element name="F1" library="pi3_hat" package="FUS_VISHAY_MFU0603" value="MFU0603FF04000P100" x="32.6" y="9.8" smashed="yes" rot="R180">
-<attribute name="DPN" value="MFU06034.00CT-ND" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="DPN" value="507-2154-1-ND" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="MANUFACTURER_PART_NUMBER" value="" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="MF" value="VISHAY" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="MPN" value="MFU0603FF04000P100" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MF" value="BEL FUSE" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="MPN" value="0686F4000-01" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
 <attribute name="NAME" x="33.8234" y="9.965" size="0.6" layer="25" font="vector" ratio="10" rot="SR0"/>
 <attribute name="POPULATE" value="1" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
-<attribute name="VENDOR" value="VISHAY" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
+<attribute name="VENDOR" value="BEL FUSE" x="32.6" y="9.8" size="1.778" layer="27" rot="R180" display="off"/>
 </element>
 <element name="C2" library="mfpassives" package="C1206" value="10uF 50V" x="31.5" y="3.5" smashed="yes">
 <attribute name="DIELECTRIC" value="" x="31.5" y="3.5" size="1.778" layer="27" display="off"/>
@@ -1798,7 +1798,7 @@ This DRC check is for 4-Layer Standard Capability boards to be manufactured thro
 <attribute name="DIELECTRIC" value="" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>
 <attribute name="HOUSEPART" value="1" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="MF-CAP-0805-0.1uF" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>
-<attribute name="NAME" x="29.7" y="9.3" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="33.9" y="8.9" size="0.8" layer="25" font="vector" ratio="10" rot="R270"/>
 <attribute name="POPULATE" value="1" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>
 <attribute name="TOLERANCE" value="" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>
 <attribute name="URL" value="" x="31.9" y="8.2" size="1.778" layer="27" display="off"/>

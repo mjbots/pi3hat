@@ -3212,11 +3212,12 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 </part>
 <part name="P+4" library="supply1" deviceset="+5V" device=""/>
 <part name="F1" library="pi3_hat" deviceset="MFU0603FF04000P100" device="">
-<attribute name="DPN" value="MFU06034.00CT-ND"/>
+<attribute name="DPN" value="507-2154-1-ND"/>
 <attribute name="MANUFACTURER_PART_NUMBER" value=""/>
-<attribute name="MF" value="VISHAY"/>
-<attribute name="MPN" value="MFU0603FF04000P100"/>
+<attribute name="MF" value="BEL FUSE"/>
+<attribute name="MPN" value="0686F4000-01"/>
 <attribute name="POPULATE" value="1"/>
+<attribute name="VENDOR" value="BEL FUSE"/>
 </part>
 <part name="C2" library="mfpassives" deviceset="CAPACITOR_NP" device="_1206" value="10uF 50V">
 <attribute name="MF" value="TDK"/>
@@ -3777,7 +3778,7 @@ Source: &lt;a href="https://componentsearchengine.com/Datasheets/1/STM32G474CEU6
 <wire x1="220.98" y1="170.18" x2="-48.26" y2="170.18" width="0.1524" layer="90"/>
 <wire x1="-48.26" y1="170.18" x2="-48.26" y2="347.98" width="0.1524" layer="90"/>
 <text x="-45.72" y="335.28" size="7.62" layer="90" font="vector">INPUT POWER</text>
-<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots pi3 hat r4.3
+<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots pi3 hat r4.4
 (c) jjp@pobox.com 2020
 Licensed under the Apache 2.0 License</text>
 <wire x1="-48.26" y1="162.56" x2="220.98" y2="162.56" width="0.1524" layer="90"/>
