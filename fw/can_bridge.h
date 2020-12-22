@@ -31,7 +31,7 @@ namespace fw {
 /// cannot be read or written piecemeal.
 ///
 /// 0: Protocol version
-///    byte 0: the constant value 2
+///    byte 0: the constant value 3
 /// 1: Interface type
 ///    byte 0: the constant value 1
 /// 2: Receive status
@@ -85,6 +85,19 @@ namespace fw {
 ///   byte 9 - CAN1 tx error count
 ///   byte 10 - CAN1 reset count
 ///   byte 11 - reserved
+/// 7: Read configuration 1
+///   bytes: The contents of the 'Configuration' structure
+/// 8: Read configuration 2
+///   bytes: The contents of the 'Configuration' structure
+/// 9: Write configuration 1
+///   bytes: The contents of the 'Configuration' structure
+/// 10: Write configuration 2
+///   bytes: The contents of the 'Configuration' structure
+
+
+// Protocol history:
+//
+// Version 3: Added register 7-10 for configuration.
 
 class CanBridge {
  public:
@@ -95,6 +108,106 @@ class CanBridge {
     PinName irq_name = NC;
   };
 
+  struct Rate {
+    int8_t prescaler = -1;
+    int8_t sync_jump_width = -1;
+    int8_t time_seg1 = -1;
+    int8_t time_seg2 = -1;
+
+    bool operator==(const Rate& rhs) const {
+      return prescaler == rhs.prescaler &&
+          sync_jump_width == rhs.sync_jump_width &&
+          time_seg1 == rhs.time_seg1 &&
+          time_seg2 == rhs.time_seg2;
+    }
+
+    bool operator!=(const Rate& rhs) {
+      return !(*this == rhs);
+    }
+  } __attribute__((packed));
+
+  struct Configuration {
+    int32_t slow_bitrate = 1000000;
+    int32_t fast_bitrate = 5000000;
+    int8_t fdcan_frame = 1;
+    int8_t bitrate_switch = 1;
+    int8_t automatic_retransmission = 0;
+    int8_t restricted_mode = 0;
+    int8_t bus_monitor = 0;
+
+    // If any members of either 'rate' structure are non-negative, use
+    // them instead of the 'bitrate' fields above.  Each rate applies
+    // to a base clock rate of 85MHz.
+    Rate std_rate;
+    Rate fd_rate;
+
+    bool operator==(const Configuration& rhs) const {
+      return slow_bitrate == rhs.slow_bitrate &&
+          fast_bitrate == rhs.fast_bitrate &&
+          fdcan_frame == rhs.fdcan_frame &&
+          bitrate_switch == rhs.bitrate_switch &&
+          automatic_retransmission == rhs.automatic_retransmission &&
+          restricted_mode == rhs.restricted_mode &&
+          bus_monitor == rhs.bus_monitor &&
+          std_rate == rhs.std_rate &&
+          fd_rate == rhs.fd_rate;
+    }
+
+    bool operator!=(const Configuration& rhs) const {
+      return !(*this == rhs);
+    }
+  } __attribute__((packed));
+
+  static FDCan::Options MakeCanOptions(
+      const FDCan::Options& source,
+      const Configuration& config) {
+
+    FDCan::Options result;
+    result.td = source.td;
+    result.rd = source.rd;
+
+    result.slow_bitrate = config.slow_bitrate;
+    result.fast_bitrate = config.fast_bitrate;
+    result.fdcan_frame = config.fdcan_frame;
+    result.bitrate_switch = config.bitrate_switch;
+    result.restricted_mode = config.restricted_mode;
+    result.bus_monitor = config.bus_monitor;
+
+    result.rate_override.prescaler = config.std_rate.prescaler;
+    result.rate_override.sync_jump_width = config.std_rate.sync_jump_width;
+    result.rate_override.time_seg1 = config.std_rate.time_seg1;
+    result.rate_override.time_seg2 = config.std_rate.time_seg2;
+
+    result.fdrate_override.prescaler = config.fd_rate.prescaler;
+    result.fdrate_override.sync_jump_width = config.fd_rate.sync_jump_width;
+    result.fdrate_override.time_seg1 = config.fd_rate.time_seg1;
+    result.fdrate_override.time_seg2 = config.fd_rate.time_seg2;
+
+    return result;
+  }
+
+  static Configuration GetCanConfig(const FDCan::Options& source) {
+    Configuration result;
+    result.slow_bitrate = source.slow_bitrate;
+    result.fast_bitrate = source.fast_bitrate;
+    result.fdcan_frame = source.fdcan_frame;
+    result.bitrate_switch = source.bitrate_switch;
+    result.restricted_mode = source.restricted_mode;
+    result.bus_monitor = source.bus_monitor;
+
+    result.std_rate.prescaler = source.rate_override.prescaler;
+    result.std_rate.sync_jump_width = source.rate_override.sync_jump_width;
+    result.std_rate.time_seg1 = source.rate_override.time_seg1;
+    result.std_rate.time_seg2 = source.rate_override.time_seg2;
+
+    result.fd_rate.prescaler = source.fdrate_override.prescaler;
+    result.fd_rate.sync_jump_width = source.fdrate_override.sync_jump_width;
+    result.fd_rate.time_seg1 = source.fdrate_override.time_seg1;
+    result.fd_rate.time_seg2 = source.fdrate_override.time_seg2;
+
+    return result;
+  }
+
   CanBridge(fw::MillisecondTimer* timer,
             fw::FDCan* can1, fw::FDCan* can2,
             const Pins& pins)
@@ -102,9 +215,28 @@ class CanBridge {
         pins_{pins},
         can1_{can1},
         can2_{can2},
-        irq_{pins.irq_name, 0} {}
+        irq_{pins.irq_name, 0} {
+    if (can1_) {
+      can_config1_ = GetCanConfig(can1_->options());
+      can_config1_shadow_ = can_config1_;
+    }
+    if (can2_) {
+      can_config2_ = GetCanConfig(can2_->options());
+      can_config2_shadow_ = can_config2_;
+    }
+  }
 
   void Poll() {
+    if (reset_can_.load()) {
+      reset_can_.store(false);
+      if (can1_) {
+        can1_->Reset(MakeCanOptions(can1_->options(), can_config1_));
+      }
+      if (can2_) {
+        can2_->Reset(MakeCanOptions(can2_->options(), can_config2_));
+      }
+    }
+
     auto can_poll = [&](int bus_id, auto* can, uint8_t* reset_count) {
       const auto status = can->status();
       uint8_t* const can_status = &status_buf_[(bus_id - 1) * 6];
@@ -208,13 +340,13 @@ class CanBridge {
   }
 
   static bool IsSpiAddress(uint16_t address) {
-    return address <= 6;
+    return address <= 10;
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 0) {
       return {
-        std::string_view("\x02", 1),
+        std::string_view("\x03", 1),
         {},
       };
     }
@@ -287,11 +419,55 @@ class CanBridge {
         {},
       };
     }
+    if (address == 7) {
+      return {
+        std::string_view(
+            reinterpret_cast<const char*>(&can_config1_),
+            sizeof(can_config1_)),
+        {},
+      };
+    }
+    if (address == 8) {
+      return {
+        std::string_view(
+            reinterpret_cast<const char*>(&can_config2_),
+            sizeof(can_config2_)),
+        {},
+      };
+    }
+    if (address == 9) {
+      return {
+        {},
+        mjlib::base::string_span(
+            reinterpret_cast<char*>(&can_config1_shadow_),
+            sizeof(can_config1_shadow_)),
+      };
+    }
+    if (address == 10) {
+      return {
+        {},
+        mjlib::base::string_span(
+            reinterpret_cast<char*>(&can_config2_shadow_),
+            sizeof(can_config2_shadow_)),
+      };
+    }
 
     return { {}, {} };
   }
 
   void ISR_End(uint16_t address, int bytes) {
+    if ((address == 9 || address == 10) &&
+        bytes == sizeof(can_config1_shadow_)) {
+      if (can_config1_ != can_config1_shadow_) {
+        can_config1_ = can_config1_shadow_;
+        reset_can_.store(true);
+      }
+      if (can_config2_ != can_config2_shadow_) {
+        can_config2_ = can_config2_shadow_;
+        reset_can_.store(true);
+      }
+    }
+
     if (current_can_buf_) {
       current_can_buf_->active = false;
       current_can_buf_ = nullptr;
@@ -405,6 +581,13 @@ class CanBridge {
 
   char address16_buf_[kBufferItems] = {};
   uint8_t status_buf_[12] = {};
+
+  Configuration can_config1_;
+  Configuration can_config1_shadow_;
+  Configuration can_config2_;
+  Configuration can_config2_shadow_;
+
+  std::atomic<bool> reset_can_{false};
 };
 
 

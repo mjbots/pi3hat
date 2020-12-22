@@ -134,6 +134,28 @@ class Error : public std::runtime_error {
 ///    priority.
 class Pi3Hat {
  public:
+  /// If any of these fields are non-negative, then they are used
+  /// instead of the "bitrate" options in the CAN configuration.
+  struct CanRateOverride {
+    int prescaler = -1;
+    int sync_jump_width = -1;
+    int time_seg1 = -1;
+    int time_seg2 = -1;
+  };
+
+  struct CanConfiguration {
+    int slow_bitrate = 1000000;
+    int fast_bitrate = 5000000;
+    bool fdcan_frame = true;
+    bool bitrate_switch = true;
+    bool automatic_retransmission = false;
+    bool restricted_mode = false;
+    bool bus_monitor = false;
+
+    CanRateOverride std_rate;
+    CanRateOverride fd_rate;
+  };
+
   struct Configuration {
     int spi_speed_hz = 10000000;
 
@@ -147,6 +169,16 @@ class Pi3Hat {
 
     // RF communication will be with a transmitter having this ID.
     uint32_t rf_id = 5678;
+
+    CanConfiguration can[5] = {};
+
+    Configuration() {
+      // By default the final CAN bus should be 125kbps standard frame.
+      can[4].slow_bitrate = 125000;
+      can[4].fast_bitrate = 125000;
+      can[4].fdcan_frame = false;
+      can[4].bitrate_switch = false;
+    }
   };
 
   /// This may throw an instance of `Error` if construction fails for

@@ -90,8 +90,13 @@ FDCan::Rate ApplyRateOverride(FDCan::Rate base, FDCan::Rate overlay) {
 }
 }
 
-FDCan::FDCan(const Options& options)
-    : options_(options) {
+FDCan::FDCan(const Options& options) {
+  Reset(options);
+}
+
+void FDCan::Reset(const Options& options) {
+  options_ = options;
+
   __HAL_RCC_FDCAN_CLK_ENABLE();
 
   {

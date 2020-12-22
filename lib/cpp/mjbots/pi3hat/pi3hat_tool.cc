@@ -47,12 +47,26 @@ int64_t GetNow() {
       static_cast<int64_t>(ts.tv_nsec);
 }
 
+std::vector<std::string> Split(const std::string& input, const char* delim = ",") {
+  std::vector<std::string> result;
+  size_t pos = 0;
+  while(pos < input.size()) {
+    const size_t next = input.find_first_of(delim, pos);
+    result.push_back(input.substr(pos, next - pos));
+    if (next == std::string::npos) { break; }
+    pos = next + 1;
+  }
+  return result;
+}
+
 struct Arguments {
   Arguments(const std::vector<std::string>& args) {
     for (size_t i = 0; i < args.size(); i++) {
       const auto& arg = args[i];
       if (arg == "-h" || arg == "--help") {
         help = true;
+      } else if (arg == "--can-help") {
+        can_help = true;
       } else if (arg == "--spi-speed") {
         spi_speed_hz = std::stoi(args.at(++i));
       } else if (arg == "--mount-y") {
@@ -65,6 +79,8 @@ struct Arguments {
         attitude_rate_hz = std::stol(args.at(++i));
       } else if (arg == "--rf-id") {
         rf_id = std::stoul(args.at(++i));
+      } else if (arg == "--can-config") {
+        can_config.push_back(args.at(++i));
       } else if (arg == "-c" || arg == "--write-can") {
         write_can.push_back(args.at(++i));
       } else if (arg == "--read-can") {
@@ -100,6 +116,7 @@ struct Arguments {
   }
 
   bool help = false;
+  bool can_help = false;
   bool run = false;
   std::string time_log;
 
@@ -108,6 +125,7 @@ struct Arguments {
   uint32_t attitude_rate_hz = 400;
   uint32_t rf_id = 5678;
 
+  std::vector<std::string> can_config;
   std::vector<std::string> write_can;
   uint32_t read_can = 0;
   int64_t can_timeout_ns = 0;
@@ -128,6 +146,7 @@ void DisplayUsage() {
   std::cout << "Usage: pi3hat_tool [options]\n";
   std::cout << "\n";
   std::cout << "  -h,--help       display this usage\n";
+  std::cout << "  --can-help      display CAN configuration format\n";
   std::cout << "\n";
   std::cout << "Configuration\n";
   std::cout << "  --spi-speed HZ      set the SPI speed\n";
@@ -136,6 +155,7 @@ void DisplayUsage() {
   std::cout << "  --mount-r DEG       set the mounting roll angle\n";
   std::cout << "  --attitude-rate HZ  set the attitude rate\n";
   std::cout << "  --rf-id ID          set the RF id\n";
+  std::cout << "  --can-config CFG    configure a specific CAN bus\n";
   std::cout << "  --can-timeout-ns T  set the receive timeout\n";
   std::cout << "  --can-min-wait-ns T set the receive timeout\n";
   std::cout << "  --realtime CPU      run in a realtime configuration on a CPU\n";
@@ -157,6 +177,70 @@ void DisplayUsage() {
   std::cout << "  --time-log F    when running, write a delta-t log\n";
 }
 
+void DisplayCanConfigurationUsage() {
+  std::cout << " Usage: pi3hat_tool [options]\n";
+  std::cout << "  --can-config CFG\n";
+  std::cout << "    CFG : CANBUS,[option,]...\n";
+  std::cout << "     rN: slow_bitrate\n";
+  std::cout << "     RN: fast_bitrate\n";
+  std::cout << "     d/D: fdcan_frame=false/true\n";
+  std::cout << "     b/B: bitrate_switch=false/true\n";
+  std::cout << "     t/T: automatic_retransmission=false/true\n";
+  std::cout << "     m/M: bus_monitor=false/true\n";
+  std::cout << "     [sf]pN: (std|fd)_rate.prescaler\n";
+  std::cout << "     [sf]jN: (std|fd)_rate.sync_jump_width\n";
+  std::cout << "     [sf]1N: (std|fd)_rate.time_seg1\n";
+  std::cout << "     [sf]2N: (std|fd)_rate.time_seg2\n";
+}
+
+template <typename Iterator>
+Pi3Hat::CanConfiguration ParseCanConfig(Iterator begin, Iterator end) {
+  Pi3Hat::CanConfiguration result;
+  for (auto it = begin; it != end; ++it) {
+    const auto item = *it;
+    if (item.at(0) == 'r') {
+      result.slow_bitrate = std::stoi(item.substr(1));
+    } else if (item.at(0) == 'R') {
+      result.fast_bitrate = std::stoi(item.substr(1));
+    } else if (item == "d") {
+      result.fdcan_frame = false;
+    } else if (item == "D") {
+      result.fdcan_frame = true;
+    } else if (item == "b") {
+      result.bitrate_switch = false;
+    } else if (item == "B") {
+      result.bitrate_switch = true;
+    } else if (item == "t") {
+      result.automatic_retransmission = false;
+    } else if (item == "T") {
+      result.automatic_retransmission = true;
+    } else if (item == "m") {
+      result.bus_monitor = false;
+    } else if (item == "M") {
+      result.bus_monitor = true;
+    } else if (item.at(0) == 's' ||
+               item.at(0) == 'f') {
+      auto& rate = (item.at(0) == 's') ? result.std_rate : result.fd_rate;
+      const auto value = std::stoi(item.substr(2));
+      if (item.at(1) == 'p') {
+        rate.prescaler = value;
+      } else if (item.at(1) == 'j') {
+        rate.sync_jump_width = value;
+      } else if (item.at(1) == '1') {
+        rate.time_seg1 = value;
+      } else if (item.at(1) == '2') {
+        rate.time_seg2 = value;
+      } else {
+        throw std::runtime_error("Unknown rate code:" + item);
+      }
+    } else {
+      throw std::runtime_error("Unknown CAN option: " + item);
+    }
+  }
+
+  return result;
+}
+
 Pi3Hat::Configuration MakeConfig(const Arguments& args) {
   Pi3Hat::Configuration config;
   if (args.spi_speed_hz >= 0) {
@@ -170,6 +254,20 @@ Pi3Hat::Configuration MakeConfig(const Arguments& args) {
   if (args.rf_id != 0) {
     config.rf_id = args.rf_id;
   }
+
+  for (const auto& can_config : args.can_config) {
+    const auto can_fields = Split(can_config);
+    if (can_fields.size() < 2) {
+      throw std::runtime_error("Error parsing can config: " + can_config);
+    }
+    const int can_bus = std::stoi(can_fields.at(0));
+    if (can_bus < 1 || can_bus > 5) {
+      throw std::runtime_error("Invalid CAN bus: " + can_config);
+    }
+
+    config.can[can_bus - 1] =
+        ParseCanConfig(can_fields.begin() + 1, can_fields.end());
+  }
   return config;
 }
 
@@ -177,18 +275,6 @@ void CheckError(int error) {
   if (! error) { return; }
   throw std::runtime_error(
       "Unexpected pi3hat error: " + std::to_string(error));
-}
-
-std::vector<std::string> Split(const std::string& input, const char* delim = ",") {
-  std::vector<std::string> result;
-  size_t pos = 0;
-  while(pos < input.size()) {
-    const size_t next = input.find_first_of(delim, pos);
-    result.push_back(input.substr(pos, next - pos));
-    if (next == std::string::npos) { break; }
-    pos = next + 1;
-  }
-  return result;
 }
 
 int ParseHexNybble(char c) {
@@ -527,6 +613,10 @@ int do_main(int argc, char** argv) {
 
   if (args.help) {
     DisplayUsage();
+    return 0;
+  }
+  if (args.can_help) {
+    DisplayCanConfigurationUsage();
     return 0;
   }
 

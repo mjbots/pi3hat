@@ -783,6 +783,56 @@ struct DevicePerformance {
   uint32_t min_cycles_per_ms = 0;
 } __attribute__((packed));
 
+struct DeviceCanRate {
+  int8_t prescaler = -1;
+  int8_t sync_jump_width = -1;
+  int8_t time_seg1 = -1;
+  int8_t time_seg2 = -1;
+
+  bool operator==(const DeviceCanRate& rhs) const {
+    return prescaler == rhs.prescaler &&
+        sync_jump_width == rhs.sync_jump_width &&
+        time_seg1 == rhs.time_seg1 &&
+        time_seg2 == rhs.time_seg2;
+  }
+
+  bool operator!=(const DeviceCanRate& rhs) const {
+    return !(*this == rhs);
+  }
+} __attribute__((packed));
+
+struct DeviceCanConfiguration {
+  int32_t slow_bitrate = 1000000;
+  int32_t fast_bitrate = 5000000;
+  int8_t fdcan_frame = 1;
+  int8_t bitrate_switch = 1;
+  int8_t automatic_retransmission = 0;
+  int8_t restricted_mode = 0;
+  int8_t bus_monitor = 0;
+
+  // If any members of either 'rate' structure are non-negative, use
+  // them instead of the 'bitrate' fields above.  Each rate applies
+  // to a base clock rate of 85MHz.
+  DeviceCanRate std_rate;
+  DeviceCanRate fd_rate;
+
+  bool operator==(const DeviceCanConfiguration& rhs) const {
+    return slow_bitrate == rhs.slow_bitrate &&
+        fast_bitrate == rhs.fast_bitrate &&
+        fdcan_frame == rhs.fdcan_frame &&
+        bitrate_switch == rhs.bitrate_switch &&
+        automatic_retransmission == rhs.automatic_retransmission &&
+        restricted_mode == rhs.restricted_mode &&
+        bus_monitor == rhs.bus_monitor &&
+        std_rate == rhs.std_rate &&
+        fd_rate == rhs.fd_rate;
+  }
+
+  bool operator!=(const DeviceCanConfiguration& rhs) const {
+    return !(*this == rhs);
+  }
+} __attribute__((packed));
+
 template <typename Spi>
 Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
   DeviceDeviceInfo di;
@@ -910,6 +960,8 @@ class Pi3Hat::Impl {
                           id_verify);
           });
     }
+
+    ConfigureCan();
   }
 
   ~Impl() {
@@ -917,6 +969,66 @@ class Pi3Hat::Impl {
       // Who cares about errors here?
       ::close(lock_file_fd_);
     }
+  }
+
+  template <typename Spi>
+  void UpdateCanConfig(Spi* spi, int cs, int canbus,
+                       const CanConfiguration& can_config) {
+    // If the version is before 3, then we can't config anything.
+    const auto version = ReadByte(spi, cs, 0);
+    if (version < 3) { return; }
+
+    // Populate what we want our config to look like.
+    DeviceCanConfiguration out;
+    out.slow_bitrate = can_config.slow_bitrate;
+    out.fast_bitrate = can_config.fast_bitrate;
+    out.fdcan_frame = can_config.fdcan_frame ? 1 : 0;
+    out.bitrate_switch = can_config.bitrate_switch ? 1 : 0;
+    out.automatic_retransmission = can_config.automatic_retransmission ? 1 : 0;
+    out.bus_monitor = can_config.bus_monitor ? 1 : 0;
+
+    out.std_rate.prescaler = can_config.std_rate.prescaler;
+    out.std_rate.sync_jump_width = can_config.std_rate.sync_jump_width;
+    out.std_rate.time_seg1 = can_config.std_rate.time_seg1;
+    out.std_rate.time_seg2 = can_config.std_rate.time_seg2;
+
+    out.fd_rate.prescaler = can_config.fd_rate.prescaler;
+    out.fd_rate.sync_jump_width = can_config.fd_rate.sync_jump_width;
+    out.fd_rate.time_seg1 = can_config.fd_rate.time_seg1;
+    out.fd_rate.time_seg2 = can_config.fd_rate.time_seg2;
+
+    // Check to see if this is what is already there.
+    DeviceCanConfiguration original_config;
+    spi->Read(cs, canbus ? 8 : 7,
+              reinterpret_cast<char*>(&original_config),
+              sizeof(original_config));
+    if (original_config == out) {
+      // We have nothing to do, so just bail early.
+      return;
+    }
+
+    // Update the configuration on the device.
+    spi->Write(cs, canbus ? 10 : 9,
+               reinterpret_cast<const char*>(&out), sizeof(out));
+
+    // Give it some time to work.
+    ::usleep(100);
+    DeviceCanConfiguration verify;
+    spi->Read(cs, canbus ? 8 : 7,
+              reinterpret_cast<char*>(&verify), sizeof(verify));
+    ThrowIf(
+        out != verify,
+        [&]() {
+          return "Could not set CAN configuration properly";
+        });
+  }
+
+  void ConfigureCan() {
+    UpdateCanConfig(&aux_spi_, 0, 0, config_.can[0]);
+    UpdateCanConfig(&aux_spi_, 0, 1, config_.can[1]);
+    UpdateCanConfig(&aux_spi_, 1, 0, config_.can[2]);
+    UpdateCanConfig(&aux_spi_, 1, 1, config_.can[3]);
+    UpdateCanConfig(&primary_spi_, 0, 0, config_.can[4]);
   }
 
   void LockFile() {
@@ -944,14 +1056,12 @@ class Pi3Hat::Impl {
 
   template <typename Spi>
   void TestCan(Spi* spi, int cs, const char* name) {
-    constexpr int kCanVersion = 0x02;
-
     const auto version = ReadByte(spi, cs, 0);
-    if (version != kCanVersion) {
+    if (version != 2 && version != 3) {
       throw std::runtime_error(
           Format(
-              "Processor '%s' has incorrect CAN SPI version %d != %d",
-              name, version, kCanVersion));
+              "Processor '%s' has incorrect CAN SPI version %d != [2,3]",
+              name, version));
     }
   }
 

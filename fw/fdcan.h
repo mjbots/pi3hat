@@ -88,6 +88,10 @@ class FDCan {
 
   FDCan(const Options& options = Options());
 
+  Options options() { return options_; }
+
+  void Reset(const Options&);
+
   enum class Override {
     kDefault,
     kRequire,
@@ -132,7 +136,7 @@ class FDCan {
   static int ParseDlc(uint32_t dlc_code);
 
  private:
-  const Options options_;
+  Options options_;
   Config config_;
 
   FDCAN_GlobalTypeDef* can_ = nullptr;

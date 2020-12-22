@@ -209,6 +209,58 @@ These addresses are present on processor 1, 2, and 3.
     * bit 6-0: size of payload
   * byte 1-2: CAN ID, MSB first
   * byte 3+: payload
+* *6* Error status (read only)
+  * Port 0 (JC1/JC3/JC5)
+    * byte 0
+      * bit 7-6 activity
+      * bit 5-3 data last error code
+      * bit 2-0 last error code
+    * byte 1
+      * bit 3 protocol exception
+      * bit 2 bus_off
+      * bit 1 warning status
+      * bit 0 error passive
+    * byte 2 - rx error count
+    * byte 3 - tx error count
+    * byte 4 - reset count
+    * byte 5 - reserved
+  * Port 1 (JC2/JC4)
+    * byte 6
+      * bit 7-6 activity
+      * bit 5-3 data last error code
+      * bit 2-0 last error code
+    * byte 7
+      * bit 3 protocol exception
+      * bit 2 bus_off
+      * bit 1 warning status
+      * bit 0 error passive
+    * byte 8 - rx error count
+    * byte 9 - tx error count
+    * byte 10 - reset count
+    * byte 11 - reserved
+* *7* Read configuration Port 1 (JC1/JC3/JC5)
+  * byte 0-3: int32 standard bitrate
+  * byte 4-7: int32 CAN-FD bitrate
+  * byte 8: generate CAN-FD frames
+  * byte 9: switch bitrates
+  * byte 10: enable automatic retransmission
+  * byte 11: restricted mode
+  * byte 12: bus monitor mode
+  * byte 13: std prescaler
+  * byte 14: std sync_jump_width
+  * byte 15: std time_seg1
+  * byte 16: std time_seg2
+  * byte 17: std prescaler
+  * byte 18: std sync_jump_width
+  * byte 19: std time_seg1
+  * byte 20: std time_seg2
+* *8* Read configuration Port 2 (JC2/JC4)
+  * Same as for 7
+* *9* Write configuration Port 1 (JC1/JC3/JC5)
+  * Same as for 7
+* *10* Write configuration Port 2 (JC2/JC4)
+  * Same as for 7
+
 
 ## IMU Register Mapping ##
 
