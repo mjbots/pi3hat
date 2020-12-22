@@ -16,8 +16,6 @@ import asyncio
 import pathlib
 import sys
 
-VERSION = "0.0.1"
-
 here = str(pathlib.Path(__file__).parent.resolve())
 sys.path.insert(0, here)
 
