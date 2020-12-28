@@ -27,7 +27,6 @@ filegroup(
     name = "pi_target",
     srcs = [
         "//lib/cpp/mjbots/pi3hat",
-        "//lib/cpp/mjbots/moteus:moteus_tool",
     ],
 )
 
@@ -37,7 +36,6 @@ pkg_tar(
     package_dir = "pi3hat_tools",
     srcs = [
         "//lib/cpp/mjbots/pi3hat:pi3hat_tool",
-        "//lib/cpp/mjbots/moteus:moteus_tool",
         "//lib/cpp/mjbots/moteus:moteus_control_example",
         "//lib/python:bdist_wheel",
     ],

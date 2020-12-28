@@ -16,16 +16,6 @@
 
 package(default_visibility = ["//visibility:public"])
 
-cc_binary(
-    name = "moteus_tool",
-    srcs = ["moteus_tool_main.cc"],
-    deps = [
-        "//lib/cpp/mjbots/pi3hat:libpi3hat",
-        "@moteus//utils:moteus_tool_lib",
-        "@org_llvm_libcxx//:libcxx",
-    ],
-)
-
 cc_library(
     name = "headers",
     hdrs = [

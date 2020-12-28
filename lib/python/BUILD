@@ -14,9 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
 
 package(default_visibility = ["//visibility:public"])
+
+load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@moteus//tools:python.bzl", "VERSION")
+load("//tools/workspace:template_file.bzl", "template_file")
 
 # It would be nice to pull this from the python source.  As it is, the
 # below genrule will fail if they don't match, so at least there is
@@ -24,28 +27,33 @@ package(default_visibility = ["//visibility:public"])
 pkg_tar(
     name = "wheel_tar",
     extension = "tar",
-    package_dir = "moteus",
+    package_dir = "moteus_pi3hat",
     srcs = [
-        "//lib/python/moteus:_pi3hat_router.so",
-        "//lib/python/moteus",
-        "@moteus//lib/python/moteus:libfiles",
+        "//lib/python/moteus_pi3hat:_pi3hat_router.so",
+        "//lib/python/moteus_pi3hat",
     ],
 )
 
-VER="0.2.0"
+template_file(
+    name = "setup.py",
+    src = "setup.py.TPL",
+    substitutions = {
+        "{{VERSION}}" : '"{}"'.format(VERSION),
+    },
+)
 
 genrule(
     name = "bdist_wheel",
-    srcs = ["setup.py", ":wheel_tar", "@moteus//lib/python:README.md"],
+    srcs = ["setup.py", ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp37-abi3-linux_armv7l.whl".format(ver=VER),
+        "moteus_pi3hat-{ver}-cp37-abi3-linux_armv7l.whl".format(ver=VERSION),
     ],
     cmd = (
         "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp37-abi3-linux_armv7l.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
-        "cp $(location setup.py) $(location @moteus//lib/python:README.md) $$BUILDDIR && " +
+        "cp $(location setup.py) $(location README.md) $$BUILDDIR && " +
         "cd $$BUILDDIR && " +
         "python3 setup.py bdist_wheel " +
         "        --plat-name linux_armv7l " +
@@ -53,5 +61,5 @@ genrule(
         "        --dist-dir .. " +
         "        1>/dev/null" +
         ""
-    ).format(ver=VER),
+    ).format(ver=VERSION),
 )

@@ -31,7 +31,7 @@ cc_binary(
 )
 
 py_library(
-    name = "moteus",
+    name = "moteus_pi3hat",
     srcs = [
         "__init__.py",
         "pi3hat_router.py",

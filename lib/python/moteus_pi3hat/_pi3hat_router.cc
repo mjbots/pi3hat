@@ -30,14 +30,21 @@ namespace pi3hat = mjbots::pi3hat;
 
 namespace {
 struct SingleCan {
-  int id = 0;
+  int arbitration_id = 0;
+  bool is_extended_id = true;
+  int dlc = 0;
   std::string data;
+  bool is_fd = true;
+  bool bitrate_switch = true;
+
   int bus = 0;
   bool expect_reply = false;
 };
 
 struct Input {
   std::vector<SingleCan> tx_can;
+  uint32_t force_can_check = 0;
+  uint32_t max_rx = 0;
 };
 
 struct Output {
@@ -92,13 +99,18 @@ class Pi3HatRouter {
       auto& out = tx_can_[i];
       auto& in = input.tx_can[i];
 
-      out.id = in.id;
+      out.id = in.arbitration_id;
       out.size = in.data.size();
       std::memcpy(&out.data[0], in.data.data(), out.size);
       out.bus = in.bus;
       out.expect_reply = in.expect_reply;
     }
-    rx_can_.resize(tx_can_.size() * 2);
+    force_can_check_ = input.force_can_check;
+    if (input.max_rx) {
+      rx_can_.resize(input.max_rx);
+    } else {
+      rx_can_.resize(tx_can_.size() * 2);
+    }
   }
 
   void CHILD_Run() {
@@ -137,6 +149,9 @@ class Pi3HatRouter {
     pi3hat::Pi3Hat::Input input;
     input.tx_can = { tx_can_.data(), tx_can_.size() };
     input.rx_can = { rx_can_.data(), rx_can_.size() };
+    input.force_can_check = force_can_check_;
+    input.timeout_ns = 10000000;
+    input.min_tx_wait_ns = 10000000;
 
     Output result;
 
@@ -145,7 +160,9 @@ class Pi3HatRouter {
     for (size_t i = 0; i < output.rx_can_size; i++) {
       SingleCan out;
       const auto& in = rx_can_[i];
-      out.id = in.id;
+      out.arbitration_id = in.id;
+      out.is_extended_id = in.id > 0x7ff;
+      out.dlc = in.size;
       out.data = std::string(reinterpret_cast<const char*>(&in.data[0]), in.size);
       out.bus = in.bus;
       result.rx_can.push_back(std::move(out));
@@ -175,6 +192,7 @@ class Pi3HatRouter {
   // We leave these around just so that we don't have to repeatedly
   // allocate and also to make lifetime management easier.
   std::vector<pi3hat::CanFrame> tx_can_;
+  uint32_t force_can_check_ = 0;
   std::vector<pi3hat::CanFrame> rx_can_;
 };
 }
@@ -190,10 +208,15 @@ PYBIND11_MODULE(_pi3hat_router, m) {
 
   py::class_<SingleCan>(m, "SingleCan")
       .def(py::init<>())
-      .def_readwrite("id", &SingleCan::id)
+      .def_readwrite("arbitration_id", &SingleCan::arbitration_id)
+      .def_readwrite("is_extended_id", &SingleCan::is_extended_id)
+      .def_readwrite("dlc", &SingleCan::dlc)
       .def_property("data",
                     [](const SingleCan& i) { return py::bytes(i.data); },
                     [](SingleCan& i, const std::string& value) { i.data = value; })
+      .def_readwrite("is_fd", &SingleCan::is_fd)
+      .def_readwrite("bitrate_switch", &SingleCan::bitrate_switch)
+
       .def_readwrite("bus", &SingleCan::bus)
       .def_readwrite("expect_reply", &SingleCan::expect_reply)
       ;

@@ -60,17 +60,13 @@ class Pi3HatRouter:
 
     def _make_single_can(self, command):
         result = _pi3hat_router.SingleCan()
-        result.id = command.destination | (0x8000 if command.reply_required else 0x0000)
+        result.arbitration_id = command.destination | (0x8000 if command.reply_required else 0x0000)
         result.data = command.data
         result.bus = self._find_bus(command.destination)
         result.expect_reply = command.reply_required
         return result
 
-    async def cycle(self, commands):
-        input = _pi3hat_router.Input()
-
-        input.tx_can = [self._make_single_can(command) for command in commands]
-
+    async def _cycle(self, input):
         loop = asyncio.get_event_loop()
         future = asyncio.Future(loop=loop)
 
@@ -78,12 +74,36 @@ class Pi3HatRouter:
             loop.call_soon_threadsafe(future.set_result, output)
 
         self._impl.cycle(input, handle_output)
-        output = await future
+        return await future
+
+    async def cycle(self, commands):
+        input = _pi3hat_router.Input()
+
+        input.tx_can = [self._make_single_can(command) for command in commands]
+
+        output = await self._cycle(input)
 
         result = []
         for single_rx in output.rx_can:
-            maybe_command = [x for x in commands if x.destination == (single_rx.id) >> 8]
+            maybe_command = [x for x in commands if
+                             x.destination == (single_rx.arbitration_id) >> 8]
             if maybe_command:
                 command = maybe_command[0]
-                result.append(command.parse(single_rx.data))
+                result.append(command.parse(single_rx))
         return result
+
+    async def write(self, command):
+        input = _pi3hat_router.Input()
+
+        input.tx_can = [self._make_single_can(command)]
+        await self._cycle(input)
+        return []
+
+    async def read(self):
+        input = _pi3hat_router.Input()
+        input.force_can_check = 0x3f
+        input.max_rx = 1
+
+        output = await self._cycle(input)
+
+        return None if not output.rx_can else output.rx_can[0]

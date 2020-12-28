@@ -1,3 +1,5 @@
+# -*- python -*-
+
 # Copyright 2020 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -28,7 +30,7 @@ class BinaryDistribution(setuptools.dist.Distribution):
 
 setuptools.setup(
     name = 'moteus-pi3hat',
-    version = '0.2.0',
+    version = {{VERSION}},
     description = 'moteus brushless controller library and tools',
     long_description = long_description,
     long_description_content_type = 'text/markdown',
@@ -43,16 +45,18 @@ setuptools.setup(
     ],
     keywords='moteus, pi3hat',
     packages = [
-        'moteus',
+        'moteus_pi3hat',
     ],
+    entry_points = {
+        'moteus.transports': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
+    },
     python_requires = '>=3.7, <4',
     install_requires = [
-        'pyserial>=3.5',
-        'python-can>=3.3',
+        'moteus>=0.3.0',
     ],
     include_package_data = True,
     package_data = {
-        'moteus' : ['_pi3hat_router.so'],
+        'moteus_pi3hat' : ['_pi3hat_router.so'],
     },
     distclass = BinaryDistribution,
 )
