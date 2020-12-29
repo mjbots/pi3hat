@@ -2342,7 +2342,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 </element>
 <element name="U10" library="pi3_hat" package="UDFN8_2X3_ONS" value="CAT24C32UDFN8" x="8.3" y="43.5" smashed="yes" rot="R270">
 <attribute name="MF" value="ON Semiconductor" x="8.3" y="43.5" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="MPN" value="CAT24C32WI-GT3" x="8.3" y="43.5" size="1.778" layer="27" rot="R270" display="off"/>
+<attribute name="MPN" value="CAT24C32HU4I-GT3" x="8.3" y="43.5" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="NAME" x="7.3234" y="45.39" size="0.8" layer="25" font="vector" ratio="10" rot="SR0"/>
 <attribute name="POPULATE" value="1" x="8.3" y="43.5" size="1.778" layer="27" rot="R270" display="off"/>
 </element>

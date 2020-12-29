@@ -3808,7 +3808,7 @@ With round pins</description>
 <part name="+3V25" library="supply1" deviceset="+3V3" device=""/>
 <part name="U10" library="pi3_hat" deviceset="CAT24C32" device="UDFN8" value="CAT24C32UDFN8">
 <attribute name="MF" value="ON Semiconductor"/>
-<attribute name="MPN" value="CAT24C32WI-GT3"/>
+<attribute name="MPN" value="CAT24C32HU4I-GT3"/>
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="GND45" library="supply1" deviceset="GND" device=""/>
