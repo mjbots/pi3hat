@@ -1749,7 +1749,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="HOUSEPART" value="" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MF" value="YAGEO" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="RC0402FR-0722K1L" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="21.8" y="13.5" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="19.9" y="15.5" size="0.8" layer="25" font="vector" ratio="10"/>
 <attribute name="POPULATE" value="1" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="URL" value="" x="20.5" y="13.9" size="1.778" layer="27" rot="R90" display="off"/>
@@ -2231,7 +2231,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="DIELECTRIC" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="HOUSEPART" value="YES" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-0.1uF" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="24.3" y="25.5" size="0.8" layer="25" font="vector" ratio="10" rot="R90"/>
+<attribute name="NAME" x="24.3" y="26.1" size="0.8" layer="25" font="vector" ratio="10" rot="R90"/>
 <attribute name="POPULATE" value="1" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="URL" value="" x="15.9" y="69" size="1.778" layer="27" rot="R270" display="off"/>
@@ -2251,7 +2251,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="DIELECTRIC" value="" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="HOUSEPART" value="YES" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-1uF" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="29.2" y="27.5" size="0.8" layer="25" font="vector" ratio="10" rot="R270"/>
+<attribute name="NAME" x="29.8" y="28.3" size="0.8" layer="25" font="vector" ratio="10" rot="R270"/>
 <attribute name="POPULATE" value="1" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="URL" value="" x="16" y="42" size="1.778" layer="27" rot="R270" display="off"/>
@@ -4748,11 +4748,10 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <wire x1="24.15" y1="29.55" x2="24.15" y2="28.95" width="0.1524" layer="1"/>
 <wire x1="24.15" y1="28.95" x2="24.1" y2="28.9" width="0.1524" layer="1"/>
 <wire x1="24.1" y1="28.9" x2="24.1" y2="28.5" width="0.1524" layer="1"/>
-<wire x1="24.1" y1="28.5" x2="24.3" y2="28.3" width="0.1524" layer="1"/>
-<wire x1="24.3" y1="28.3" x2="24.2821" y2="28.3" width="0.1524" layer="1"/>
-<wire x1="24.2821" y1="28.3" x2="24.2321" y2="28.35" width="0.1524" layer="1"/>
-<via x="24.2321" y="28.35" extent="1-16" drill="0.35"/>
-<wire x1="24.2321" y1="28.35" x2="24.2321" y2="26.975525" width="0.1524" layer="16"/>
+<wire x1="24.2321" y1="28.45" x2="24.15" y2="28.45" width="0.1524" layer="1"/>
+<wire x1="24.15" y1="28.45" x2="24.1" y2="28.5" width="0.1524" layer="1"/>
+<via x="24.2321" y="28.45" extent="1-16" drill="0.35"/>
+<wire x1="24.2321" y1="28.45" x2="24.2321" y2="26.975525" width="0.1524" layer="16"/>
 <wire x1="24.2321" y1="26.975525" x2="24.192" y2="26.935425" width="0.1524" layer="16"/>
 <wire x1="24.192" y1="26.935425" x2="24.192" y2="26.692" width="0.1524" layer="16"/>
 <wire x1="24.192" y1="26.692" x2="23.1" y2="25.6" width="0.1524" layer="16"/>
