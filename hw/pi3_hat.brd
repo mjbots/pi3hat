@@ -184,8 +184,8 @@
 <text x="14.1" y="6.9" size="0.8" layer="26" rot="MR180">REGOUT</text>
 <text x="48.3" y="5.2" size="0.8" layer="25" font="vector">V+</text>
 <text x="48.3" y="3.2" size="0.8" layer="25" font="vector">G</text>
-<text x="7.7" y="2.7" size="0.8" layer="25" font="vector" rot="R180">+5V</text>
-<text x="12.3" y="21.8" size="0.8" layer="25" font="vector" rot="R180">SPI1_CS</text>
+<text x="8.65" y="2.475" size="0.7" layer="25" font="vector" rot="R180">+5V</text>
+<text x="11.9" y="24.2" size="0.8" layer="25" font="vector" rot="R270">SPI1_CS</text>
 <text x="7.5" y="22.8" size="0.8" layer="25" font="vector">0</text>
 <text x="11" y="22.8" size="0.8" layer="25" font="vector">1</text>
 <text x="9.7" y="52.4" size="0.8" layer="25" font="vector" rot="R180">SPI1</text>
@@ -1615,14 +1615,14 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="DPN" value="DMG2305UX-13DICT-ND" x="9.7" y="4.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MF" value="Diodes Incorporated" x="9.7" y="4.6" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="DMG2305UX-13" x="9.7" y="4.6" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="8.7" y="5.1" size="0.8" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="7.9" y="5.5" size="0.8" layer="25" font="vector" ratio="10" rot="R180"/>
 <attribute name="POPULATE" value="1" x="9.7" y="4.6" size="1.778" layer="27" rot="R90" display="off"/>
 </element>
 <element name="U2" library="pi3_hat" package="SOT26" value="DMMT5401" x="9.96" y="8.34" smashed="yes">
 <attribute name="DPN" value="DMMT5401-FDICT-ND" x="9.96" y="8.34" size="1.778" layer="27" display="off"/>
 <attribute name="MF" value="Didoes Incorporated" x="9.96" y="8.34" size="1.778" layer="27" display="off"/>
 <attribute name="MPN" value="DMMT5401-7-F" x="9.96" y="8.34" size="1.778" layer="27" display="off"/>
-<attribute name="NAME" x="8.54" y="10.04" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="8.34" y="10.04" size="0.8" layer="25" font="vector" ratio="10"/>
 <attribute name="POPULATE" value="1" x="9.96" y="8.34" size="1.778" layer="27" display="off"/>
 </element>
 <element name="F1" library="pi3_hat" package="FUS_VISHAY_MFU0603" value="MFU0603FF04000P100" x="32.6" y="9.8" smashed="yes" rot="R180">
@@ -2143,7 +2143,7 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <attribute name="DIELECTRIC" value="" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="HOUSEPART" value="YES" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="MPN" value="MF-CAP-0402-0.1uF" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
-<attribute name="NAME" x="36" y="47" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="36.1" y="47.4" size="0.8" layer="25" font="vector" ratio="10"/>
 <attribute name="POPULATE" value="1" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="TOLERANCE" value="" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
 <attribute name="URL" value="" x="76" y="27.4" size="1.778" layer="27" rot="R90" display="off"/>
@@ -2174,13 +2174,13 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <element name="JC5" library="pi3_hat" package="JST_B3B_PH-SM4-TB(LF)(SN)" value="JST-PH3SMT_VERT" x="53.3" y="29.7" smashed="yes" rot="R270">
 <attribute name="MF" value="JST" x="53.3" y="29.7" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="B3B-PH-SM4-TB(LF)(SN)" x="53.3" y="29.7" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="50.1409875" y="34.732740625" size="1" layer="25" font="vector" ratio="10" rot="R180"/>
+<attribute name="NAME" x="50.3409875" y="35.232740625" size="1" layer="25" font="vector" ratio="10" rot="R180"/>
 <attribute name="POPULATE" value="1" x="53.3" y="29.7" size="1.778" layer="27" rot="R270" display="off"/>
 </element>
 <element name="R13" library="mfpassives" package="R0402" value="120" x="47.3" y="30.6" smashed="yes" rot="R270">
 <attribute name="HOUSEPART" value="YES" x="60.3" y="60.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="MPN" value="MF-RES-0402-100" x="60.3" y="60.1" size="1.778" layer="27" rot="R270" display="off"/>
-<attribute name="NAME" x="46.7" y="32" size="0.8" layer="25" font="vector" ratio="10"/>
+<attribute name="NAME" x="47.6" y="32" size="0.8" layer="25" font="vector" ratio="10" rot="R90"/>
 <attribute name="POPULATE" value="1" x="60.3" y="60.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="TOLERANCE" value="" x="60.3" y="60.1" size="1.778" layer="27" rot="R270" display="off"/>
 <attribute name="URL" value="" x="60.3" y="60.1" size="1.778" layer="27" rot="R270" display="off"/>
@@ -3711,9 +3711,11 @@ Note, that not all DRC settings must be set by the manufacturer. Several can be 
 <wire x1="6.5" y1="21.375" x2="6.25" y2="21.125" width="0.127" layer="1"/>
 <wire x1="6.25" y1="21.125" x2="6.14" y2="21.07" width="0.127" layer="1"/>
 <wire x1="6.875" y1="21.75" x2="6.5" y2="21.375" width="0.127" layer="1"/>
+<wire x1="6.25" y1="21.125" x2="6.249996875" y2="21.124996875" width="0.127" layer="1"/>
 <wire x1="9.375" y1="21.75" x2="6.875" y2="21.75" width="0.127" layer="1"/>
 <wire x1="10.125" y1="22.5" x2="9.375" y2="21.75" width="0.127" layer="1"/>
-<wire x1="6.5" y1="21.375" x2="6.14" y2="21.07" width="0.127" layer="1"/>
+<wire x1="6.249996875" y1="21.124996875" x2="6.18508125" y2="21.07" width="0.127" layer="1"/>
+<wire x1="6.18508125" y1="21.07" x2="6.14" y2="21.07" width="0.127" layer="1"/>
 <wire x1="10.125" y1="22.5" x2="10.2" y2="22.5" width="0.127" layer="1"/>
 <wire x1="12" y1="24.25" x2="10.25" y2="22.5" width="0.127" layer="16"/>
 <wire x1="12" y1="34.5" x2="12" y2="24.25" width="0.127" layer="16"/>
