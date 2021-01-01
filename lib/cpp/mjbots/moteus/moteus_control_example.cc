@@ -121,7 +121,11 @@ std::pair<double, double> MinMaxVoltage(
 /// This holds the user-defined control logic.
 class SampleController {
  public:
-  SampleController(const Arguments& arguments) : arguments_(arguments) {}
+  SampleController(const Arguments& arguments) : arguments_(arguments) {
+    if (arguments_.primary_id == arguments_.secondary_id) {
+      throw std::runtime_error("The servos must have unique IDs");
+    }
+  }
 
   /// This is called before any control begins, and must return the
   /// set of servos that are used, along with which bus each is

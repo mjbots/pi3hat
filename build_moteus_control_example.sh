@@ -1,11 +1,9 @@
 #!/bin/bash
 
-cd lib/cpp
-
-g++ -O2 -Wall --std=c++11 \
+g++ -O2 -g -Wall --std=c++11 \
     -lpthread \
     -Wno-psabi \
-    -I . -I /opt/vc/include -L /opt/vc/lib -l bcm_host \
+    -I lib/cpp -I /opt/vc/include -L /opt/vc/lib -l bcm_host \
     -o moteus_control_example \
-    mjbots/moteus/moteus_control_example.cc \
-    mjbots/pi3hat/pi3hat.cc
+    lib/cpp/mjbots/moteus/moteus_control_example.cc \
+    lib/cpp/mjbots/pi3hat/pi3hat.cc
