@@ -53,7 +53,7 @@ class Pi3HatRouter:
         self._impl = _pi3hat_router.Pi3HatRouter(options)
 
     def _find_bus(self, destination):
-        for key, value in self.servo_bus_map:
+        for key, value in self.servo_bus_map.items():
             if destination in value:
                 return key
         return 1
