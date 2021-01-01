@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd lib/cpp
+
 g++ -O2 -Wall --std=c++11 \
     -lpthread \
     -Wno-psabi \
