@@ -44,7 +44,7 @@ class Pi3HatRouter:
           servo_bus_map: A list of tuples, (bus, [list, of, ids])
         """
 
-        self.servo_bus_map = servo_bus_map or []
+        self.servo_bus_map = servo_bus_map or {}
 
         options = _pi3hat_router.Pi3HatRouterOptions()
         options.cpu = cpu

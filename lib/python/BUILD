@@ -18,8 +18,9 @@
 package(default_visibility = ["//visibility:public"])
 
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
-load("@moteus//tools:python.bzl", "VERSION")
 load("//tools/workspace:template_file.bzl", "template_file")
+
+VERSION="0.3.4"
 
 # It would be nice to pull this from the python source.  As it is, the
 # below genrule will fail if they don't match, so at least there is
