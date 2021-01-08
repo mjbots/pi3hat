@@ -69,6 +69,8 @@ struct Arguments {
         can_help = true;
       } else if (arg == "--spi-speed") {
         spi_speed_hz = std::stoi(args.at(++i));
+      } else if (arg == "--disable-aux") {
+        disable_aux = true;
       } else if (arg == "--mount-y") {
         mounting_deg.yaw = std::stod(args.at(++i));
       } else if (arg == "--mount-p") {
@@ -121,6 +123,7 @@ struct Arguments {
   std::string time_log;
 
   int spi_speed_hz = -1;
+  bool disable_aux = false;
   Euler mounting_deg;
   uint32_t attitude_rate_hz = 400;
   uint32_t rf_id = 5678;
@@ -150,6 +153,7 @@ void DisplayUsage() {
   std::cout << "\n";
   std::cout << "Configuration\n";
   std::cout << "  --spi-speed HZ      set the SPI speed\n";
+  std::cout << "  --disable-aux       disable the auxiliary processor\n";
   std::cout << "  --mount-y DEG       set the mounting yaw angle\n";
   std::cout << "  --mount-p DEG       set the mounting pitch angle\n";
   std::cout << "  --mount-r DEG       set the mounting roll angle\n";
@@ -250,6 +254,7 @@ Pi3Hat::Configuration MakeConfig(const Arguments& args) {
   config.mounting_deg.pitch = args.mounting_deg.pitch;
   config.mounting_deg.roll = args.mounting_deg.roll;
   config.attitude_rate_hz = args.attitude_rate_hz;
+  config.enable_aux = !args.disable_aux;
 
   if (args.rf_id != 0) {
     config.rf_id = args.rf_id;

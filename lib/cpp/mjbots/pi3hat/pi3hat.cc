@@ -894,6 +894,20 @@ class Pi3Hat::Impl {
     // Verify the versions of all peripherals we will use.
     VerifyVersions();
 
+    if (config_.enable_aux) {
+      ConfigureAux();
+    }
+    ConfigureCan();
+  }
+
+  ~Impl() {
+    if (lock_file_fd_ >= 0) {
+      // Who cares about errors here?
+      ::close(lock_file_fd_);
+    }
+  }
+
+  void ConfigureAux() {
     // See if we need to update the IMU configuration.
     DeviceImuConfiguration original_imu_configuration;
     primary_spi_.Read(
@@ -902,11 +916,11 @@ class Pi3Hat::Impl {
         sizeof(original_imu_configuration));
 
     DeviceImuConfiguration desired_imu;
-    desired_imu.yaw_deg = configuration.mounting_deg.yaw;
-    desired_imu.pitch_deg = configuration.mounting_deg.pitch;
-    desired_imu.roll_deg = configuration.mounting_deg.roll;
+    desired_imu.yaw_deg = config_.mounting_deg.yaw;
+    desired_imu.pitch_deg = config_.mounting_deg.pitch;
+    desired_imu.roll_deg = config_.mounting_deg.roll;
     desired_imu.rate_hz =
-        std::min<uint32_t>(1000, configuration.attitude_rate_hz);
+        std::min<uint32_t>(1000, config_.attitude_rate_hz);
 
     if (desired_imu != original_imu_configuration) {
       primary_spi_.Write(
@@ -959,15 +973,6 @@ class Pi3Hat::Impl {
                           config_.rf_id,
                           id_verify);
           });
-    }
-
-    ConfigureCan();
-  }
-
-  ~Impl() {
-    if (lock_file_fd_ >= 0) {
-      // Who cares about errors here?
-      ::close(lock_file_fd_);
     }
   }
 
@@ -1028,7 +1033,9 @@ class Pi3Hat::Impl {
     UpdateCanConfig(&aux_spi_, 0, 1, config_.can[1]);
     UpdateCanConfig(&aux_spi_, 1, 0, config_.can[2]);
     UpdateCanConfig(&aux_spi_, 1, 1, config_.can[3]);
-    UpdateCanConfig(&primary_spi_, 0, 0, config_.can[4]);
+    if (config_.enable_aux) {
+      UpdateCanConfig(&primary_spi_, 0, 0, config_.can[4]);
+    }
   }
 
   void LockFile() {
@@ -1069,25 +1076,29 @@ class Pi3Hat::Impl {
     constexpr int kAttitudeVersion = 0x20;
     constexpr int kRfVersion = 0x10;
 
-    TestCan(&primary_spi_, 0, "aux");
+    if (config_.enable_aux) {
+      TestCan(&primary_spi_, 0, "aux");
+    }
     TestCan(&aux_spi_, 0, "can1");
     TestCan(&aux_spi_, 1, "can2");
 
-    const auto attitude_version = ReadByte(&primary_spi_, 0, 32);
-    if (attitude_version != kAttitudeVersion) {
-      throw std::runtime_error(
-          Format(
-              "Incorrect attitude version %d != %d",
-              attitude_version, kAttitudeVersion));
-    }
+    if (config_.enable_aux) {
+      const auto attitude_version = ReadByte(&primary_spi_, 0, 32);
+      if (attitude_version != kAttitudeVersion) {
+        throw std::runtime_error(
+            Format(
+                "Incorrect attitude version %d != %d",
+                attitude_version, kAttitudeVersion));
+      }
 
 
-    const auto rf_version = ReadByte(&primary_spi_, 0, 48);
-    if (rf_version != kRfVersion) {
-      throw std::runtime_error(
-          Format(
-              "Incorrect RF version %d != %d",
-              rf_version, kRfVersion));
+      const auto rf_version = ReadByte(&primary_spi_, 0, 48);
+      if (rf_version != kRfVersion) {
+        throw std::runtime_error(
+            Format(
+                "Incorrect RF version %d != %d",
+                rf_version, kRfVersion));
+      }
     }
   }
 
@@ -1096,7 +1107,9 @@ class Pi3Hat::Impl {
     // Now get the device information from all three processors.
     result.can1 = GetProcessorInfo(&aux_spi_, 0);
     result.can2 = GetProcessorInfo(&aux_spi_, 1);
-    result.aux = GetProcessorInfo(&primary_spi_, 0);
+    if (config_.enable_aux) {
+      result.aux = GetProcessorInfo(&primary_spi_, 0);
+    }
     return result;
   }
 
@@ -1105,7 +1118,9 @@ class Pi3Hat::Impl {
     // Now get the device information from all three processors.
     result.can1 = GetPerformance(&aux_spi_, 0);
     result.can2 = GetPerformance(&aux_spi_, 1);
-    result.aux = GetPerformance(&primary_spi_, 0);
+    if (config_.enable_aux) {
+      result.aux = GetPerformance(&primary_spi_, 0);
+    }
     return result;
   }
 
@@ -1225,7 +1240,9 @@ class Pi3Hat::Impl {
         break;
       }
       case 5: {
-        SendCanPacketSpi(primary_spi_, 0, 0, can_frame);
+        if (config_.enable_aux) {
+          SendCanPacketSpi(primary_spi_, 0, 0, can_frame);
+        }
         break;
       }
     }
@@ -1281,6 +1298,8 @@ class Pi3Hat::Impl {
   }
 
   void SendRf(const Span<RfSlot>& slots) {
+    if (!config_.enable_aux) { return; }
+
     constexpr int kHeaderSize = 5;
     constexpr int kMaxDataSize = 16;
     uint8_t buf[kHeaderSize + kMaxDataSize] = {};
@@ -1301,6 +1320,8 @@ class Pi3Hat::Impl {
   }
 
   void ReadRf(const Input& input, Output* output) {
+    if (!config_.enable_aux) { return; }
+
     DeviceRfStatus rf_status;
     primary_spi_.Read(
         0, 52, reinterpret_cast<char*>(&rf_status), sizeof(rf_status));
@@ -1426,7 +1447,7 @@ class Pi3Hat::Impl {
           any_found = true;
         }
       }
-      if (to_check[2]) {
+      if (to_check[2] && config_.enable_aux) {
         const int count = ReadCanFrames(primary_spi_, 0, 5, &input.rx_can, output);
         bus_replies[2] -= count;
         if (count) {
