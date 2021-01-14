@@ -135,6 +135,10 @@ class Pi3HatRouter {
       }
 
       auto output = CHILD_Cycle();
+
+      // This will be a python object, so we need the GIL.
+      py::gil_scoped_acquire acquire;
+
       CallbackFunction callback_copy;
       {
         std::unique_lock<std::mutex> lock(mutex_);
