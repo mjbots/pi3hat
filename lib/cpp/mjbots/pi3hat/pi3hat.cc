@@ -1381,6 +1381,11 @@ class Pi3Hat::Impl {
 
       // Read all we can until our buffer is full.
       for (int size : queue_sizes) {
+        if (output->rx_can_size >= rx_can->size()) {
+          // We're full and can't read any more.
+          break;
+        }
+
         if (size == 0) { continue; }
         if (size > (64 + 5)) {
           // This is malformed.  Lets just set it to the maximum size for now.
