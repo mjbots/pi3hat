@@ -150,8 +150,8 @@ class Pi3HatRouter {
     input.tx_can = { tx_can_.data(), tx_can_.size() };
     input.rx_can = { rx_can_.data(), rx_can_.size() };
     input.force_can_check = force_can_check_;
-    input.timeout_ns = 10000000;
-    input.min_tx_wait_ns = 10000000;
+    input.timeout_ns = 1000000;
+    input.min_tx_wait_ns = 1000000;
 
     Output result;
 
