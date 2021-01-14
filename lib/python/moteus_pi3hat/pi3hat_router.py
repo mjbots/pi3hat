@@ -22,6 +22,11 @@ sys.path.insert(0, here)
 import _pi3hat_router
 
 
+def _set_future(future, output):
+    if not future.cancelled():
+        future.set_result(output)
+
+
 class Pi3HatRouter:
     """Permits communication using the pi3hat CAN interfaces.  This
     requires a dedicated Raspberry PI CPU to operate the hardware.  It
@@ -71,10 +76,18 @@ class Pi3HatRouter:
         future = asyncio.Future(loop=loop)
 
         def handle_output(output):
-            loop.call_soon_threadsafe(future.set_result, output)
+            if loop.is_closed():
+                print("LOOP UNEXPECTEDLY CLOSED")
+            else:
+                loop.call_soon_threadsafe(_set_future, future, output)
 
         self._impl.cycle(input, handle_output)
-        return await future
+        # We are forbidden to call "cycle" multiple times, thus we
+        # have to actually wait for it to finish before we can let any
+        # timeouts or other cancellations propagate up.
+        result = await asyncio.shield(future)
+
+        return result
 
     async def cycle(self, commands):
         input = _pi3hat_router.Input()
