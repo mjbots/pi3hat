@@ -174,6 +174,9 @@ class Pi3Hat {
 
     CanConfiguration can[5] = {};
 
+    // If true, nothing is guaranteed to work but ReadSpi.
+    bool raw_spi_only = false;
+
     Configuration() {
       // By default the final CAN bus should be 125kbps standard frame.
       can[4].slow_bitrate = 125000;

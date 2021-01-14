@@ -891,6 +891,10 @@ class Pi3Hat::Impl {
     // time.
     LockFile();
 
+    if (config_.raw_spi_only) {
+      return;
+    }
+
     // Verify the versions of all peripherals we will use.
     VerifyVersions();
 

@@ -273,6 +273,11 @@ Pi3Hat::Configuration MakeConfig(const Arguments& args) {
     config.can[can_bus - 1] =
         ParseCanConfig(can_fields.begin() + 1, can_fields.end());
   }
+
+  if (!args.read_spi.empty()) {
+    config.raw_spi_only = true;
+  }
+
   return config;
 }
 
