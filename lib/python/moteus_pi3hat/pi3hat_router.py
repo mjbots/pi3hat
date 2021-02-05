@@ -46,7 +46,7 @@ class Pi3HatRouter:
 
           cpu: The device interface will run on this CPU
           spi_speed_hz: How fast to run the SPI bus
-          servo_bus_map: A list of tuples, (bus, [list, of, ids])
+          servo_bus_map: A map of buses to servo ids: {bus: [list, of, ids, ...})
         """
 
         self.servo_bus_map = servo_bus_map or {}
