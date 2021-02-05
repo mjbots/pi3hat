@@ -189,7 +189,8 @@ class Bmi088::Impl {
 
     // Verify we have an actual accelerometer present.
     setup_data_.acc_id = acc_.ReadScalar<uint8_t>(0x80);
-    MJ_ASSERT(setup_data_.acc_id == 0x1e);
+    MJ_ASSERT(setup_data_.acc_id == 0x1e ||  // BMI088
+              setup_data_.acc_id == 0x1a);   // BMI090L
 
     // Power on the sensor.
     acc_.WriteScalar<uint8_t>(0x7d, 0x04);  // ACC_PWR_CTRL - o n
