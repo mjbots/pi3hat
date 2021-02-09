@@ -3471,9 +3471,9 @@ With round pins</description>
 </part>
 <part name="GND15" library="supply1" deviceset="GND" device=""/>
 <part name="GND16" library="supply1" deviceset="GND" device=""/>
-<part name="J4" library="pi3_hat" deviceset="PI3_HEADER" device="SMT_THRU">
-<attribute name="MF" value="SAMTEC"/>
-<attribute name="MPN" value="HLE-120-02-F-DV-BE-A"/>
+<part name="J4" library="pi3_hat" deviceset="PI3_HEADER" device="2X20-FLIP">
+<attribute name="MF" value="SULLINS"/>
+<attribute name="MPN" value="PPPC202LFBN-RC"/>
 <attribute name="POPULATE" value="1"/>
 </part>
 <part name="+3V6" library="supply1" deviceset="+3V3" device=""/>
@@ -3979,8 +3979,8 @@ With round pins</description>
 <wire x1="220.98" y1="170.18" x2="-48.26" y2="170.18" width="0.1524" layer="90"/>
 <wire x1="-48.26" y1="170.18" x2="-48.26" y2="347.98" width="0.1524" layer="90"/>
 <text x="-45.72" y="335.28" size="7.62" layer="90" font="vector">INPUT POWER</text>
-<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots pi3 hat r4.4
-(c) jjp@pobox.com 2020
+<text x="-45.72" y="355.6" size="7.62" layer="90" font="vector">mjbots pi3 hat r4.4b
+(c) jjp@pobox.com 2021
 Licensed under the Apache 2.0 License</text>
 <wire x1="-48.26" y1="162.56" x2="220.98" y2="162.56" width="0.1524" layer="90"/>
 <wire x1="220.98" y1="162.56" x2="220.98" y2="-15.24" width="0.1524" layer="90"/>
