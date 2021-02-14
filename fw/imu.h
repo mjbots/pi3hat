@@ -91,16 +91,16 @@ class Imu {
   } __attribute__((packed));
 
   struct Configuration {
-    float yaw_deg = 0;
-    float pitch_deg = 0;
     float roll_deg = 0;
+    float pitch_deg = 0;
+    float yaw_deg = 0;
     uint32_t rate_hz = 400;
 
     Quaternion quaternion() {
       return Quaternion::FromEuler(
-          Radians(yaw_deg),
+          Radians(roll_deg),
           Radians(pitch_deg),
-          Radians(roll_deg));
+          Radians(yaw_deg));
     }
 
     bool operator==(const Configuration& rhs) const {

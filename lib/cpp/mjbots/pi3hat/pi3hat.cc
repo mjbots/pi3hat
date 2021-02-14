@@ -744,9 +744,9 @@ struct DeviceAttitudeData {
 } __attribute__((packed));
 
 struct DeviceImuConfiguration {
-  float yaw_deg = 0;
-  float pitch_deg = 0;
   float roll_deg = 0;
+  float pitch_deg = 0;
+  float yaw_deg = 0;
   uint32_t rate_hz = 0;
 
   bool operator==(const DeviceImuConfiguration& rhs) const {

@@ -309,9 +309,9 @@ These addresses are present only on processor 3.
   * uint32 _error count_
   * uint32 _last error_
 * *35* Read configuration
-  * float _yaw deg_
-  * float _pitch deg_
   * float _roll deg_
+  * float _pitch deg_
+  * float _yaw deg_
   * uint32t _rate Hz_
 * *36* Write configuration
   * The same structure as for address 35.
