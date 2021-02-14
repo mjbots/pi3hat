@@ -53,6 +53,15 @@ Pin 1 is closest to the J3 label.
 * Pin 7: 3.3V
 * Pin 8: GND
 
+# Orientation #
+
+For the purposes of the IMU, in the absence of any configured rotation
+the reported axes are as follows:
+
+* +x - towards the CAN connectors or HDMI connectors on the RPI
+* +y - towards the USB ports on the rpi
+* +z - up from the rpi towards the pi3hat
+
 # Usage  with client-side libraries #
 
 ## Python ##
