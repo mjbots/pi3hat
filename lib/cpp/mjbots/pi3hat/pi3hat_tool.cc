@@ -59,6 +59,121 @@ std::vector<std::string> Split(const std::string& input, const char* delim = ","
   return result;
 }
 
+/// Euler angles are in roll, pitch, then yaw.
+///  +roll -> right side down
+///  +pitch -> forward edge up
+///  +yaw -> clockwise looking down
+struct Euler {
+  double roll = 0.0;
+  double pitch = 0.0;
+  double yaw = 0.0;
+};
+
+class Quaternion;
+inline Quaternion operator*(const Quaternion& lhs,
+                            const Quaternion& rhs);
+
+class Quaternion {
+ public:
+  Quaternion(double w, double x, double y, double z)
+      : w_(w), x_(x), y_(y), z_(z) {}
+
+  Quaternion()
+      : w_(1.0), x_(0.), y_(0.), z_(0.) {}
+
+  std::string str() const;
+
+  Quaternion conjugated() const {
+    return Quaternion(w_, -x_, -y_, -z_);
+  }
+
+  double norm() const {
+    return std::sqrt(w_ * w_ + x_ * x_ + y_ * y_ + z_ * z_);
+  }
+
+  Quaternion normalized() const {
+    const double n = norm();
+    return Quaternion(w_ / n, x_ / n, y_ / n, z_ / n);
+  }
+
+  Euler euler_rad() const {
+    Euler result_rad;
+
+    const double sinp = 2.0 * (w_ * y_ - z_ * x_);
+    if (sinp >= (1.0 - 1e-8)) {
+      result_rad.pitch = M_PI_2;
+      result_rad.roll = 0.0;
+      result_rad.yaw = -2.0 * std::atan2(x_, w_);
+    } else if (sinp <= (-1.0 + 1e-8)) {
+      result_rad.pitch = -M_PI_2;
+      result_rad.roll = 0.0;
+      result_rad.yaw = 2.0 * std::atan2(x_, w_);
+    } else {
+      result_rad.pitch = std::asin(sinp);
+
+      const double sinr_cosp = 2.0 * (w_ * x_ + y_ * z_);
+      const double cosr_cosp = 1.0 - 2.0 * (x_ * x_ + y_ * y_);
+      result_rad.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+      const double siny_cosp = 2.0 * (w_ * z_ + x_ * y_);
+      const double cosy_cosp = 1.0 - 2.0 * (y_ * y_ + z_ * z_);
+      result_rad.yaw = std::atan2(siny_cosp, cosy_cosp);
+    }
+
+    return result_rad;
+  }
+
+  static Quaternion FromEuler(
+      double roll_rad, double pitch_rad, double yaw_rad) {
+    // Quaternions multiply in opposite order, and we want to get into
+    // roll, pitch, then yaw as standard.
+    return (Quaternion::FromAxisAngle(yaw_rad, 0, 0, 1) *
+            Quaternion::FromAxisAngle(pitch_rad, 0, 1, 0) *
+            Quaternion::FromAxisAngle(roll_rad, 1, 0, 0));
+  }
+
+  static Quaternion FromEuler(Euler euler_rad) {
+    return FromEuler(euler_rad.roll, euler_rad.pitch, euler_rad.yaw);
+  }
+
+  static Quaternion FromAxisAngle(
+      double angle_rad, double x, double y, double z) {
+    double c = std::cos(angle_rad / 2.0);
+    double s = std::sin(angle_rad / 2.0);
+
+    return Quaternion(c, x * s, y * s, z * s);
+  }
+
+  double w() const { return w_; }
+  double x() const { return x_; }
+  double y() const { return y_; }
+  double z() const { return z_; }
+
+ private:
+  double w_;
+  double x_;
+  double y_;
+  double z_;
+};
+
+inline Quaternion operator*(const Quaternion& lhs,
+                            const Quaternion& rhs) {
+  double a = lhs.w();
+  double b = lhs.x();
+  double c = lhs.y();
+  double d = lhs.z();
+
+  double e = rhs.w();
+  double f = rhs.x();
+  double g = rhs.y();
+  double h = rhs.z();
+
+  return Quaternion(a * e - b * f - c * g - d * h,
+                    b * e + a * f + c * h - d * g,
+                    a * g - b * h + c * e + d * f,
+                    a * h + b * g - c * f + d * e);
+}
+
 struct Arguments {
   Arguments(const std::vector<std::string>& args) {
     for (size_t i = 0; i < args.size(); i++) {
@@ -404,13 +519,23 @@ std::string FormatCanFrame(const CanFrame& can_frame) {
   return result;
 }
 
+double R2D(double value) {
+  return 180.0 * value / 3.141592653589793;
+}
+
 std::string FormatAttitude(const Attitude& a) {
+  const auto euler_rad =
+      Quaternion(a.attitude.w,
+                 a.attitude.x,
+                 a.attitude.y,
+                 a.attitude.z).euler_rad();
+
   char buf[2048] = {};
   ::snprintf(
       buf, sizeof(buf) - 1,
-      "w=%5.3f x=%5.3f y=%5.3f z=%5.3f  dps=(%5.1f,%5.1f,%5.1f) "
+      "rpy=(%6.1f,%6.1f,%6.1f) dps=(%5.1f,%5.1f,%5.1f) "
       "a=(%4.1f,%4.1f,%4.1f)",
-      a.attitude.w, a.attitude.x, a.attitude.y, a.attitude.z,
+      R2D(euler_rad.roll), R2D(euler_rad.pitch), R2D(euler_rad.yaw),
       a.rate_dps.x, a.rate_dps.y, a.rate_dps.z,
       a.accel_mps2.x, a.accel_mps2.y, a.accel_mps2.z);
   return std::string(buf);
