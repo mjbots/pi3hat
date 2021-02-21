@@ -44,7 +44,7 @@ struct SingleCan {
 struct Input {
   std::vector<SingleCan> tx_can;
   uint32_t force_can_check = 0;
-  uint32_t max_rx = 0;
+  int32_t max_rx = -1;
 };
 
 struct Output {
@@ -106,7 +106,7 @@ class Pi3HatRouter {
       out.expect_reply = in.expect_reply;
     }
     force_can_check_ = input.force_can_check;
-    if (input.max_rx) {
+    if (input.max_rx >= 0) {
       rx_can_.resize(input.max_rx);
     } else {
       rx_can_.resize(tx_can_.size() * 2);
@@ -228,6 +228,8 @@ PYBIND11_MODULE(_pi3hat_router, m) {
   py::class_<Input>(m, "Input")
       .def(py::init<>())
       .def_readwrite("tx_can", &Input::tx_can)
+      .def_readwrite("force_can_check", &Input::force_can_check)
+      .def_readwrite("max_rx", &Input::max_rx)
       ;
 
   py::class_<Output>(m, "Output")

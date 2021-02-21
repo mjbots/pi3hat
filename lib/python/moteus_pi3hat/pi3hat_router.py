@@ -109,6 +109,8 @@ class Pi3HatRouter:
         input = _pi3hat_router.Input()
 
         input.tx_can = [self._make_single_can(command)]
+        input.max_rx = 0
+
         await self._cycle(input)
         return []
 
