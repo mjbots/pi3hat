@@ -69,7 +69,7 @@ the reported axes are as follows:
 Simply perform:
 
 ```
-pip3 install moteus_pi3hat
+sudo pip3 install moteus_pi3hat
 ```
 
 Then use the same API documented at:
