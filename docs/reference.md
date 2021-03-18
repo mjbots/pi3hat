@@ -79,8 +79,12 @@ Alternately, the pi3hat transport can be constructed directly using:
 
 ```
 import moteus
+import moteus_pi3hat
 
-transport = moteus.Pi3HatRouter()
+transport = moteus_pi3hat.Pi3HatRouter(
+    servo_bus_map={...},
+)
+controller = moteus.Controller(id=1, transport=transport)
 ```
 
 
