@@ -45,10 +45,13 @@ struct Input {
   std::vector<SingleCan> tx_can;
   uint32_t force_can_check = 0;
   int32_t max_rx = -1;
+  bool request_attitude = false;
 };
 
 struct Output {
   std::vector<SingleCan> rx_can;
+  bool attitude_present = false;
+  pi3hat::Attitude attitude;
 };
 
 class Pi3HatRouter {
@@ -106,6 +109,7 @@ class Pi3HatRouter {
       out.expect_reply = in.expect_reply;
     }
     force_can_check_ = input.force_can_check;
+    request_attitude_ = input.request_attitude;
     if (input.max_rx >= 0) {
       rx_can_.resize(input.max_rx);
     } else {
@@ -154,6 +158,10 @@ class Pi3HatRouter {
     input.tx_can = { tx_can_.data(), tx_can_.size() };
     input.rx_can = { rx_can_.data(), rx_can_.size() };
     input.force_can_check = force_can_check_;
+    input.attitude = &attitude_;
+    input.request_attitude = request_attitude_;
+    // If we're requesting attitude, always wait for it.
+    input.wait_for_attitude = request_attitude_;
     input.timeout_ns = 1000000;
     input.min_tx_wait_ns = 1000000;
 
@@ -170,6 +178,10 @@ class Pi3HatRouter {
       out.data = std::string(reinterpret_cast<const char*>(&in.data[0]), in.size);
       out.bus = in.bus;
       result.rx_can.push_back(std::move(out));
+    }
+    result.attitude_present = output.attitude_present;
+    if (result.attitude_present) {
+      result.attitude = attitude_;
     }
     return result;
   }
@@ -197,7 +209,9 @@ class Pi3HatRouter {
   // allocate and also to make lifetime management easier.
   std::vector<pi3hat::CanFrame> tx_can_;
   uint32_t force_can_check_ = 0;
+  bool request_attitude_ = false;
   std::vector<pi3hat::CanFrame> rx_can_;
+  pi3hat::Attitude attitude_;
 };
 }
 
@@ -230,11 +244,36 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("tx_can", &Input::tx_can)
       .def_readwrite("force_can_check", &Input::force_can_check)
       .def_readwrite("max_rx", &Input::max_rx)
+      .def_readwrite("request_attitude", &Input::request_attitude)
       ;
 
   py::class_<Output>(m, "Output")
       .def(py::init<>())
       .def_readwrite("rx_can", &Output::rx_can)
+      .def_readwrite("attitude_present", &Output::attitude_present)
+      .def_readwrite("attitude", &Output::attitude)
+      ;
+
+  py::class_<pi3hat::Attitude>(m, "Attitude")
+      .def(py::init<>())
+      .def_readwrite("attitude", &pi3hat::Attitude::attitude)
+      .def_readwrite("rate_dps", &pi3hat::Attitude::rate_dps)
+      .def_readwrite("accel_mps2", &pi3hat::Attitude::accel_mps2)
+      ;
+
+  py::class_<pi3hat::Quaternion>(m, "Quaternion")
+      .def(py::init<>())
+      .def_readwrite("w", &pi3hat::Quaternion::w)
+      .def_readwrite("x", &pi3hat::Quaternion::x)
+      .def_readwrite("y", &pi3hat::Quaternion::y)
+      .def_readwrite("z", &pi3hat::Quaternion::z)
+      ;
+
+  py::class_<pi3hat::Point3D>(m, "Point3D")
+      .def(py::init<>())
+      .def_readwrite("x", &pi3hat::Point3D::x)
+      .def_readwrite("y", &pi3hat::Point3D::y)
+      .def_readwrite("z", &pi3hat::Point3D::z)
       ;
 
   py::class_<Pi3HatRouter>(m, "Pi3HatRouter")

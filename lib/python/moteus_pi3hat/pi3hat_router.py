@@ -122,3 +122,11 @@ class Pi3HatRouter:
         output = await self._cycle(input)
 
         return None if not output.rx_can else output.rx_can[0]
+
+    async def attitude(self):
+        input = _pi3hat_router.Input()
+        input.request_attitude = True
+
+        output = await self._cycle(input)
+
+        return output.attitude if output.attitude_present else None
