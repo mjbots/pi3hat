@@ -48,11 +48,48 @@ struct Input {
   bool request_attitude = false;
 };
 
+struct Euler {
+  double roll = 0.0;
+  double pitch = 0.0;
+  double yaw = 0.0;
+};
+
+struct Attitude : pi3hat::Attitude {
+  Euler euler_rad;
+};
+
 struct Output {
   std::vector<SingleCan> rx_can;
   bool attitude_present = false;
-  pi3hat::Attitude attitude;
+  Attitude attitude;
 };
+
+Euler ConvertEulerRad(const pi3hat::Quaternion& q) {
+  Euler result_rad;
+
+  const double sinp = 2.0 * (q.w * q.y - q.z * q.x);
+  if (sinp >= (1.0 - 1e-8)) {
+    result_rad.pitch = M_PI_2;
+    result_rad.roll = 0.0;
+    result_rad.yaw = -2.0 * std::atan2(q.x, q.w);
+  } else if (sinp <= (-1.0 + 1e-8)) {
+    result_rad.pitch = -M_PI_2;
+    result_rad.roll = 0.0;
+    result_rad.yaw = 2.0 * std::atan2(q.x, q.w);
+  } else {
+    result_rad.pitch = std::asin(sinp);
+
+    const double sinr_cosp = 2.0 * (q.w * q.x + q.y * q.z);
+    const double cosr_cosp = 1.0 - 2.0 * (q.x * q.x + q.y * q.y);
+    result_rad.roll = std::atan2(sinr_cosp, cosr_cosp);
+
+    const double siny_cosp = 2.0 * (q.w * q.z + q.x * q.y);
+    const double cosy_cosp = 1.0 - 2.0 * (q.y * q.y + q.z * q.z);
+    result_rad.yaw = std::atan2(siny_cosp, cosy_cosp);
+  }
+
+  return result_rad;
+}
 
 class Pi3HatRouter {
  public:
@@ -182,6 +219,7 @@ class Pi3HatRouter {
     result.attitude_present = output.attitude_present;
     if (result.attitude_present) {
       result.attitude = attitude_;
+      result.attitude.euler_rad = ConvertEulerRad(result.attitude.attitude);
     }
     return result;
   }
@@ -211,7 +249,7 @@ class Pi3HatRouter {
   uint32_t force_can_check_ = 0;
   bool request_attitude_ = false;
   std::vector<pi3hat::CanFrame> rx_can_;
-  pi3hat::Attitude attitude_;
+  Attitude attitude_;
 };
 }
 
@@ -254,11 +292,19 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("attitude", &Output::attitude)
       ;
 
-  py::class_<pi3hat::Attitude>(m, "Attitude")
+  py::class_<Euler>(m, "Euler")
       .def(py::init<>())
-      .def_readwrite("attitude", &pi3hat::Attitude::attitude)
-      .def_readwrite("rate_dps", &pi3hat::Attitude::rate_dps)
-      .def_readwrite("accel_mps2", &pi3hat::Attitude::accel_mps2)
+      .def_readwrite("roll", &Euler::roll)
+      .def_readwrite("pitch", &Euler::pitch)
+      .def_readwrite("yaw", &Euler::yaw)
+      ;
+
+  py::class_<Attitude>(m, "Attitude")
+      .def(py::init<>())
+      .def_readwrite("attitude", &Attitude::attitude)
+      .def_readwrite("rate_dps", &Attitude::rate_dps)
+      .def_readwrite("accel_mps2", &Attitude::accel_mps2)
+      .def_readwrite("euler_rad", &Attitude::euler_rad)
       ;
 
   py::class_<pi3hat::Quaternion>(m, "Quaternion")

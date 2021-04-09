@@ -124,6 +124,15 @@ class Pi3HatRouter:
         return None if not output.rx_can else output.rx_can[0]
 
     async def attitude(self):
+        '''Return the current IMU value
+
+        The return object will have the following fields:
+         - attitude: a Quaternion with w, x, y, z fields
+         - rate_dps: a Point3D with x, y, z fields
+         - accel_mps2: a Point3D with x, y, z fields
+         - euler_rad: a Euler with roll, pitch, yaw fields (redundant with attitude)
+        '''
+
         input = _pi3hat_router.Input()
         input.request_attitude = True
 
