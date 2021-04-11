@@ -225,8 +225,10 @@ void Nrf24l01::ReadPacket() {
 
   rx_packet_.size = payload_width;
   if (payload_width) {
-    nrf_.Command(0x61, {}, {&rx_packet_.data[0],
-            static_cast<ssize_t>(payload_width)});
+    nrf_.Command(0x61, {},
+                 {&rx_packet_.data[0],
+                  std::min<ssize_t>(static_cast<ssize_t>(payload_width),
+                                    sizeof(rx_packet_.data))});
   }
 }
 
