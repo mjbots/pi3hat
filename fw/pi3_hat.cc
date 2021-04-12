@@ -25,7 +25,6 @@
 #include "fw/device_info.h"
 #include "fw/fdcan.h"
 #include "fw/imu.h"
-#include "fw/microphone.h"
 #include "fw/millisecond_timer.h"
 #include "fw/register_spi_slave.h"
 #include "fw/rf_transceiver.h"
@@ -136,8 +135,6 @@ class CanApplication {
 ///
 /// C. A spread spectrum RF transceiver as per the RfTransceiver
 /// class.
-///
-/// D. A microphone.
 class AuxApplication {
  public:
   AuxApplication(mjlib::micro::Pool* pool, fw::MillisecondTimer* timer)
@@ -156,7 +153,6 @@ class AuxApplication {
     spi_.PollMillisecond();
     imu_.PollMillisecond();
     rf_.PollMillisecond();
-    microphone_.PollMillisecond();
   }
 
  private:
@@ -169,9 +165,6 @@ class AuxApplication {
     }
     if (RfTransceiver::IsSpiAddress(address)) {
       return rf_.ISR_Start(address);
-    }
-    if (Microphone::IsSpiAddress(address)) {
-      return microphone_.ISR_Start(address);
     }
     if (CpuMeter::IsSpiAddress(address)) {
       return cpu_meter_.ISR_Start(address);
@@ -204,9 +197,6 @@ class AuxApplication {
     if (RfTransceiver::IsSpiAddress(address)) {
       rf_.ISR_End(address, bytes);
     }
-    if (Microphone::IsSpiAddress(address)) {
-      microphone_.ISR_End(address, bytes);
-    }
     if (DeviceInfo::IsSpiAddress(address)) {
       device_info_.ISR_End(address, bytes);
     }
@@ -238,7 +228,6 @@ class AuxApplication {
 
   Imu imu_{pool_, timer_, PB_1};
   RfTransceiver rf_{timer_, PB_2};
-  Microphone microphone_{timer_, PB_10};
   DeviceInfo device_info_;
 
   RegisterSPISlave spi_{
