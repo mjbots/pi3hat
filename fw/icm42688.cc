@@ -70,7 +70,6 @@ class SpiMaster {
   };
   SpiMaster(SPI* spi, PinName cs, MillisecondTimer* timer, const Options& options)
       : spi_(spi), cs_(cs, 1), timer_(timer), options_(options) {
-    // TODO: Set SPI frequency.
   }
 
   void Write(uint8_t address, std::string_view data) {
@@ -95,8 +94,6 @@ class SpiMaster {
     timer_->wait_us(1);
 
     cs_.write(1);
-
-    // TODO: See if there is any need to delay here.
   }
 
   void Read(uint8_t address, mjlib::base::string_span data) {
@@ -163,7 +160,6 @@ class Icm42688::Impl {
         spi_{options.mosi, options.miso, options.sck},
         master_{&spi_, options.cs, timer, {}},
         irq_{options.irq, PullUp} {
-    // TODO: Try a higher frequency.
     spi_.frequency(5000000);
 
     // Lets give the part some time after power-on to get ready.  We
@@ -222,11 +218,8 @@ class Icm42688::Impl {
 
     master_.WriteScalar<uint8_t>(ICM_ACCEL_CONFIG0, (accel_range << 5) | odr);
 
-    // TODO: Program gyro anti-alias filter?
-
-    // TODO: Program accel anti-alias filter?
-
-    // TODO: Program the gyro notch filters?
+    // Maybe eventually we could use the gyro/accel anti-alias filters
+    // or the gyro notch filter?
 
     setup_data_.rate_hz = [&]() {
       if (odr == 11) { return 13; }
