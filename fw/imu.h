@@ -142,11 +142,20 @@ class Imu {
   }
 
   void Poll() {
-    const auto now = timer_->read_us();
-    if (now - next_imu_sample_ < 0x80000000) {
-      // We have gone past.
-      next_imu_sample_ += us_step_;
-      DoImu();
+    if (icm42688_) {
+      // For the ICM-42688-P, we rely on its interrupt to tell us that
+      // we should read data.
+      if (icm42688_->data_ready()) {
+        DoImu();
+      }
+    } else {
+      // Otherwise we do it at a fixed interval.
+      const auto now = timer_->read_us();
+      if (now - next_imu_sample_ < 0x80000000) {
+        // We have gone past.
+        next_imu_sample_ += us_step_;
+        DoImu();
+      }
     }
   }
 

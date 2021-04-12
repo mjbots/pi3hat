@@ -63,6 +63,7 @@ mbed_binary(
         "rf_transceiver.h",
         "slot_rf_protocol.h",
         "slot_rf_protocol.cc",
+        "stm32_pwm_out.h",
         "ukf_filter.h",
     ],
     features = [

@@ -53,6 +53,9 @@ class Icm42688 {
   using Data = ImuData;
   Data read_data();
 
+  // This polls the interrupt digital input, so is quick.
+  bool data_ready();
+
  private:
   class Impl;
   mjlib::micro::StaticPtr<Impl, 1024> impl_;

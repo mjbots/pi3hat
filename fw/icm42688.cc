@@ -23,9 +23,12 @@
 #include "mjlib/base/assert.h"
 #include "mjlib/base/string_span.h"
 
+#include "fw/stm32_pwm_out.h"
+
 namespace fw {
 
 namespace {
+const uint8_t ICM_INT_CONFIG = 0x14;
 const uint8_t ICM_ACCEL_DATA_X1 = 0x1f;
 const uint8_t ICM_ACCEL_DATA_X0 = 0x20;
 const uint8_t ICM_ACCEL_DATA_Y1 = 0x21;
@@ -38,11 +41,20 @@ const uint8_t ICM_GYRO_DATA_Y1 = 0x27;
 const uint8_t ICM_GYRO_DATA_Y0 = 0x28;
 const uint8_t ICM_GYRO_DATA_Z1 = 0x29;
 const uint8_t ICM_GYRO_DATA_Z0 = 0x2a;
+const uint8_t ICM_INTF_CONFIG0 = 0x4c;
+const uint8_t ICM_INTF_CONFIG1 = 0x4d;
 const uint8_t ICM_PWR_MGMT0 = 0x4e;
 const uint8_t ICM_GYRO_CONFIG0 = 0x4f;
 const uint8_t ICM_ACCEL_CONFIG0 = 0x50;
+const uint8_t ICM_INT_CONFIG0 = 0x63;
+const uint8_t ICM_INT_SOURCE0 = 0x65;
 const uint8_t ICM_REG_BANK_SEL = 0x76;
 const uint8_t ICM_WHOAMI = 0x75;
+
+// Bank 1
+
+const uint8_t ICM_INTF_CONFIG5 = 0x7b;
+
 }
 
 namespace {
@@ -141,6 +153,13 @@ class Icm42688::Impl {
   Impl(MillisecondTimer* timer, const Options& options)
       : timer_(timer),
         options_(options),
+        clkin_(options.clkin, [&]() {
+          Stm32PwmOut::Options pwm_opt;
+          pwm_opt.prescaler = 1;
+          pwm_opt.period = 2 * HAL_RCC_GetPCLK1Freq() / 32000;
+          pwm_opt.on_counts = pwm_opt.period / 2;
+          return pwm_opt;
+        }()),
         spi_{options.mosi, options.miso, options.sck},
         master_{&spi_, options.cs, timer, {}},
         irq_{options.irq, PullUp} {
@@ -153,8 +172,12 @@ class Icm42688::Impl {
     // hasn't wrapped, but if it has, we'll pay a bit of a penalty.
     wait_until_us(timer, 1000);
 
-    // Start out in bank 0.
+    // Start out in bank 0 and turn off the sensors.
     master_.WriteScalar<uint8_t>(ICM_REG_BANK_SEL, 0);
+    master_.WriteScalar<uint8_t>(ICM_PWR_MGMT0, 0x00);
+
+    // Give things a bit to turn off.
+    timer_->wait_us(20);
 
     setup_data_.whoami = master_.ReadScalar<uint8_t>(ICM_WHOAMI);
     if (setup_data_.whoami != 0x47) {
@@ -245,6 +268,39 @@ class Icm42688::Impl {
     accel_scale_ = kG * static_cast<float>(setup_data_.accel_max_g) / 32767.0f;
     gyro_scale_ = static_cast<float>(setup_data_.gyro_max_dps) / 32767.0f;
 
+    // Configure our interrupts.
+
+    // UI_DRDY_INT_CLEAR = 2 (clear on sensor register read)
+    master_.WriteScalar<uint8_t>(ICM_INT_CONFIG0, 0x20);
+
+    // UI_DRDY_INT1_EN = 1 (data ready routed to INT1)
+    master_.WriteScalar<uint8_t>(ICM_INT_SOURCE0, 0x08);
+
+    // INT1_MODE = 1 (latched mode)
+    // INT1_DRIVE_CIRCUIT = 0 (open drain)
+    // INT1_POLARITY = 0 (active low)
+    master_.WriteScalar<uint8_t>(ICM_INT_CONFIG, 0x04);
+
+
+    // Configure our clocks.
+
+    // ACCEL_LP_CLK_SEL = 1
+    // RTC_MODE = 1
+    // CLKSEL = 1 (select PLL when available, else RC)
+    master_.WriteScalar<uint8_t>(ICM_INTF_CONFIG1, 0x95);
+
+    ////////////////////
+    // Move to bank 1.
+    master_.WriteScalar<uint8_t>(ICM_REG_BANK_SEL, 1);
+
+    // PIN9_FUNCTION = 2 (CLKIN)
+    master_.WriteScalar<uint8_t>(ICM_INTF_CONFIG5, 0x04);
+
+    ////////////////////
+    // And finally back to bank 0 to turn things on.
+    master_.WriteScalar<uint8_t>(ICM_REG_BANK_SEL, 0);
+
+
     // Place both gyro and accel in low noise mode.
     master_.WriteScalar<uint8_t>(ICM_PWR_MGMT0, 0x0f);
 
@@ -285,6 +341,7 @@ class Icm42688::Impl {
 
   MillisecondTimer* const timer_;
   const Options options_;
+  Stm32PwmOut clkin_;
   SPI spi_;
   SpiMaster master_;
   DigitalIn irq_;
@@ -307,6 +364,10 @@ const Icm42688::SetupData& Icm42688::setup_data() const {
 
 Icm42688::Data Icm42688::read_data() {
   return impl_->read_data();
+}
+
+bool Icm42688::data_ready() {
+  return impl_->irq_.read() == 0;
 }
 
 }
