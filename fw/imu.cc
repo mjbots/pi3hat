@@ -21,11 +21,18 @@ void Imu::DoImu() {
 
   if (reset_estimator_.load()) {
     reset_estimator_.store(false);
-    ConfigureBmi088();
+    if (bmi088_) {
+      ConfigureBmi088();
+    } else {
+      ConfigureIcm42688();
+    }
     attitude_reference_.emplace();
   }
 
-  const auto unrotated_data = imu_->read_data();
+
+  const auto unrotated_data =
+      (!!bmi088_) ? bmi088_->read_data() : icm42688_->read_data();
+
   auto data = unrotated_data;
   data.rate_dps = mounting_.Rotate(data.rate_dps);
   data.accel_mps2 = mounting_.Rotate(data.accel_mps2);

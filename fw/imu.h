@@ -22,6 +22,7 @@
 
 #include "fw/attitude_reference.h"
 #include "fw/bmi088.h"
+#include "fw/icm42688.h"
 #include "fw/millisecond_timer.h"
 #include "fw/quaternion.h"
 #include "fw/register_spi_slave.h"
@@ -40,6 +41,8 @@ namespace fw {
 ///     bytes: The contents of the 'Configuration' structure
 ///  36: Write configuration
 ///     bytes: The contents of the 'Configuration' structure
+///  37: Error status
+///     byte 0-3: A bitmask of error flags
 class Imu {
  public:
   struct ImuRegister {
@@ -52,7 +55,7 @@ class Imu {
     float az_mps2 = 0;
 
     ImuRegister() {}
-    ImuRegister(const Bmi088::Data& data) {
+    ImuRegister(const ImuData& data) {
       present = 1;
       gx_dps = data.rate_dps.x();
       gy_dps = data.rate_dps.y();
@@ -119,13 +122,23 @@ class Imu {
       : pool_(pool),
         timer_(timer),
         irq_(irq_name, 0) {
+    // Detect if we have a BMI088/BMI090L or the ICM-42688-P
     ConfigureBmi088();
+    if (bmi088_->setup_data().error) {
+      bmi088_.reset();
+      ConfigureIcm42688();
+      if (icm42688_->setup_data().error) {
+        // No IMU found!
+        error_flags_ |= 1;
+        return;
+      }
+    }
     attitude_reference_.emplace();
 
     // We do this here after everything has been initialized.
     next_imu_sample_ = timer_->read_us();
 
-    setup_data_ = imu_->setup_data();
+    setup_data_ = bmi088_->setup_data();
   }
 
   void Poll() {
@@ -144,7 +157,7 @@ class Imu {
   }
 
   static bool IsSpiAddress(uint16_t address) {
-    return address >= 32 && address <= 36;
+    return address >= 32 && address <= 37;
   }
 
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
@@ -203,6 +216,14 @@ class Imu {
             sizeof(spi_config_shadow_)),
       };
     }
+    if (address == 37) {
+      return {
+        {},
+        mjlib::base::string_span(
+            reinterpret_cast<char*>(&error_flags_),
+            sizeof(error_flags_)),
+      };
+    }
     return {};
   }
 
@@ -221,7 +242,7 @@ class Imu {
 
  private:
   void ConfigureBmi088() {
-    imu_.emplace(timer_, [&]() {
+    bmi088_.emplace(timer_, [&]() {
         Bmi088::Options options;
         options.mosi = PB_15;
         options.miso = PB_14;
@@ -237,9 +258,29 @@ class Imu {
 
         return options;
       }());
-    period_s_ = 1.0f / static_cast<float>(imu_->setup_data().rate_hz);
-    us_step_ = 1000000 / imu_->setup_data().rate_hz;
+    period_s_ = 1.0f / static_cast<float>(bmi088_->setup_data().rate_hz);
+    us_step_ = 1000000 / bmi088_->setup_data().rate_hz;
   };
+
+  void ConfigureIcm42688() {
+    icm42688_.emplace(timer_, [&]() {
+        Icm42688::Options options;
+        options.mosi = PB_15;
+        options.miso = PB_14;
+        options.sck = PB_13;
+        options.cs = PB_11;
+        options.clkin = PB_10;
+        options.irq = PA_8;
+
+        options.rate_hz = spi_config_.rate_hz;
+        options.gyro_max_dps = 1000;
+        options.accel_max_g = 8;
+
+        return options;
+      }());
+    period_s_ = 1.0f / static_cast<float>(icm42688_->setup_data().rate_hz);
+    us_step_ = 1000000 / icm42688_->setup_data().rate_hz;
+  }
 
   void ISR_GetImuData() {
     // If we have something, release it.
@@ -260,7 +301,8 @@ class Imu {
   MillisecondTimer* const timer_;
   DigitalOut irq_;
 
-  std::optional<Bmi088> imu_;
+  std::optional<Bmi088> bmi088_;
+  std::optional<Icm42688> icm42688_;
   float period_s_ = 0.0;
   uint32_t us_step_ = 0;
   uint32_t next_imu_sample_ = 0;
@@ -268,6 +310,7 @@ class Imu {
   Configuration spi_config_{0, 90, -90, 400};
   Configuration spi_config_shadow_;
   Quaternion mounting_ = spi_config_.quaternion();
+  uint32_t error_flags_ = 0;
 
   struct ImuData {
     ImuRegister imu;

@@ -144,17 +144,25 @@ class Bmi088::Impl {
     // penalty.
     wait_until_us(timer, 1000);
 
-    // First do the accelerometer.
-    ConfigureAccelerometer();
+    if (!setup_data_.error) {
+      // First do the accelerometer.
+      ConfigureAccelerometer();
+    }
 
-    // Then the gyro.
-    ConfigureGyro();
+    if (!setup_data_.error) {
+      // Then the gyro.
+      ConfigureGyro();
+    }
   }
 
   Data read_data() {
-    last_read_ = timer_->read_us();
-
     Data result;
+
+    if (setup_data_.error) {
+      return result;
+    }
+
+    last_read_ = timer_->read_us();
 
     uint8_t buf[6] = {};
     acc_.Read(0x80 | 0x12,  // ACC_X_LSB
@@ -188,9 +196,12 @@ class Bmi088::Impl {
     acc_.ReadScalar<uint8_t>(0x80);
 
     // Verify we have an actual accelerometer present.
-    setup_data_.acc_id = acc_.ReadScalar<uint8_t>(0x80);
-    MJ_ASSERT(setup_data_.acc_id == 0x1e ||  // BMI088
-              setup_data_.acc_id == 0x1a);   // BMI090L
+    setup_data_.whoami = acc_.ReadScalar<uint8_t>(0x80);
+    if (setup_data_.whoami != 0x1e &&  // BMI088
+        setup_data_.whoami != 0x1a) {   // BMI090L
+      setup_data_.error = 1;
+      return;
+    }
 
     // Power on the sensor.
     acc_.WriteScalar<uint8_t>(0x7d, 0x04);  // ACC_PWR_CTRL - o n
@@ -236,7 +247,10 @@ class Bmi088::Impl {
 
   void ConfigureGyro() {
     setup_data_.gyro_id = gyro_.ReadScalar<uint8_t>(0x80);
-    MJ_ASSERT(setup_data_.gyro_id == 0x0f);
+    if (setup_data_.gyro_id != 0x0f) {
+      setup_data_.error = 2;
+      return;
+    }
 
     gyro_.VerifyScalar<uint8_t>(0x15, 0x80);  // GYRO_INT_CTRL - enable interrupts
     gyro_.VerifyScalar<uint8_t>(0x16, 0x00);  // push pull active high

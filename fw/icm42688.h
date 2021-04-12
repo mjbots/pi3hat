@@ -1,4 +1,4 @@
-// Copyright 2020 Josh Pieper, jjp@pobox.com.
+// Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,36 +25,32 @@
 
 namespace fw {
 
-// Operate the BMI088 IMU via SPI.
-class Bmi088 {
+// Operate the ICM-42688-P IMU via SPI.
+class Icm42688 {
  public:
   struct Options {
     PinName mosi = NC;
     PinName miso = NC;
     PinName sck = NC;
-    PinName acc_cs = NC;
-    PinName gyro_cs = NC;
-    PinName acc_int = NC;
-    PinName gyro_int = NC;
+    PinName cs = NC;
+    PinName irq = NC;
+    PinName clkin = NC;
 
     uint16_t rate_hz = 800;
     uint16_t gyro_max_dps = 1000;
-    uint16_t accel_max_g = 6;
+    uint16_t accel_max_g = 8;
 
     Options() {}
   };
 
-  Bmi088(MillisecondTimer*, const Options& = Options());
-  ~Bmi088();
+  Icm42688(MillisecondTimer*, const Options& = Options());
+  ~Icm42688();
 
-  struct SetupData : ImuSetupData {
-    uint8_t gyro_id = 0;
-  };
+  struct SetupData : ImuSetupData {};
 
   const SetupData& setup_data() const;
 
   using Data = ImuData;
-
   Data read_data();
 
  private:
