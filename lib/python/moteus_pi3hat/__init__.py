@@ -1,4 +1,4 @@
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
 """Classes and functions for interoperating with the moteus brushless
 controller."""
 
-from moteus_pi3hat.pi3hat_router import Pi3HatRouter
+from moteus_pi3hat.pi3hat_router import (
+    Pi3HatRouter, CanConfiguration, CanRateOverride)
 
 class Pi3HatFactory():
     PRIORITY = 5
@@ -53,4 +54,6 @@ class Pi3HatFactory():
 __all__ = [
     'Pi3HatRouter',
     'Pi3HatFactory',
+    'CanConfiguration',
+    'CanRateOverride',
 ]

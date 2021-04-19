@@ -1,4 +1,4 @@
-// Copyright 2020 Josh Pieper, jjp@pobox.com.
+// Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 #include <string>
 #include <thread>
 
+#include <pybind11/numpy.h>
 #include <pybind11/pybind11.h>
 #include <pybind11/functional.h>
 #include <pybind11/stl.h>
@@ -48,11 +49,7 @@ struct Input {
   bool request_attitude = false;
 };
 
-struct Euler {
-  double roll = 0.0;
-  double pitch = 0.0;
-  double yaw = 0.0;
-};
+using Euler = pi3hat::Euler;
 
 struct Attitude : pi3hat::Attitude {
   Euler euler_rad;
@@ -255,11 +252,44 @@ class Pi3HatRouter {
 
 PYBIND11_MODULE(_pi3hat_router, m) {
   m.doc() = "implementation of pi3hat specific moteus functionality";
+  using PH = pi3hat::Pi3Hat;
 
-  py::class_<Pi3HatRouter::Options>(m, "Pi3HatRouterOptions")
+  py::class_<PH::CanRateOverride>(m, "CanRateOverride")
+      .def(py::init<>())
+      .def_readwrite("prescaler", &PH::CanRateOverride::prescaler)
+      .def_readwrite("sync_jump_width",
+                     &PH::CanRateOverride::sync_jump_width)
+      .def_readwrite("time_seg1", &PH::CanRateOverride::time_seg1)
+      .def_readwrite("time_seg2", &PH::CanRateOverride::time_seg2)
+      ;
+
+  py::class_<PH::CanConfiguration>(m, "CanConfiguration")
+      .def(py::init<>())
+      .def_readwrite("slow_bitrate", &PH::CanConfiguration::slow_bitrate)
+      .def_readwrite("fast_bitrate", &PH::CanConfiguration::fast_bitrate)
+      .def_readwrite("fdcan_frame", &PH::CanConfiguration::fdcan_frame)
+      .def_readwrite("bitrate_switch", &PH::CanConfiguration::bitrate_switch)
+      .def_readwrite("automatic_retransmission",
+                     &PH::CanConfiguration::automatic_retransmission)
+      .def_readwrite("restricted_mode",
+                     &PH::CanConfiguration::restricted_mode)
+      .def_readwrite("bus_monitor",
+                     &PH::CanConfiguration::bus_monitor)
+      .def_readwrite("std_rate", &PH::CanConfiguration::std_rate)
+      .def_readwrite("fd_rate", &PH::CanConfiguration::std_rate)
+      ;
+
+  py::class_<Pi3HatRouter::Options>(m, "Options")
       .def(py::init<>())
       .def_readwrite("cpu", &Pi3HatRouter::Options::cpu)
       .def_readwrite("spi_speed_hz", &Pi3HatRouter::Options::spi_speed_hz)
+      .def_readwrite("mounting_deg", &Pi3HatRouter::Options::mounting_deg)
+      .def_readwrite("attitude_rate_hz", &Pi3HatRouter::Options::attitude_rate_hz)
+      // We rely on the fact that std::array has the same in-memory
+      // layout as a C style array.
+      .def_readwrite("can", reinterpret_cast<
+                     std::array<PH::CanConfiguration, 5>
+                     Pi3HatRouter::Options::*>(&Pi3HatRouter::Options::can))
       ;
 
   py::class_<SingleCan>(m, "SingleCan")

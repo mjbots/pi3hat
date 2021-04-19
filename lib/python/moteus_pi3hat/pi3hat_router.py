@@ -1,4 +1,4 @@
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,6 +27,10 @@ def _set_future(future, output):
         future.set_result(output)
 
 
+CanRateOverride = _pi3hat_router.CanRateOverride
+CanConfiguration = _pi3hat_router.CanConfiguration
+
+
 class Pi3HatRouter:
     """Permits communication using the pi3hat CAN interfaces.  This
     requires a dedicated Raspberry PI CPU to operate the hardware.  It
@@ -41,6 +45,9 @@ class Pi3HatRouter:
     def __init__(self,
                  cpu = 3,
                  spi_speed_hz = 10000000,
+                 mounting_deg = None,
+                 attitude_rate_hz = None,
+                 can = None,
                  servo_bus_map = None):
         """Args:
 
@@ -51,9 +58,24 @@ class Pi3HatRouter:
 
         self.servo_bus_map = servo_bus_map or {}
 
-        options = _pi3hat_router.Pi3HatRouterOptions()
+        options = _pi3hat_router.Options()
         options.cpu = cpu
         options.spi_speed_hz = spi_speed_hz
+
+        if mounting_deg:
+            options.mounting_deg.pitch = mounting_deg['pitch']
+            options.mounting_deg.roll = mounting_deg['roll']
+            options.mounting_deg.yaw = mounting_deg['yaw']
+
+        if attitude_rate_hz:
+            options.attitude_rate_hz = attitude_rate_hz
+
+        if can:
+            # pybind11 arrays are returned by copy, thus element
+            # modifications are not possible.  Thus we just create a
+            # full array to assign.
+            options.can = [can[i] if i in can else CanConfiguration()
+                           for i in range(1, 6)]
 
         self._impl = _pi3hat_router.Pi3HatRouter(options)
 

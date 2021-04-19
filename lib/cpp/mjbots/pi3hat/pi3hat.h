@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Josh Pieper, jjp@pobox.com.
+// Copyright 2019-2021 Josh Pieper, jjp@pobox.com.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,13 +177,7 @@ class Pi3Hat {
     // If true, nothing is guaranteed to work but ReadSpi.
     bool raw_spi_only = false;
 
-    Configuration() {
-      // By default the final CAN bus should be 125kbps standard frame.
-      can[4].slow_bitrate = 125000;
-      can[4].fast_bitrate = 125000;
-      can[4].fdcan_frame = false;
-      can[4].bitrate_switch = false;
-    }
+    Configuration() {}
   };
 
   /// This may throw an instance of `Error` if construction fails for
