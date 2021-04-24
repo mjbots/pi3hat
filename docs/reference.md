@@ -87,7 +87,7 @@ So, an example where servo ID 1 and 6 are present on port JC1 (bus 1),
 and 3 and 7 are present on port JC2 (bus 2), would look like:
 
 ```
-python3 -m moteus_gui.tview --pi3hat-cfg '1=1,6;2=3,7' -t 1,3,6,7
+sudo python3 -m moteus_gui.tview --pi3hat-cfg '1=1,6;2=3,7' -t 1,3,6,7
 ```
 
 The same `--pi3hat-cfg` works for `moteus_tool` as for `tview`.
