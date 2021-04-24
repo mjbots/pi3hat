@@ -62,7 +62,35 @@ the reported axes are as follows:
 * +y - towards the USB ports on the rpi
 * +z - up from the rpi towards the pi3hat
 
-# Usage  with client-side libraries #
+# Usage with client-side tools #
+
+## tview / moteus_tool ##
+
+First, install the python library:
+
+```
+sudo pip3 install moteus_pi3hat
+```
+
+Then both `moteus_tool` and `tview` will be aware of the pi3hat, and
+will use its port JC1 by default if no fdcanusb is present.
+
+To use other ports, you need to tell the tool which IDs are present on
+which port using the `--pi3hat-cfg` command line option.  It has the
+following syntax:
+
+```
+--pi3hat-cfg 'BUS1=ID1,ID2,ID3;BUS2=ID4,ID5,ID6
+```
+
+So, an example where servo ID 1 and 6 are present on port JC1 (bus 1),
+and 3 and 7 are present on port JC2 (bus 2), would look like:
+
+```
+python3 -m moteus_gui.tview --pi3hat-cfg '1=1,6;2=3,7' -t 1,3,6,7
+```
+
+The same `--pi3hat-cfg` works for `moteus_tool` as for `tview`.
 
 ## Python ##
 
