@@ -276,7 +276,7 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("bus_monitor",
                      &PH::CanConfiguration::bus_monitor)
       .def_readwrite("std_rate", &PH::CanConfiguration::std_rate)
-      .def_readwrite("fd_rate", &PH::CanConfiguration::std_rate)
+      .def_readwrite("fd_rate", &PH::CanConfiguration::fd_rate)
       ;
 
   py::class_<Pi3HatRouter::Options>(m, "Options")
