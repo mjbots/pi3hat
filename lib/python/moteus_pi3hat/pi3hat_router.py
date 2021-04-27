@@ -49,11 +49,14 @@ class Pi3HatRouter:
                  attitude_rate_hz = None,
                  can = None,
                  servo_bus_map = None):
-        """Args:
+        """Initialize.
 
-          cpu: The device interface will run on this CPU
-          spi_speed_hz: How fast to run the SPI bus
-          servo_bus_map: A map of buses to servo ids: {bus: [list, of, ids, ...})
+        :param cpu: The device interface will run on this CPU
+
+        :param spi_speed_hz: How fast to run the SPI bus
+
+        :param servo_bus_map: A map of buses to servo ids: {bus:
+          [list, of, ids, ...})
         """
 
         self.servo_bus_map = servo_bus_map or {}
@@ -87,9 +90,14 @@ class Pi3HatRouter:
 
     def _make_single_can(self, command):
         result = _pi3hat_router.SingleCan()
-        result.arbitration_id = command.destination | (0x8000 if command.reply_required else 0x0000)
+
+        if getattr(command, 'raw', False):
+            result.arbitration_id = command.arbitration_id
+            result.bus = command.bus
+        else:
+            result.bus = self._find_bus(command.destination)
+            result.arbitration_id = command.destination | (0x8000 if command.reply_required else 0x0000)
         result.data = command.data
-        result.bus = self._find_bus(command.destination)
         result.expect_reply = command.reply_required
         return result
 
@@ -111,23 +119,46 @@ class Pi3HatRouter:
 
         return result
 
-    async def cycle(self, commands):
+    async def cycle(self, commands, force_can_check=0, max_rx=-1):
+        '''Operate one CAN cycle of the pi3hat
+
+        :param commands: A list of moteus.Command structures
+
+        :param force_can_check: A bitmask list CAN channels which
+          should be listened to, even if no commands on that bus were
+          marked as expecting a reply.
+
+        :param max_rx: The maximum number of receive packets to
+          return, the default -1, means return as many as possible.
+        '''
         input = _pi3hat_router.Input()
 
         input.tx_can = [self._make_single_can(command) for command in commands]
+        input.force_can_check = force_can_check
+        input.max_rx = max_rx
 
         output = await self._cycle(input)
 
         result = []
         for single_rx in output.rx_can:
+            # For commands that were raw, we can't associate them with
+            # a response.  They will just get returned as a python-can
+            # style class instead of a parsed structure.
             maybe_command = [x for x in commands if
-                             x.destination == (single_rx.arbitration_id) >> 8]
+                             (not getattr(x, 'raw', False) and
+                              x.destination == (single_rx.arbitration_id) >> 8)
+                             ]
             if maybe_command:
                 command = maybe_command[0]
                 result.append(command.parse(single_rx))
+            else:
+                # We didn't associate this with a command, so just
+                # return it raw.
+                result.append(single_rx)
         return result
 
     async def write(self, command):
+        '''Write a single message.'''
         input = _pi3hat_router.Input()
 
         input.tx_can = [self._make_single_can(command)]
@@ -137,6 +168,7 @@ class Pi3HatRouter:
         return []
 
     async def read(self):
+        '''Read at most one message from any BUS.'''
         input = _pi3hat_router.Input()
         input.force_can_check = 0x3f
         input.max_rx = 1

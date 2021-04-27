@@ -52,7 +52,7 @@ setuptools.setup(
     },
     python_requires = '>=3.7, <4',
     install_requires = [
-        'moteus>=0.3.0',
+        'moteus>=0.3.22',
     ],
     include_package_data = True,
     package_data = {
