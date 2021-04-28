@@ -119,7 +119,12 @@ class Pi3HatRouter:
 
         return result
 
-    async def cycle(self, commands, force_can_check=0, max_rx=-1):
+    async def cycle(self, commands,
+                    force_can_check=0,
+                    max_rx=-1,
+                    timeout_ns=1000000,
+                    min_tx_wait_ns=1000000,
+                    rx_extra_wait_ns=40000):
         '''Operate one CAN cycle of the pi3hat
 
         :param commands: A list of moteus.Command structures
@@ -130,12 +135,26 @@ class Pi3HatRouter:
 
         :param max_rx: The maximum number of receive packets to
           return, the default -1, means return as many as possible.
+
+        :param timeout_ns: If specified, require waiting at least this
+        long for replies.
+
+        :param min_tx_wait_ns: If specified, change the amount of time
+        waited after the last transmit on a given bus if replies are
+        expected.
+
+        :param rx_extra_wait_ns: After a successful receipt, wait this
+        much longer for more replies.
+
         '''
         input = _pi3hat_router.Input()
 
         input.tx_can = [self._make_single_can(command) for command in commands]
         input.force_can_check = force_can_check
         input.max_rx = max_rx
+        input.timeout_ns = timeout_ns
+        input.min_tx_wait_ns = min_tx_wait_ns
+        input.rx_extra_wait_ns = rx_extra_wait_ns
 
         output = await self._cycle(input)
 

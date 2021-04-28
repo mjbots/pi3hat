@@ -47,6 +47,9 @@ struct Input {
   uint32_t force_can_check = 0;
   int32_t max_rx = -1;
   bool request_attitude = false;
+  uint32_t timeout_ns = 0;
+  uint32_t min_tx_wait_ns = 200000;
+  uint32_t rx_extra_wait_ns = 40000;
 };
 
 using Euler = pi3hat::Euler;
@@ -144,6 +147,9 @@ class Pi3HatRouter {
     }
     force_can_check_ = input.force_can_check;
     request_attitude_ = input.request_attitude;
+    timeout_ns_ = input.timeout_ns;
+    min_tx_wait_ns_ = input.min_tx_wait_ns;
+    rx_extra_wait_ns_ = input.rx_extra_wait_ns;
     if (input.max_rx >= 0) {
       rx_can_.resize(input.max_rx);
     } else {
@@ -193,11 +199,14 @@ class Pi3HatRouter {
     input.rx_can = { rx_can_.data(), rx_can_.size() };
     input.force_can_check = force_can_check_;
     input.attitude = &attitude_;
+
     input.request_attitude = request_attitude_;
     // If we're requesting attitude, always wait for it.
     input.wait_for_attitude = request_attitude_;
-    input.timeout_ns = 1000000;
-    input.min_tx_wait_ns = 1000000;
+
+    input.timeout_ns = timeout_ns_;
+    input.min_tx_wait_ns = min_tx_wait_ns_;
+    input.rx_extra_wait_ns = rx_extra_wait_ns_;
 
     Output result;
 
@@ -245,6 +254,9 @@ class Pi3HatRouter {
   std::vector<pi3hat::CanFrame> tx_can_;
   uint32_t force_can_check_ = 0;
   bool request_attitude_ = false;
+  uint32_t timeout_ns_ = 0;
+  uint32_t min_tx_wait_ns_ = 0;
+  uint32_t rx_extra_wait_ns_ = 0;
   std::vector<pi3hat::CanFrame> rx_can_;
   Attitude attitude_;
 };
@@ -313,6 +325,9 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("force_can_check", &Input::force_can_check)
       .def_readwrite("max_rx", &Input::max_rx)
       .def_readwrite("request_attitude", &Input::request_attitude)
+      .def_readwrite("timeout_ns", &Input::timeout_ns)
+      .def_readwrite("min_tx_wait_ns", &Input::min_tx_wait_ns)
+      .def_readwrite("rx_extra_wait_ns", &Input::rx_extra_wait_ns)
       ;
 
   py::class_<Output>(m, "Output")
