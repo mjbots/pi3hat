@@ -81,9 +81,9 @@ namespace fw {
 ///    bit 2 bus_off
 ///    bit 1 warning status
 ///    bit 0 error passive
-///   byte 8 - CAN1 rx error count
-///   byte 9 - CAN1 tx error count
-///   byte 10 - CAN1 reset count
+///   byte 8 - CAN2 rx error count
+///   byte 9 - CAN2 tx error count
+///   byte 10 - CAN2 reset count
 ///   byte 11 - reserved
 /// 7: Read configuration 1
 ///   bytes: The contents of the 'Configuration' structure
