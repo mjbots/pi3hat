@@ -36,7 +36,8 @@ inline void ConfigureRealtime(int cpu) {
     params.sched_priority = 10;
     const int r = ::sched_setscheduler(0, SCHED_RR, &params);
     if (r < 0) {
-      throw std::runtime_error("Error setting realtime scheduler");
+      throw std::runtime_error(
+          "Error setting realtime scheduler, try running as root (use sudo)");
     }
   }
 }
