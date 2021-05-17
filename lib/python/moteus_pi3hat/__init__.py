@@ -16,7 +16,7 @@
 controller."""
 
 from moteus_pi3hat.pi3hat_router import (
-    Pi3HatRouter, CanConfiguration, CanRateOverride)
+    Pi3HatRouter, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
 
 class Pi3HatFactory():
     PRIORITY = 5
@@ -54,6 +54,7 @@ class Pi3HatFactory():
 __all__ = [
     'Pi3HatRouter',
     'Pi3HatFactory',
+    'CanAttitudeWrapper',
     'CanConfiguration',
     'CanRateOverride',
 ]

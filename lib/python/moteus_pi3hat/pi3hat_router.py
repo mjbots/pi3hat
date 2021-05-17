@@ -31,6 +31,22 @@ CanRateOverride = _pi3hat_router.CanRateOverride
 CanConfiguration = _pi3hat_router.CanConfiguration
 
 
+class CanAttitudeWrapper:
+    def __init__(self, attitude):
+
+        # Set some variables so we look a little bit like a CAN
+        # response.
+        self.id = -1
+        self.arbitration_id = -1
+        self.bus = -1
+        self.values = []
+
+        self.attitude = attitude.attitude
+        self.rate_dps = attitude.rate_dps
+        self.accel_mps2 = attitude.accel_mps2
+        self.euler_rad = attitude.euler_rad
+
+
 class Pi3HatRouter:
     """Permits communication using the pi3hat CAN interfaces.  This
     requires a dedicated Raspberry PI CPU to operate the hardware.  It
@@ -124,7 +140,8 @@ class Pi3HatRouter:
                     max_rx=-1,
                     timeout_ns=1000000,
                     min_tx_wait_ns=1000000,
-                    rx_extra_wait_ns=40000):
+                    rx_extra_wait_ns=40000,
+                    request_attitude=False):
         '''Operate one CAN cycle of the pi3hat
 
         :param commands: A list of moteus.Command structures
@@ -146,6 +163,10 @@ class Pi3HatRouter:
         :param rx_extra_wait_ns: After a successful receipt, wait this
         much longer for more replies.
 
+        :param request_attitude: If True, then the attitude will be
+        queried in the same cycle, and returned as a message with
+        id=-1/bus=-1 and the type moteus_pi3hat.CanAttitudeWrapper.
+
         '''
         input = _pi3hat_router.Input()
 
@@ -155,6 +176,7 @@ class Pi3HatRouter:
         input.timeout_ns = timeout_ns
         input.min_tx_wait_ns = min_tx_wait_ns
         input.rx_extra_wait_ns = rx_extra_wait_ns
+        input.request_attitude = request_attitude
 
         output = await self._cycle(input)
 
@@ -174,6 +196,12 @@ class Pi3HatRouter:
                 # We didn't associate this with a command, so just
                 # return it raw.
                 result.append(single_rx)
+
+        if output.attitude_present:
+            # For now, we return this as a "pseudo-can" message, with
+            # a negative ID.
+            result.append(CanAttitudeWrapper(output.attitude))
+
         return result
 
     async def write(self, command):
