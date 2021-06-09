@@ -933,7 +933,7 @@ class Pi3Hat::Impl {
           sizeof(desired_imu));
 
       // Give it some time to work.
-      ::usleep(100);
+      ::usleep(1000);
       DeviceImuConfiguration config_verify;
       primary_spi_.Read(
           0, 35,
