@@ -48,9 +48,11 @@ class Pi3HatMoteusInterface {
   }
 
   ~Pi3HatMoteusInterface() {
-    std::lock_guard<std::mutex> lock(mutex_);
-    done_ = true;
-    condition_.notify_one();
+    {
+      std::lock_guard<std::mutex> lock(mutex_);
+      done_ = true;
+      condition_.notify_one();
+    }
     thread_.join();
   }
 
