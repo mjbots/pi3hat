@@ -113,6 +113,8 @@ class Pi3HatRouter:
         else:
             result.bus = self._find_bus(command.destination)
             result.arbitration_id = command.destination | (0x8000 if command.reply_required else 0x0000)
+            if hasattr(command, 'can_prefix'):
+                result.arbitration_id = result.arbitration_id | (command.can_prefix << 16)
         result.data = command.data
         result.expect_reply = command.reply_required
         return result
@@ -185,10 +187,16 @@ class Pi3HatRouter:
             # For commands that were raw, we can't associate them with
             # a response.  They will just get returned as a python-can
             # style class instead of a parsed structure.
+            def match_id(cmd, aid):
+                if (hasattr(cmd, 'can_prefix') and
+                    ((aid >> 16) & 0x1fff) != cmd.can_prefix):
+                    return False
+                return cmd.destination == (aid >> 8) & 0xff
+
             maybe_command = [x for x in commands if
                              (not getattr(x, 'raw', False) and
-                              x.destination == (single_rx.arbitration_id) >> 8)
-                             ]
+                              match_id(x, single_rx.arbitration_id))
+                              ]
             if maybe_command:
                 command = maybe_command[0]
                 result.append(command.parse(single_rx))
