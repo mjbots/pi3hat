@@ -60,9 +60,9 @@ std::vector<std::string> Split(const std::string& input, const char* delim = ","
 }
 
 /// Euler angles are in roll, pitch, then yaw.
-///  +roll -> right side down
-///  +pitch -> forward edge up
-///  +yaw -> clockwise looking down
+///  +roll -> clockwise about X axis
+///  +pitch -> clockwise about Y axis
+///  +yaw -> clockwise about Z axis
 struct Euler {
   double roll = 0.0;
   double pitch = 0.0;
