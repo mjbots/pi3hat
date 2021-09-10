@@ -631,7 +631,13 @@ class AuxSpi {
       spi_->io = value;
     }
 
-    while ((spi_->stat & AUXSPI_STAT_TX_EMPTY) == 0);
+    while (true) {
+      const auto stat = spi_->stat;
+      if ((stat & AUXSPI_STAT_BUSY) == 0 &&
+          (stat & AUXSPI_STAT_TX_EMPTY) != 0) {
+        break;
+      }
+    }
 
     if (size == 0) { return; }
 
