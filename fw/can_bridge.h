@@ -357,12 +357,17 @@ class CanBridge {
       };
     }
     if (address == 2) {
+      address16_buf_[kBufferItems] = 0;
       for (size_t i = 0; i < kBufferItems; i++) {
         const auto item = can_rx_queue_[i];
         address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 5);
+        address16_buf_[kBufferItems] += address16_buf_[i];
       }
+      address16_buf_[kBufferItems] ^= 0xff;
+
       return {
-        address16_buf_,
+        std::string_view(reinterpret_cast<const char*>(&address16_buf_[0]),
+                         sizeof(address16_buf_)),
         {},
       };
     }
@@ -579,7 +584,7 @@ class CanBridge {
   uint8_t can1_reset_count_ = 0;
   uint8_t can2_reset_count_ = 0;
 
-  char address16_buf_[kBufferItems] = {};
+  uint8_t address16_buf_[kBufferItems + 1] = {};
   uint8_t status_buf_[12] = {};
 
   Configuration can_config1_;
