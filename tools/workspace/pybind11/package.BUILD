@@ -17,10 +17,19 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "pybind11",
+    name = "pybind11_37",
     hdrs = glob(["include/**"]),
     includes = ["include"],
     deps = [
         "@python37//:headers",
+    ],
+)
+
+cc_library(
+    name = "pybind11_39",
+    hdrs = glob(["include/**"]),
+    includes = ["include"],
+    deps = [
+        "@python39//:headers",
     ],
 )

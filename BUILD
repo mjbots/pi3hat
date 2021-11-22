@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -46,4 +46,18 @@ test_suite(
     tests = [
         "//lib/cpp/mjbots/moteus:test",
     ],
+)
+
+config_setting(
+    name = "python37",
+    values = {
+        "define": "PYTHON=3.7",
+    },
+)
+
+config_setting(
+    name = "python39",
+    values = {
+        "define": "PYTHON=3.9",
+    },
 )

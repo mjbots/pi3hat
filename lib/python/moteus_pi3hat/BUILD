@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,11 +22,14 @@ cc_binary(
         "_pi3hat_router.cc",
     ],
     deps = [
-        "@com_github_pybind_pybind11//:pybind11",
         "//lib/cpp/mjbots/pi3hat:libpi3hat",
         "//lib/cpp/mjbots/moteus:common",
         "@org_llvm_libcxx//:libcxx",
-    ],
+    ] + select({
+        "//conditions:default" : [],
+        "//:python37" : ["@com_github_pybind_pybind11//:pybind11_37"],
+        "//:python39" : ["@com_github_pybind_pybind11//:pybind11_39"],
+    }),
     linkshared = True,
 )
 

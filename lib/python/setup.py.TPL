@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -50,7 +50,9 @@ setuptools.setup(
     entry_points = {
         'moteus.transports': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
     },
-    python_requires = '>=3.7, <4',
+    python_requires = {"37" : ">=3.7, <3.8",
+                       "39" : ">=3.9, <3.10"
+                       }[{{PYTHON_SHORT_VERSION}}],
     install_requires = [
         'moteus>=0.3.22',
     ],
