@@ -193,6 +193,7 @@ class CanBridge {
     result.fast_bitrate = source.fast_bitrate;
     result.fdcan_frame = source.fdcan_frame;
     result.bitrate_switch = source.bitrate_switch;
+    result.automatic_retransmission = source.automatic_retransmission;
     result.restricted_mode = source.restricted_mode;
     result.bus_monitor = source.bus_monitor;
 
