@@ -1,2 +1,2 @@
-dir bazel-mjmech_pi3_hat
+dir bazel-pi3hat
 target extended-remote localhost:3333
