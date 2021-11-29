@@ -131,7 +131,7 @@ class CanBridge {
     int32_t fast_bitrate = 5000000;
     int8_t fdcan_frame = 1;
     int8_t bitrate_switch = 1;
-    int8_t automatic_retransmission = 0;
+    int8_t automatic_retransmission = 1;
     int8_t restricted_mode = 0;
     int8_t bus_monitor = 0;
 
@@ -170,6 +170,7 @@ class CanBridge {
     result.fast_bitrate = config.fast_bitrate;
     result.fdcan_frame = config.fdcan_frame;
     result.bitrate_switch = config.bitrate_switch;
+    result.automatic_retransmission = config.automatic_retransmission;
     result.restricted_mode = config.restricted_mode;
     result.bus_monitor = config.bus_monitor;
 
