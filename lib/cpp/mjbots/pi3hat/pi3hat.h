@@ -148,7 +148,7 @@ class Pi3Hat {
     int fast_bitrate = 5000000;
     bool fdcan_frame = true;
     bool bitrate_switch = true;
-    bool automatic_retransmission = false;
+    bool automatic_retransmission = true;
     bool restricted_mode = false;
     bool bus_monitor = false;
 
