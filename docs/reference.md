@@ -379,6 +379,24 @@ being sent every other frame.
   * byte 5-20: data
 
 
+# Flashing new firmware #
+
+To flash new firmware, openocd 0.11.0 or newer is required.  You can find binaries for many platforms at: https://xpack.github.io/openocd/releases/
+
+Flashing can be performed using the `flash.py` script, for instance to flash a newly compiled image:
+
+```
+./flash.py
+```
+
+Or to flash a specific .elf file
+
+```
+./flash.py 20211129-pi3hat-71c002e71ce804959e681dc7043f6fb5d8147cac.elf
+```
+
+Each of the three processors needs to be flashed with the same image.
+
 # Optional Raspberry Pi SD card image #
 
 The optional Raspberry Pi with SD card comes with a non-GUI image
