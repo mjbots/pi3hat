@@ -69,7 +69,7 @@ the reported axes are as follows:
 First, install the python library:
 
 ```
-sudo pip3 install moteus_pi3hat
+sudo pip3 install moteus-pi3hat
 ```
 
 Then both `moteus_tool` and `tview` will be aware of the pi3hat, and
@@ -97,7 +97,7 @@ The same `--pi3hat-cfg` works for `moteus_tool` as for `tview`.
 Simply perform:
 
 ```
-sudo pip3 install moteus_pi3hat
+sudo pip3 install moteus-pi3hat
 ```
 
 Then use the same API documented at:
