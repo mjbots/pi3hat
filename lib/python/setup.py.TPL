@@ -50,8 +50,8 @@ setuptools.setup(
     entry_points = {
         'moteus.transports': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
     },
-    python_requires = {"37" : ">=3.7, <3.8",
-                       "39" : ">=3.9, <3.10"
+    python_requires = {"37" : "==3.7.*",
+                       "39" : "==3.9.*"
                        }[{{PYTHON_SHORT_VERSION}}],
     install_requires = [
         'moteus>=0.3.22',
