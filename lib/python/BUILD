@@ -20,9 +20,13 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//tools/workspace:template_file.bzl", "template_file")
 
-VERSION="0.3.16"
+VERSION="0.3.17"
 
 PYTHON_SHORT_VERSIONS = ['37', '39']
+ABITAG = {
+    '37': 'abi3',
+    '39': 'cp39',
+}
 
 
 # It would be nice to pull this from the python source.  As it is, the
@@ -57,11 +61,11 @@ pkg_tar(
     srcs = ["setup_{pyshortver}.py".format(pyshortver=pyshortver),
             ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl".format(
-            ver=VERSION, pyshortver=pyshortver),
+        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl".format(
+            ver=VERSION, pyshortver=pyshortver, abitag=ABITAG[pyshortver]),
     ],
     cmd = (
-        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl)) && " +
+        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
@@ -72,10 +76,18 @@ pkg_tar(
         "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
         "        1>/dev/null &&" +
-        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl " +
+
+        # In case the file doesn't change, we rename to a different
+        # temporary name.
+
+        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl ../a.whl && " +
+        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl " +
         ""
-    ).format(ver=VERSION, pyshortver=pyshortver),
-)
+    ).format(ver=VERSION,
+             pyshortver=pyshortver,
+             abitag=ABITAG[pyshortver],
+    ),
+ )
  for pyshortver in PYTHON_SHORT_VERSIONS
 ]
 
