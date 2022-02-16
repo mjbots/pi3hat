@@ -20,7 +20,7 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//tools/workspace:template_file.bzl", "template_file")
 
-VERSION="0.3.15"
+VERSION="0.3.16"
 
 PYTHON_SHORT_VERSIONS = ['37', '39']
 
@@ -57,11 +57,11 @@ pkg_tar(
     srcs = ["setup_{pyshortver}.py".format(pyshortver=pyshortver),
             ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl".format(
+        "moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl".format(
             ver=VERSION, pyshortver=pyshortver),
     ],
     cmd = (
-        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl)) && " +
+        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
@@ -71,7 +71,8 @@ pkg_tar(
         "        --plat-name linux_armv7l " +
         "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
-        "        1>/dev/null" +
+        "        1>/dev/null &&" +
+        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-linux_armv7l.whl " +
         ""
     ).format(ver=VERSION, pyshortver=pyshortver),
 )
