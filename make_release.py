@@ -14,6 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import argparse
 import datetime
 import subprocess
 import sys
@@ -24,12 +25,17 @@ def run(cmd):
     subprocess.check_call(cmd, shell=True)
 
 def main():
-    outdir = sys.argv[1]
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--force', action='store_true')
+    parser.add_argument('outdir')
+    args = parser.parse_args()
+
+    outdir = args.outdir
 
     # Make sure git is clean first.
     dirty = (subprocess.run("git diff-index --quiet HEAD --",
                             shell=True).returncode != 0)
-    if dirty:
+    if dirty and not args.force:
         raise RuntimeError("git is dirty, cannot release!")
     git_hash = subprocess.check_output(
         "git rev-parse HEAD", shell=True).decode('utf8').strip()

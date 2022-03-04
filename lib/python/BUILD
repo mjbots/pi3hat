@@ -20,7 +20,7 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//tools/workspace:template_file.bzl", "template_file")
 
-VERSION="0.3.18"
+VERSION="0.3.20"
 
 PYTHON_SHORT_VERSIONS = ['37', '39']
 ARCHITECTURES = ['armv7l', 'aarch64']
@@ -28,6 +28,7 @@ ABITAG = {
     '37': 'abi3',
     '39': 'cp39',
 }
+PTAG = 'manylinux_2_17'
 
 
 # It would be nice to pull this from the python source.  As it is, the
@@ -64,21 +65,22 @@ pkg_tar(
     srcs = ["setup_{pyshortver}.py".format(pyshortver=pyshortver),
             ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl".format(
+        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl".format(
             ver=VERSION,
             pyshortver=pyshortver,
             abitag=ABITAG[pyshortver],
+            ptag=PTAG,
             architecture=architecture),
     ],
     cmd = (
-        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl)) && " +
+        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
         "cp $(location setup_{pyshortver}.py) $(location README.md) $$BUILDDIR && " +
         "cd $$BUILDDIR && " +
         "python3.9 setup_{pyshortver}.py bdist_wheel " +
-        "        --plat-name linux_{architecture} " +
+        "        --plat-name {ptag}_{architecture} " +
         "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
         "        1>/dev/null &&" +
@@ -86,12 +88,13 @@ pkg_tar(
         # In case the file doesn't change, we rename to a different
         # temporary name.
 
-        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_{architecture}.whl ../a.whl && " +
-        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl " +
+        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-{ptag}_{architecture}.whl ../a.whl && " +
+        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl " +
         ""
     ).format(ver=VERSION,
              pyshortver=pyshortver,
              abitag=ABITAG[pyshortver],
+             ptag=PTAG,
              architecture=architecture,
     ),
  )
