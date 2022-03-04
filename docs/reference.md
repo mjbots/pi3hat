@@ -18,21 +18,10 @@ provides the following:
 XT30-M power input/output.  The chamfered side of the connector is
 negative.
 
-## JC1/JC2/JC3/JC4 ##
+## JC1/JC2/JC3/JC4/JC5 ##
 
 These are JST PH-3, 5Mbps CAN-FD connectors with 12V common mode
 range.  Each has a physical 100 ohm terminator permanently installed.
-
-* Pin 1: CANH
-* Pin 2: CANL
-* Pin 3: Ground
-
-## JC5 ##
-
-This is a JST PH-3 125 kbps CAN connector with 34V common mode range.
-It is suitable for connecting to the mjbots power dist board or
-another low speed CAN operation where high common mode range is
-necessary.
 
 * Pin 1: CANH
 * Pin 2: CANL
