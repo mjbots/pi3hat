@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -47,6 +47,19 @@ test_suite(
         "//lib/cpp/mjbots/moteus:test",
     ],
 )
+
+[config_setting(
+    name = "python{py_nodot_ver}_{arch}".format(
+        py_nodot_ver=pyver.replace('.',''),
+        arch=arch),
+    values = {
+        "define": "PYTHON={pyver}".format(pyver=pyver),
+        "cpu": arch,
+    },
+ )
+ for pyver in ['3.7', '3.9']
+ for arch in ['armeabihf', 'aarch64']
+]
 
 config_setting(
     name = "python37",

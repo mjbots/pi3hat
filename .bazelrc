@@ -22,6 +22,15 @@ test:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
 build:pi --compiler=clang
 test:pi --compiler=clang
 
+build:pi64 --cpu=aarch64
+test:pi64 --cpu=aarch64
+
+build:pi64 --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
+test:pi64 --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
+
+build:pi64 --compiler=clang
+test:pi64 --compiler=clang
+
 build:host --compiler=compiler
 build:host --cpu=k8
 

@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -49,11 +49,16 @@ def main():
     run(f'cp bazel-bin/fw/pi3_hat.elf {outdir}/{datestr}-pi3hat-{git_hash}.elf')
 
     for pyver in ['3.7', '3.9']:
-        run(f'tools/bazel build --config=pi --define PYTHON={pyver} -c opt //:pi3hat_tools')
-        run(f'cp bazel-bin/pi3hat_tools.tar.bz2 {outdir}/{datestr}-pi3hat_tools-cp{pyver.replace(".","")}-{git_hash}.tar.bz2')
+        for arch in ['pi', 'pi64']:
+            pyarch = {
+                'pi' : 'armv7l',
+                'pi64' : 'aarch64',
+            }[arch]
+            run(f'tools/bazel build --config={arch} --define PYTHON={pyver} -c opt //:pi3hat_tools')
+            run(f'cp bazel-bin/pi3hat_tools.tar.bz2 {outdir}/{datestr}-pi3hat_tools-cp{pyver.replace(".","")}-{pyarch}-{git_hash}.tar.bz2')
 
-        wheel_name = subprocess.check_output("tar --list -f bazel-bin/pi3hat_tools.tar.bz2 | grep \.whl$", shell=True).decode('utf8').strip()
-        run(f'tar -C {outdir} --strip-components 2 --extract -f bazel-bin/pi3hat_tools.tar.bz2 {wheel_name}')
+            wheel_name = subprocess.check_output("tar --list -f bazel-bin/pi3hat_tools.tar.bz2 | grep \.whl$", shell=True).decode('utf8').strip()
+            run(f'tar -C {outdir} --strip-components 2 --extract -f bazel-bin/pi3hat_tools.tar.bz2 {wheel_name}')
 
 
     print()

@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ load("//tools/workspace:template_file.bzl", "template_file")
 VERSION="0.3.18"
 
 PYTHON_SHORT_VERSIONS = ['37', '39']
+ARCHITECTURES = ['armv7l', 'aarch64']
 ABITAG = {
     '37': 'abi3',
     '39': 'cp39',
@@ -57,22 +58,27 @@ pkg_tar(
 
 
 [genrule(
-    name = "bdist_wheel_{pyshortver}".format(pyshortver=pyshortver),
+    name = "bdist_wheel_{pyshortver}_{architecture}".format(
+        pyshortver=pyshortver,
+        architecture=architecture),
     srcs = ["setup_{pyshortver}.py".format(pyshortver=pyshortver),
             ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl".format(
-            ver=VERSION, pyshortver=pyshortver, abitag=ABITAG[pyshortver]),
+        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl".format(
+            ver=VERSION,
+            pyshortver=pyshortver,
+            abitag=ABITAG[pyshortver],
+            architecture=architecture),
     ],
     cmd = (
-        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl)) && " +
+        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
         "cp $(location setup_{pyshortver}.py) $(location README.md) $$BUILDDIR && " +
         "cd $$BUILDDIR && " +
         "python3.9 setup_{pyshortver}.py bdist_wheel " +
-        "        --plat-name linux_armv7l " +
+        "        --plat-name linux_{architecture} " +
         "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
         "        1>/dev/null &&" +
@@ -80,21 +86,25 @@ pkg_tar(
         # In case the file doesn't change, we rename to a different
         # temporary name.
 
-        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_armv7l.whl ../a.whl && " +
-        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_armv7l.whl " +
+        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-linux_{architecture}.whl ../a.whl && " +
+        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-linux_{architecture}.whl " +
         ""
     ).format(ver=VERSION,
              pyshortver=pyshortver,
              abitag=ABITAG[pyshortver],
+             architecture=architecture,
     ),
  )
  for pyshortver in PYTHON_SHORT_VERSIONS
+ for architecture in ARCHITECTURES
 ]
 
 filegroup(
     name="bdist_wheel",
     srcs = select({
-        "//:python37" : [":bdist_wheel_37"],
-        "//:python39" : [":bdist_wheel_39"],
+        "//:python37_armeabihf" : [":bdist_wheel_37_armv7l"],
+        "//:python37_aarch64" : [":bdist_wheel_37_aarch64"],
+        "//:python39_armeabihf" : [":bdist_wheel_39_armv7l"],
+        "//:python39_aarch64" : [":bdist_wheel_39_aarch64"],
     }),
 )

@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2018 Josh Pieper, jjp@pobox.com.
+# Copyright 2018-2022 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,18 +16,42 @@
 
 package(default_visibility = ["//visibility:public"])
 
+config_setting(
+    name = "armeabihf",
+    values = {"cpu" : "armeabihf"},
+)
+
+config_setting(
+    name = "aarch64",
+    values = {"cpu" : "aarch64"},
+)
+
 cc_library(
     name = "bcm_host",
-    hdrs = [
-        "hardfp/opt/vc/include/bcm_host.h",
-    ] + glob([
-        "hardfp/opt/vc/include/interface/**/*.h",
-        "hardfp/opt/vc/include/vcinclude/**/*.h",
-    ]),
-    srcs = ["hardfp/opt/vc/lib/libbcm_host.so"],
-    includes = [
-        "hardfp/opt/vc/include",
-    ],
+    hdrs = select({
+        ":armeabihf" : [
+            "hardfp/opt/vc/include/bcm_host.h",
+        ] + glob([
+            "hardfp/opt/vc/include/interface/**/*.h",
+            "hardfp/opt/vc/include/vcinclude/**/*.h",
+        ]),
+        ":aarch64" : [] + glob([
+            "aarch64/usr/include/**/*.h",
+        ]),
+        "//conditions:default" : [],
+    }),
+    srcs = select({
+        ":armeabihf" : ["hardfp/opt/vc/lib/libbcm_host.so"],
+        ":aarch64" : ["aarch64/usr/lib/aarch64-linux-gnu/libbcm_host.so"],
+    }),
+    includes = select({
+        ":armeabihf" : [
+            "hardfp/opt/vc/include",
+        ],
+        "aarch64" : [
+            "aarch64/usr/include",
+        ],
+    })
 )
 
 cc_library(

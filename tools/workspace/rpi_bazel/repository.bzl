@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2018-2019 Josh Pieper, jjp@pobox.com.
+# Copyright 2018-2022 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,6 @@ def rpi_bazel_repository(name):
     github_archive(
         name = name,
         repo = "mjbots/rpi_bazel",
-        commit = "91ee2c572998bb3c64d532afcda207eb8acb3604",
-        sha256 = "cf39b74d366dc40652fecedd3ca97f87a739807bc6da9532d55c26fcf8b103ff",
+        commit = "964b6feb8bb14b2a58876b406f17266538794c3a",
+        sha256 = "ef22526864f46d4bc42b09b421050697ebc1970f279f196b8f855048df6f3e3e",
     )
