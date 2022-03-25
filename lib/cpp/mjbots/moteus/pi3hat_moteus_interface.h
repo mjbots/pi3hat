@@ -16,6 +16,7 @@
 
 #include <condition_variable>
 #include <functional>
+#include <optional>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -39,9 +40,6 @@ class Pi3HatMoteusInterface {
  public:
   struct Options {
     int cpu = -1;
-
-    // If a servo is not present, it is assumed to be on bus 1.
-    std::map<int, int> servo_bus_map;
   };
 
   Pi3HatMoteusInterface(const Options& options)
@@ -60,6 +58,7 @@ class Pi3HatMoteusInterface {
 
   struct ServoCommand {
     int id = 0;
+    std::optional<int> bus;
 
     moteus::Mode mode = moteus::Mode::kStopped;
 
@@ -72,6 +71,7 @@ class Pi3HatMoteusInterface {
 
   struct ServoReply {
     int id = 0;
+    int bus = 0;
     moteus::QueryResult result;
   };
 
@@ -147,15 +147,8 @@ class Pi3HatMoteusInterface {
 
       can.expect_reply = query.any_set();
       can.id = cmd.id | (can.expect_reply ? 0x8000 : 0x0000);
+      can.bus = cmd.bus.value_or(1);
       can.size = 0;
-
-      can.bus = [&]() {
-        const auto it = options_.servo_bus_map.find(cmd.id);
-        if (it == options_.servo_bus_map.end()) {
-          return 1;
-        }
-        return it->second;
-      }();
 
       moteus::WriteCanFrame write_frame(can.data, &can.size);
       switch (cmd.mode) {
@@ -188,6 +181,7 @@ class Pi3HatMoteusInterface {
       const auto& can = rx_can_[i];
 
       data_.replies[i].id = (can.id & 0x7f00) >> 8;
+      data_.replies[i].bus = can.bus;
       data_.replies[i].result = moteus::ParseQueryResult(can.data, can.size);
       result.query_result_size = i + 1;
     }

@@ -122,15 +122,16 @@ std::pair<double, double> MinMaxVoltage(
 class SampleController {
  public:
   SampleController(const Arguments& arguments) : arguments_(arguments) {
-    if (arguments_.primary_id == arguments_.secondary_id) {
-      throw std::runtime_error("The servos must have unique IDs");
+    if ((arguments_.primary_bus == arguments_.secondary_bus) &&
+        (arguments_.primary_id == arguments_.secondary_id)) {
+      throw std::runtime_error("Servos on the same bus must have unique IDs");
     }
   }
 
   /// This is called before any control begins, and must return the
   /// set of servos that are used, along with which bus each is
   /// attached to.
-  std::map<int, int> servo_bus_map() const {
+  std::vector<std::pair<int, int>> servo_bus_map() const {
     return {
       { arguments_.primary_id, arguments_.primary_bus },
       { arguments_.secondary_id, arguments_.secondary_bus },
@@ -157,9 +158,9 @@ class SampleController {
     }
   }
 
-  moteus::QueryResult Get(const std::vector<MoteusInterface::ServoReply>& replies, int id) {
+  moteus::QueryResult Get(const std::vector<MoteusInterface::ServoReply>& replies, int id, int bus) {
     for (const auto& item : replies) {
-      if (item.id == id) { return item.result; }
+      if (item.id == id && item.bus == bus) { return item.result; }
     }
     return {};
   }
@@ -184,12 +185,12 @@ class SampleController {
       }
     } else {
       // Then we make the secondary servo mirror the primary servo.
-      const auto primary = Get(status, arguments_.primary_id);
+      const auto primary = Get(status, arguments_.primary_id, arguments_.primary_bus);
       double primary_pos = primary.position;
       if (!std::isnan(primary_pos) && std::isnan(primary_initial_)) {
         primary_initial_ = primary_pos;
       }
-      double secondary_pos = Get(status, arguments_.secondary_id).position;
+      double secondary_pos = Get(status, arguments_.secondary_id, arguments_.secondary_bus).position;
       if (!std::isnan(secondary_pos) && std::isnan(secondary_initial_)) {
         secondary_initial_ = secondary_pos;
       }
@@ -220,13 +221,13 @@ void Run(const Arguments& args, Controller* controller) {
   moteus::ConfigureRealtime(args.main_cpu);
   MoteusInterface::Options moteus_options;
   moteus_options.cpu = args.can_cpu;
-  moteus_options.servo_bus_map = controller->servo_bus_map();
   MoteusInterface moteus_interface{moteus_options};
 
   std::vector<MoteusInterface::ServoCommand> commands;
-  for (const auto& pair : moteus_options.servo_bus_map) {
+  for (const auto& pair : controller->servo_bus_map()) {
     commands.push_back({});
     commands.back().id = pair.first;
+    commands.back().bus = pair.second;
   }
 
   std::vector<MoteusInterface::ServoReply> replies{commands.size()};
@@ -266,6 +267,7 @@ void Run(const Arguments& args, Controller* controller) {
           result << std::fixed;
           for (const auto& item : saved_replies) {
             result << item.id << "/"
+                   << item.bus << "/"
                    << static_cast<int>(item.result.mode) << "/"
                    << item.result.position << " ";
           }
