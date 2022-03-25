@@ -1,6 +1,6 @@
 #!/bin/bash
 
-g++ -O2 -g -Wall --std=c++11 \
+g++ -O2 -g -Wall --std=c++17 \
     -Wno-psabi \
     -I lib/cpp -I /opt/vc/include -L /opt/vc/lib \
     -o moteus_control_example \
