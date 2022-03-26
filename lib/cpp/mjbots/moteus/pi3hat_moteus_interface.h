@@ -16,7 +16,6 @@
 
 #include <condition_variable>
 #include <functional>
-#include <optional>
 #include <map>
 #include <memory>
 #include <mutex>
@@ -57,7 +56,7 @@ class Pi3HatMoteusInterface {
 
   struct ServoCommand {
     int id = 0;
-    std::optional<int> bus;
+    int bus = 1;
 
     moteus::Mode mode = moteus::Mode::kStopped;
 
@@ -146,7 +145,7 @@ class Pi3HatMoteusInterface {
 
       can.expect_reply = query.any_set();
       can.id = cmd.id | (can.expect_reply ? 0x8000 : 0x0000);
-      can.bus = cmd.bus.value_or(1);
+      can.bus = cmd.bus;
       can.size = 0;
 
       moteus::WriteCanFrame write_frame(can.data, &can.size);
