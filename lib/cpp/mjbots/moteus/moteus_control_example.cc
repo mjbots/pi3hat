@@ -198,7 +198,6 @@ class SampleController {
         auto& secondary_out = output->at(1);  // We constructed this, so we know the order.
         secondary_out.mode = moteus::Mode::kPosition;
         secondary_out.position.position = secondary_initial_ + (primary_pos - primary_initial_);
-        secondary_out.position.velocity = primary.velocity;
       }
     }
   }
