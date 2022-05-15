@@ -209,7 +209,7 @@ class Pi3Hat {
     /// over SPI (not necessarily over the CAN bus).
     uint32_t min_tx_wait_ns = 200000;
 
-    /// After each succesful receipt, wait this much longer for more.
+    /// After each successful receipt, wait this much longer for more.
     uint32_t rx_extra_wait_ns = 40000;
 
     bool request_attitude = false;
