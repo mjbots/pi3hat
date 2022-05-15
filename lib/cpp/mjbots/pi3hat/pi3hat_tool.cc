@@ -17,7 +17,7 @@
 /// NOTE: This file can be compiled manually on a raspberry pi using
 /// the following command line:
 ///
-/// g++ -L /opt/vc/lib -I /opt/vc/include -lbcm_host -std=c++11 pi3hat_tool.cc pi3hat.cc -o pi3hat_tool
+/// g++ -L /opt/vc/lib -I /opt/vc/include -std=c++11 pi3hat_tool.cc pi3hat.cc -lbcm_host -o pi3hat_tool
 
 
 #include <sched.h>
