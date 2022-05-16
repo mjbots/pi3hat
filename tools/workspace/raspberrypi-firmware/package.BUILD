@@ -48,7 +48,7 @@ cc_library(
         ":armeabihf" : [
             "hardfp/opt/vc/include",
         ],
-        "aarch64" : [
+        ":aarch64" : [
             "aarch64/usr/include",
         ],
     })
