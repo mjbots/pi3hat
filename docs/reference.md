@@ -307,6 +307,7 @@ These addresses are present only on processor 3.
   * float _az mps2_
 * *34* Attitude Data
   * uint8 _present_
+  * uint8 _reserved_
   * float _w_
   * float _x_
   * float _y_
