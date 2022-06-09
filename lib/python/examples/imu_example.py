@@ -46,8 +46,10 @@ async def main():
 
         accel_mps2 = imu_result.accel_mps2
         print(f"accel_mps2={accel_mps2.x:.3f},{accel_mps2.y:.3f},{accel_mps2.z:.3f}")
+
         euler_rad = imu_result.euler_rad
         print(f"euler_rad= r={euler_rad.roll:.3f},p={euler_rad.pitch:.3f},y={euler_rad.yaw:.3f}")
+
         print()
 
         await asyncio.sleep(0.5)
