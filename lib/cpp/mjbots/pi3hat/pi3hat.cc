@@ -103,7 +103,7 @@ void ThrowIfErrno(bool value, const std::string& message = "") {
 
 int64_t GetNow() {
   struct timespec ts = {};
-  ::clock_gettime(CLOCK_MONOTONIC, &ts);
+  ::clock_gettime(CLOCK_MONOTONIC_RAW, &ts);
   return static_cast<int64_t>(ts.tv_sec) * 1000000000ll +
       static_cast<int64_t>(ts.tv_nsec);
 }
@@ -287,8 +287,14 @@ class PrimarySpi {
  public:
   struct Options {
     int speed_hz = 10000000;
-    int cs_hold_us = 3;
-    int address_hold_us = 3;
+    // We actually only need hold times of around 3us.  However, the
+    // linux aarch64 kernel sometimes returns up to 8us of difference
+    // in consecutive calls to clock_gettime when in a tight busy loop
+    // (and <1 us of wall clock time has actually passed as measured
+    // by an oscilloscope).  This doesn't seem to be a problem on the
+    // armv7l kernel.
+    int cs_hold_us = 10;
+    int address_hold_us = 10;
 
     Options() {}
   };
@@ -468,8 +474,10 @@ class AuxSpi {
  public:
   struct Options {
     int speed_hz = 10000000;
-    int cs_hold_us = 3;
-    int address_hold_us = 3;
+    // We actually only need hold times of around 3us, these are
+    // larger for the same reasons as in PrimarySpi.
+    int cs_hold_us = 10;
+    int address_hold_us = 10;
 
     Options() {}
   };
