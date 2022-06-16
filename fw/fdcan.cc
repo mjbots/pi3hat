@@ -49,6 +49,14 @@ FDCan::Rate MakeTime(int bitrate, int max_time_seg1, int max_time_seg2) {
   uint32_t pclk1 = HAL_RCC_GetPCLK1Freq();
   uint32_t total_divisor = 0;
 
+  if (bitrate > 10000000) {
+    // Nothing we can do.
+    result.time_seg1 = 0;
+    result.time_seg2 = 0;
+    result.sync_jump_width = 0;
+    return result;
+  }
+
   while (true) {
     total_divisor = (pclk1 / result.prescaler) / bitrate;
 
