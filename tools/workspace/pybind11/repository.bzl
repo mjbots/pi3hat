@@ -21,7 +21,7 @@ def pybind11_repository(name):
     github_archive(
         name = name,
         repo = "pybind/pybind11",
-        commit = "028812ae7eee307dca5f8f69d467af7b92cc41c8",
-        sha256 = "d3f0bfb14b59838b6d42b2b53876007b5043f51c17cb189ae8fa2e2c88ada4f5",
+        commit = "0964a9093a728dbf67b9b98c6371752b1a346f25",
+        sha256 = "cf4cd95f8bb70dc205dd906e4c849f9fbc6a292653e4488860b18b9a581ebec2",
         build_file = Label("//tools/workspace/pybind11:package.BUILD"),
     )
