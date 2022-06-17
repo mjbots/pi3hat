@@ -109,9 +109,29 @@ int64_t GetNow() {
 }
 
 void BusyWaitUs(int64_t us) {
+  // We wait to ensure that setup and hold times are properly
+  // enforced.  Allowing data stores and loads to be re-ordered around
+  // the wait would defeat their purpose.  Thus, use barriers to force
+  // a complete synchronization event on either side of our waits.
+#ifdef __ARM_ARCH_ISA_A64
+  asm volatile("dsb sy");
+#elif __ARM_ARCH_7A__
+  asm volatile("dsb");
+#else
+# error "Unknown architecture"
+#endif
+
   const auto start = GetNow();
   const auto end = start + us * 1000;
   while (GetNow() <= end);
+
+#ifdef __ARM_ARCH_ISA_A64
+  asm volatile("dsb sy");
+#elif __ARM_ARCH_7A__
+  asm volatile("dsb");
+#else
+# error "Unknown architecture"
+#endif
 }
 
 std::string ReadContents(const std::string& filename) {
@@ -293,8 +313,8 @@ class PrimarySpi {
     // (and <1 us of wall clock time has actually passed as measured
     // by an oscilloscope).  This doesn't seem to be a problem on the
     // armv7l kernel.
-    int cs_hold_us = 10;
-    int address_hold_us = 10;
+    int cs_hold_us = 3;
+    int address_hold_us = 3;
 
     Options() {}
   };
@@ -476,8 +496,8 @@ class AuxSpi {
     int speed_hz = 10000000;
     // We actually only need hold times of around 3us, these are
     // larger for the same reasons as in PrimarySpi.
-    int cs_hold_us = 10;
-    int address_hold_us = 10;
+    int cs_hold_us = 3;
+    int address_hold_us = 3;
 
     Options() {}
   };
@@ -529,7 +549,7 @@ class AuxSpi {
         | (0 << 16) // post-input mode
         | (0 << 15) // variable CS
         | (1 << 14) // variable width
-        | (0 << 12) // DOUT hold time
+        | (2 << 12) // DOUT hold time
         | (1 << 11) // enable
         | (1 << 10) // in rising?
         | (0 << 9) // clear fifos
