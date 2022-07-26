@@ -28,7 +28,12 @@ ABITAG = {
     '37': 'abi3',
     '39': 'cp39',
 }
-PTAG = 'manylinux_2_17'
+PTAG = {
+    '37_armv7l': 'linux',
+    '37_aarch64': 'manylinux_2_17',
+    '39_armv7l': 'manylinux_2_17',
+    '39_aarch64': 'manylinux_2_17',
+}
 
 
 # It would be nice to pull this from the python source.  As it is, the
@@ -69,7 +74,7 @@ pkg_tar(
             ver=VERSION,
             pyshortver=pyshortver,
             abitag=ABITAG[pyshortver],
-            ptag=PTAG,
+            ptag=PTAG[pyshortver + '_' + architecture],
             architecture=architecture),
     ],
     cmd = (
@@ -94,7 +99,7 @@ pkg_tar(
     ).format(ver=VERSION,
              pyshortver=pyshortver,
              abitag=ABITAG[pyshortver],
-             ptag=PTAG,
+             ptag=PTAG[pyshortver + '_' + architecture],
              architecture=architecture,
     ),
  )
