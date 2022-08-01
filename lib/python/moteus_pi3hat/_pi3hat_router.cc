@@ -297,6 +297,7 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("spi_speed_hz", &Pi3HatRouter::Options::spi_speed_hz)
       .def_readwrite("mounting_deg", &Pi3HatRouter::Options::mounting_deg)
       .def_readwrite("attitude_rate_hz", &Pi3HatRouter::Options::attitude_rate_hz)
+      .def_readwrite("enable_aux", &Pi3HatRouter::Options::enable_aux)
       // We rely on the fact that std::array has the same in-memory
       // layout as a C style array.
       .def_readwrite("can", reinterpret_cast<

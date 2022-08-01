@@ -30,6 +30,8 @@ class Pi3HatFactory():
                             help='SPI speed to use')
         parser.add_argument('--pi3hat-cfg', metavar='CFG',
                             help='1=ID1,ID2;N=IDX,IDY...')
+        parser.add_argument('--pi3hat-disable-aux', action='store_true',
+                            help='Prevent use of the IMU/JC5')
 
     def is_args_set(self, args):
         return args and (args.pi3hat_cfg or args.pi3hat_cpu or args.pi3hat_spi_hz)
@@ -48,6 +50,8 @@ class Pi3HatFactory():
                 kwargs['cpu'] = args.pi3hat_cpu
             if args.pi3hat_spi_hz:
                 kwargs['spi_speed_hz'] = args.pi3hat_spi_hz
+            if args.pi3hat_disable_aux:
+                kwargs['enable_aux'] = False
 
         return Pi3HatRouter(**kwargs)
 

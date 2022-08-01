@@ -63,6 +63,7 @@ class Pi3HatRouter:
                  spi_speed_hz = 10000000,
                  mounting_deg = None,
                  attitude_rate_hz = None,
+                 enable_aux = True,
                  can = None,
                  servo_bus_map = None):
         """Initialize.
@@ -80,6 +81,7 @@ class Pi3HatRouter:
         options = _pi3hat_router.Options()
         options.cpu = cpu
         options.spi_speed_hz = spi_speed_hz
+        options.enable_aux = enable_aux
 
         if mounting_deg:
             options.mounting_deg.pitch = mounting_deg['pitch']
