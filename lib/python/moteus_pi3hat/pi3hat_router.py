@@ -64,6 +64,7 @@ class Pi3HatRouter:
                  mounting_deg = None,
                  attitude_rate_hz = None,
                  enable_aux = True,
+                 disable_brs = False,
                  can = None,
                  servo_bus_map = None):
         """Initialize.
@@ -91,12 +92,18 @@ class Pi3HatRouter:
         if attitude_rate_hz:
             options.attitude_rate_hz = attitude_rate_hz
 
-        if can:
-            # pybind11 arrays are returned by copy, thus element
-            # modifications are not possible.  Thus we just create a
-            # full array to assign.
-            options.can = [can[i] if i in can else CanConfiguration()
-                           for i in range(1, 6)]
+
+        def update_brs(x):
+            if disable_brs:
+                x.bitrate_switch = False
+            return x
+
+        # pybind11 arrays are returned by copy, thus element
+        # modifications are not possible.  Thus we just create a
+        # full array to assign.
+        options.can = [update_brs(can[i] if (can and i in can) else
+                                  CanConfiguration())
+                       for i in range(1, 6)]
 
         self._impl = _pi3hat_router.Pi3HatRouter(options)
 

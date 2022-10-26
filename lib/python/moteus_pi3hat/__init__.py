@@ -15,6 +15,8 @@
 """Classes and functions for interoperating with the moteus brushless
 controller."""
 
+import argparse
+
 from moteus_pi3hat.pi3hat_router import (
     Pi3HatRouter, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
 
@@ -24,6 +26,13 @@ class Pi3HatFactory():
     name = 'pi3hat'
 
     def add_args(self, parser):
+        try:
+            parser.add_argument('--can-disable-brs', action='store_true',
+                                help='do not set BRS')
+        except argparse.ArgumentError:
+            # It must already be set.
+            pass
+
         parser.add_argument('--pi3hat-cpu', type=int, metavar='CPU',
                             help='CPU used for busy-looping on pi3hat')
         parser.add_argument('--pi3hat-spi-hz', type=int, metavar='HZ',
@@ -52,6 +61,8 @@ class Pi3HatFactory():
                 kwargs['spi_speed_hz'] = args.pi3hat_spi_hz
             if args.pi3hat_disable_aux:
                 kwargs['enable_aux'] = False
+            if args.can_disable_brs:
+                kwargs['disable_brs'] = True
 
         return Pi3HatRouter(**kwargs)
 
