@@ -20,6 +20,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <limits>
+#include <tuple>
 
 /// @file
 ///
