@@ -70,6 +70,15 @@ class FDCan {
     bool restricted_mode = false;
     bool bus_monitor = false;
 
+    // We for now default to use compensation that is appropriate for
+    // the TCAN1057 with its longer delay:
+    //
+    //  start - 13 / 85Mhz ~= 152ns
+    //  min   - 1 / 85Mhz ~= 12ns
+    bool delay_compensation = true;
+    uint32_t tdc_offset = 13;
+    uint32_t tdc_filter = 1;
+
     FilterAction global_std_action = FilterAction::kAccept;
     FilterAction global_ext_action = FilterAction::kAccept;
     FilterAction global_remote_std_action = FilterAction::kAccept;
