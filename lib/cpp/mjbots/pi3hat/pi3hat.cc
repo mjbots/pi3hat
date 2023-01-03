@@ -117,6 +117,8 @@ void BusyWaitUs(int64_t us) {
   asm volatile("dsb sy");
 #elif __ARM_ARCH_7A__
   asm volatile("dsb");
+#elif __ARM_ARCH_8A__
+  asm volatile("dsb");
 #else
 # error "Unknown architecture"
 #endif
@@ -128,6 +130,8 @@ void BusyWaitUs(int64_t us) {
 #ifdef __ARM_ARCH_ISA_A64
   asm volatile("dsb sy");
 #elif __ARM_ARCH_7A__
+  asm volatile("dsb");
+#elif __ARM_ARCH_8A__
   asm volatile("dsb");
 #else
 # error "Unknown architecture"
