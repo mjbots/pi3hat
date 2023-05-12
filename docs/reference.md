@@ -44,12 +44,25 @@ Pin 1 is closest to the J3 label.
 
 # Orientation #
 
-For the purposes of the IMU, in the absence of any configured rotation
-the reported axes are as follows:
+The pi3hat uses a right handed coordinate system.  The raw IMU
+accelerations and rotations are measured about the following axes:
 
 * +x - towards the CAN connectors or HDMI connectors on the RPI
 * +y - towards the USB ports on the rpi
 * +z - up from the rpi towards the pi3hat
+
+Attitude is measured with respect to a coordinate system of:
+* +x forward
+* +y right
+* +z down
+
+That means, in the absence of any configured mounting angle, the
+raspberry pi must be inverted to achieve a pitch and roll of 0.
+
+Finally, note that pi3hat is only an "attitude reference system", and
+contains no sensors for measuring heading.  Thus the yaw or heading
+value will drift over time and the yaw rate will have a non-zero bias
+offset.
 
 # Usage with client-side tools #
 
