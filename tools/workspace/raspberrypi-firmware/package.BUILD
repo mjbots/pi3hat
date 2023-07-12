@@ -26,6 +26,21 @@ config_setting(
     values = {"cpu" : "aarch64"},
 )
 
+# Some distros, like Ubuntu, only have libbcm_host.so without a .0,
+# however the official raspberry pi package expects the aarch64
+# version to be libbcm_host.so.0.
+#
+# Make things work on both of them by manually patching the soname
+# before linking.  This will result in any libraries that link against
+# this only requiring "libbcm_host.so".
+genrule(
+    name = "soless_bcm_host",
+    outs = ["libbcm_host.so"],
+    srcs = ["aarch64/usr/lib/aarch64-linux-gnu/libbcm_host.so"],
+    cmd = "cp $< $@ && patchelf --set-soname libbcm_host.so $@",
+)
+
+
 cc_library(
     name = "bcm_host",
     hdrs = select({
@@ -42,7 +57,7 @@ cc_library(
     }),
     srcs = select({
         ":armeabihf" : ["hardfp/opt/vc/lib/libbcm_host.so"],
-        ":aarch64" : ["aarch64/usr/lib/aarch64-linux-gnu/libbcm_host.so"],
+        ":aarch64" : [":soless_bcm_host"],
     }),
     includes = select({
         ":armeabihf" : [
@@ -51,7 +66,7 @@ cc_library(
         "aarch64" : [
             "aarch64/usr/include",
         ],
-    })
+    }),
 )
 
 cc_library(

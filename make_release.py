@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2023 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -54,7 +54,7 @@ def main():
 
     run(f'cp bazel-bin/fw/pi3_hat.elf {outdir}/{datestr}-pi3hat-{git_hash}.elf')
 
-    for pyver in ['3.7', '3.9']:
+    for pyver in ['3.7', '3.9', '3.10']:
         for arch in ['pi', 'pi64']:
             pyarch = {
                 'pi' : 'armv7l',

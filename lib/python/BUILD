@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2023 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,17 +22,20 @@ load("//tools/workspace:template_file.bzl", "template_file")
 
 VERSION="0.3.26"
 
-PYTHON_SHORT_VERSIONS = ['37', '39']
+PYTHON_SHORT_VERSIONS = ['37', '39', '310']
 ARCHITECTURES = ['armv7l', 'aarch64']
 ABITAG = {
     '37': 'abi3',
     '39': 'cp39',
+    '310': 'cp310',
 }
 PTAG = {
     '37_armv7l': 'linux',
     '37_aarch64': 'manylinux_2_17',
     '39_armv7l': 'manylinux_2_17',
     '39_aarch64': 'manylinux_2_17',
+    '310_armv7l': 'manylinux_2_17',
+    '310_aarch64': 'manylinux_2_17',
 }
 
 
@@ -84,7 +87,7 @@ pkg_tar(
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
         "cp $(location setup_{pyshortver}.py) $(location README.md) $$BUILDDIR && " +
         "cd $$BUILDDIR && " +
-        "python3.9 setup_{pyshortver}.py bdist_wheel " +
+        "python3 setup_{pyshortver}.py bdist_wheel " +
         "        --plat-name {ptag}_{architecture} " +
         "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
@@ -114,5 +117,7 @@ filegroup(
         "//:python37_aarch64" : [":bdist_wheel_37_aarch64"],
         "//:python39_armeabihf" : [":bdist_wheel_39_armv7l"],
         "//:python39_aarch64" : [":bdist_wheel_39_aarch64"],
+        "//:python310_armeabihf" : [":bdist_wheel_310_armv7l"],
+        "//:python310_aarch64" : [":bdist_wheel_310_aarch64"],
     }),
 )

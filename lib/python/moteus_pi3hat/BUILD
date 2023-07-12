@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020-2021 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2023 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ cc_binary(
         "//conditions:default" : [],
         "//:python37" : ["@com_github_pybind_pybind11//:pybind11_37"],
         "//:python39" : ["@com_github_pybind_pybind11//:pybind11_39"],
+        "//:python310" : ["@com_github_pybind_pybind11//:pybind11_310"],
     }),
     linkshared = True,
 )

@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020-2022 Josh Pieper, jjp@pobox.com.
+# Copyright 2020-2023 Josh Pieper, jjp@pobox.com.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ test_suite(
         "cpu": arch,
     },
  )
- for pyver in ['3.7', '3.9']
+ for pyver in ['3.7', '3.9', '3.10']
  for arch in ['armeabihf', 'aarch64']
 ]
 
@@ -72,5 +72,12 @@ config_setting(
     name = "python39",
     values = {
         "define": "PYTHON=3.9",
+    },
+)
+
+config_setting(
+    name = "python310",
+    values = {
+        "define": "PYTHON=3.10",
     },
 )
