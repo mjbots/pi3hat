@@ -158,7 +158,8 @@ class SampleController {
     }
   }
 
-  moteus::QueryResult Get(const std::vector<MoteusInterface::ServoReply>& replies, int id, int bus) {
+  std::optional<moteus::QueryResult> Get(
+      const std::vector<MoteusInterface::ServoReply>& replies, int id, int bus) {
     for (const auto& item : replies) {
       if (item.id == id && item.bus == bus) { return item.result; }
     }
@@ -185,21 +186,25 @@ class SampleController {
       }
     } else {
       // Then we make the secondary servo mirror the primary servo.
-      const auto primary = Get(status, arguments_.primary_id, arguments_.primary_bus);
-      double primary_pos = primary.position;
-      if (!std::isnan(primary_pos) && std::isnan(primary_initial_)) {
-        primary_initial_ = primary_pos;
-      }
-      double secondary_pos = Get(status, arguments_.secondary_id, arguments_.secondary_bus).position;
-      if (!std::isnan(secondary_pos) && std::isnan(secondary_initial_)) {
-        secondary_initial_ = secondary_pos;
-      }
-      if (!std::isnan(primary_initial_) && !std::isnan(secondary_initial_)) {
-        // We have everything we need to start commanding.
+      const auto maybe_primary = Get(status, arguments_.primary_id, arguments_.primary_bus);
+      const auto maybe_secondary = Get(status, arguments_.secondary_id, arguments_.secondary_bus);
+
+      if (!!maybe_primary && !!maybe_secondary) {
+        double primary_pos = maybe_primary->position;
+        if (!std::isnan(primary_pos) && std::isnan(primary_initial_)) {
+          primary_initial_ = primary_pos;
+        }
+        double secondary_pos = maybe_secondary->position;
+        if (!std::isnan(secondary_pos) && std::isnan(secondary_initial_)) {
+          secondary_initial_ = secondary_pos;
+        }
         auto& secondary_out = output->at(1);  // We constructed this, so we know the order.
-        secondary_out.mode = moteus::Mode::kPosition;
-        secondary_out.position.position = secondary_initial_ + (primary_pos - primary_initial_);
-        secondary_out.position.velocity = primary.velocity;
+        if (!std::isnan(primary_initial_) && !std::isnan(secondary_initial_)) {
+          // We have everything we need to start commanding.
+          secondary_out.mode = moteus::Mode::kPosition;
+          secondary_out.position.position = secondary_initial_ + (primary_pos - primary_initial_);
+          secondary_out.position.velocity = maybe_primary->velocity;
+        }
       }
     }
   }
@@ -279,7 +284,7 @@ void Run(const Arguments& args, Controller* controller) {
                   << std::setprecision(1)
                   << "  volts: " << volts.first << "/" << volts.second
                   << "  modes: " << modes
-                  << "   \r";
+                  << "       \r";
         std::cout.flush();
         next_status += status_period;
         total_margin = 0;
