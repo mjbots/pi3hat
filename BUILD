@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files", "pkg_attributes")
 load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 filegroup(
@@ -43,6 +43,9 @@ pkg_files(
     name = "examples",
     srcs = ["//lib/cpp/examples:" + x for x in EXAMPLES],
     prefix = "examples",
+    attributes = pkg_attributes(
+        mode = "0755",
+    ),
 )
 
 pkg_tar(
