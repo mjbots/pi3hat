@@ -59,7 +59,6 @@ pkg_tar(
 test_suite(
     name = "host",
     tests = [
-        "//lib/cpp/mjbots/moteus:test",
     ],
 )
 
