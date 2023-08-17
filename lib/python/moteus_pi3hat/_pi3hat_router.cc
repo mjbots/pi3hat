@@ -24,7 +24,7 @@
 #include <pybind11/stl.h>
 
 #include "mjbots/pi3hat/pi3hat.h"
-#include "mjbots/moteus/realtime.h"
+#include "mjbots/pi3hat/realtime.h"
 
 namespace py = pybind11;
 namespace pi3hat = mjbots::pi3hat;
@@ -160,7 +160,7 @@ class Pi3HatRouter {
   void CHILD_Run() {
     std::exception_ptr ep = nullptr;
     try {
-      mjbots::moteus::ConfigureRealtime(options_.cpu);
+      mjbots::pi3hat::ConfigureRealtime(options_.cpu);
       pi3hat_.reset(new pi3hat::Pi3Hat(options_));
     } catch (...) {
       ep = std::current_exception();

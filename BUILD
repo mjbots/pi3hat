@@ -14,7 +14,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-load("@rules_pkg//:pkg.bzl", "pkg_tar")
+load("@rules_pkg//pkg:mappings.bzl", "pkg_files")
+load("@rules_pkg//pkg:tar.bzl", "pkg_tar")
 
 filegroup(
     name = "target",
@@ -30,14 +31,28 @@ filegroup(
     ],
 )
 
+EXAMPLES = [
+    "simple",
+    "diagnostic_protocol",
+    "multiple_cycle",
+    "simple_teleop",
+    "nlateral_teleop",
+]
+
+pkg_files(
+    name = "examples",
+    srcs = ["//lib/cpp/examples:" + x for x in EXAMPLES],
+    prefix = "examples",
+)
+
 pkg_tar(
     name = "pi3hat_tools",
     extension = "tar.bz2",
     package_dir = "pi3hat_tools",
     srcs = [
         "//lib/cpp/mjbots/pi3hat:pi3hat_tool",
-        "//lib/cpp/mjbots/moteus:moteus_control_example",
         "//lib/python:bdist_wheel",
+        ":examples",
     ],
 )
 

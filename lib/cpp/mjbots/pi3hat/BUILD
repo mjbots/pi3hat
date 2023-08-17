@@ -45,3 +45,21 @@ filegroup(
         ":pi3hat_tool",
     ],
 )
+
+cc_library(
+    name = "realtime",
+    hdrs = ["realtime.h"],
+)
+
+cc_library(
+    name = "transport",
+    hdrs = [
+        "pi3hat_moteus_transport.h",
+    ],
+    deps = [
+        ":realtime",
+        ":libpi3hat",
+        "@moteus//lib/cpp/mjbots/moteus:moteus",
+    ],
+    includes = ["."],
+)

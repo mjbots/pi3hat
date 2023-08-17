@@ -1,6 +1,6 @@
 # -*- python -*-
 
-# Copyright 2020 Josh Pieper, jjp@pobox.com.
+# Copyright 2023 mjbots Robotic Systems, LLC.  info@mjbots.com
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -16,43 +16,25 @@
 
 package(default_visibility = ["//visibility:public"])
 
-cc_library(
-    name = "headers",
-    hdrs = [
-        "moteus_protocol.h",
-        "pi3hat_moteus_interface.h",
-        "realtime.h",
-    ],
-    include_prefix = "mjbots/moteus",
-)
-
-cc_library(
-    name = "common",
-    deps = [
-        ":headers",
-        "//lib/cpp/mjbots/pi3hat:libpi3hat",
-    ],
-)
-
-cc_binary(
-    name = "moteus_control_example",
+[cc_binary(
+    name = x,
     srcs = [
-        "moteus_control_example.cc",
+        "@moteus//lib/cpp/examples:" + x + ".cc",
+        "pi3hat_moteus_transport_register.cc",
+    ],
+    copts = [
+        "-Iexternal/moteus/lib/cpp/mjbots/moteus",
     ],
     deps = [
-        ":common",
+        "//lib/cpp/mjbots/pi3hat:transport",
         "@org_llvm_libcxx//:libcxx",
     ],
 )
-
-cc_test(
-    name = "test",
-    srcs = [
-        "test/moteus_protocol_test.cc",
-        "test/test_main.cc",
-    ],
-    deps = [
-        ":headers",
-        "@boost//:test",
-    ],
-)
+ for x in [
+         'simple',
+         'diagnostic_protocol',
+         'multiple_cycle',
+         'simple_teleop',
+         'nlateral_teleop',
+         ]
+ ]

@@ -17,7 +17,7 @@
 #include <sched.h>
 
 namespace mjbots {
-namespace moteus {
+namespace pi3hat {
 
 inline void ConfigureRealtime(int cpu) {
   {

@@ -23,7 +23,7 @@ cc_binary(
     ],
     deps = [
         "//lib/cpp/mjbots/pi3hat:libpi3hat",
-        "//lib/cpp/mjbots/moteus:common",
+        "//lib/cpp/mjbots/pi3hat:realtime",
         "@org_llvm_libcxx//:libcxx",
     ] + select({
         "//conditions:default" : [],
@@ -32,6 +32,7 @@ cc_binary(
         "//:python310" : ["@com_github_pybind_pybind11//:pybind11_310"],
     }),
     linkshared = True,
+    copts = ["-Ilib/cpp"],
 )
 
 py_library(
