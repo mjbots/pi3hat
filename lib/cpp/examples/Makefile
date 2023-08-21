@@ -16,6 +16,9 @@
 # This is a simple Makefile to demonstrate compiling the pi3hat
 # examples in-situ on a Raspberry Pi.
 
+# On Ubuntu, you may need to:
+#  sudo apt install libraspberrypi-dev
+
 EXAMPLES = \
 	simple \
 	diagnostic_protocol \
@@ -24,7 +27,9 @@ EXAMPLES = \
 	nlateral_teleop \
 	timeout_debug
 
-% :: %.cc
+AUX_SOURCES = pi3hat.cc pi3hat_moteus_transport_register.cc
+
+% :: %.cc $(AUX_SOURCES) *.h
 	g++ -O2 \
 		-mcpu=cortex-a53 \
 		-g -Wall -Werror -std=c++17 -Wno-psabi \

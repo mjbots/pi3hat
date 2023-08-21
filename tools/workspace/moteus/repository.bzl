@@ -20,6 +20,6 @@ def moteus_repository(name):
     github_archive(
         name = name,
         repo = "mjbots/moteus",
-        commit = "d3a2167d62a1b96ab59e407d6f3501c03f815b32",
-        sha256 = "7f99a903e2934232dc5e3c4ba55dde968c004e906519c92aa27e93c1444c09ad",
+        commit = "ddd706e9ddd71d27c3cf56353c4028bcaf1f330c",
+        sha256 = "9b9ed25600585ed33ef8c31ea0f8a88ed275e3852abfb78ccf3558fb2847c9d8",
     )
