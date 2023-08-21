@@ -16,6 +16,16 @@
 
 package(default_visibility = ["//visibility:public"])
 
+filegroup(
+    name = "src",
+    srcs = [
+        "pi3hat.h",
+        "pi3hat.cc",
+        "pi3hat_moteus_transport.h",
+        "realtime.h",
+    ],
+)
+
 cc_library(
     name = "headers",
     hdrs = ["pi3hat.h"],

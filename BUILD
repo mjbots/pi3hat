@@ -49,6 +49,18 @@ pkg_files(
     ),
 )
 
+pkg_files(
+    name = "example_srcs",
+    srcs = [
+        "@moteus//lib/cpp/mjbots/moteus:src",
+        "@moteus//lib/cpp/examples:src",
+        "//lib/cpp/examples:src",
+        "//lib/cpp/mjbots/pi3hat:src",
+    ],
+    prefix = "src",
+)
+
+
 pkg_tar(
     name = "pi3hat_tools",
     extension = "tar.bz2",
@@ -57,6 +69,7 @@ pkg_tar(
         "//lib/cpp/mjbots/pi3hat:pi3hat_tool",
         "//lib/python:bdist_wheel",
         ":examples",
+        ":example_srcs",
     ],
 )
 

@@ -16,6 +16,24 @@
 
 package(default_visibility = ["//visibility:public"])
 
+EXAMPLES = [
+    'simple',
+    'diagnostic_protocol',
+    'multiple_cycle',
+    'simple_teleop',
+    'nlateral_teleop',
+    'timeout_debug',
+]
+
+filegroup(
+    name = "src",
+    srcs = [
+        "Makefile",
+        "pi3hat_moteus_transport_register.cc",
+    ]
+)
+
+
 [cc_binary(
     name = x,
     srcs = [
@@ -30,12 +48,5 @@ package(default_visibility = ["//visibility:public"])
         "@org_llvm_libcxx//:libcxx",
     ],
 )
- for x in [
-         'simple',
-         'diagnostic_protocol',
-         'multiple_cycle',
-         'simple_teleop',
-         'nlateral_teleop',
-         'timeout_debug',
-         ]
- ]
+ for x in EXAMPLES
+]
