@@ -36,5 +36,6 @@ package(default_visibility = ["//visibility:public"])
          'multiple_cycle',
          'simple_teleop',
          'nlateral_teleop',
+         'timeout_debug',
          ]
  ]

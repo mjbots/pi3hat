@@ -37,6 +37,7 @@ EXAMPLES = [
     "multiple_cycle",
     "simple_teleop",
     "nlateral_teleop",
+    "timeout_debug",
 ]
 
 pkg_files(
