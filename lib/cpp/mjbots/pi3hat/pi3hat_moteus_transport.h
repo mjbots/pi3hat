@@ -59,6 +59,15 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   Pi3HatMoteusTransport(const Options& options)
       : options_(options),
         thread_(std::bind(&Pi3HatMoteusTransport::CHILD_Run, this)) {
+    // Try to clear any stale replies.
+    std::vector<CanFdFrame> replies;
+    pi3hat::Pi3Hat::Input input_override;
+    input_override.force_can_check = (1 << 1) | (1 << 2) | (1 << 3);
+
+    moteus::BlockingCallback cbk;
+    Cycle(nullptr, 0, &replies, nullptr, nullptr,
+          &input_override, cbk.callback());
+    cbk.Wait();
   }
 
   virtual ~Pi3HatMoteusTransport() {
@@ -74,7 +83,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
                      size_t size,
                      std::vector<CanFdFrame>* replies,
                      moteus::CompletionCallback completed_callback) override {
-    Cycle(frames, size, replies, nullptr, nullptr, completed_callback);
+    Cycle(frames, size, replies, nullptr, nullptr, nullptr, completed_callback);
   }
 
   virtual void Post(std::function<void()> callback) override {
@@ -89,6 +98,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
              std::vector<CanFdFrame>* replies,
              pi3hat::Attitude* attitude,
              pi3hat::Pi3Hat::Output* pi3hat_output,
+             pi3hat::Pi3Hat::Input* input_override,
              moteus::CompletionCallback completed_callback) {
     std::lock_guard<std::mutex> lock(mutex_);
     if (active_) {
@@ -101,6 +111,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
       replies,
       attitude,
       pi3hat_output,
+      input_override,
       completed_callback,
     };
     active_ = true;
@@ -153,6 +164,11 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   }
 
   void CHILD_Cycle() {
+    // We want to have room to receive frames even if we aren't
+    // sending anything.
+    rx_can_.resize(std::max<size_t>(5, tx_can_.size() * 2));
+
+    // Now do our actual transaction.
     tx_can_.resize(cycle_data_.size);
     int out_idx = 0;
     for (size_t i = 0; i < cycle_data_.size; i++) {
@@ -164,11 +180,13 @@ class Pi3HatMoteusTransport : public moteus::Transport {
       can.bus = CHILD_FindBus(cmd.destination, cmd.bus);
       can.size = cmd.size;
       std::memcpy(can.data, cmd.data, cmd.size);
+      can.expected_reply_size = cmd.expected_reply_size;
     }
 
-    rx_can_.resize(tx_can_.size() * 2);
-
-    pi3hat::Pi3Hat::Input input = options_.default_input;
+    pi3hat::Pi3Hat::Input input =
+        cycle_data_.input_override ?
+        *cycle_data_.input_override :
+        options_.default_input;
     input.tx_can = { tx_can_.data(), tx_can_.size() };
     input.rx_can = { rx_can_.data(), rx_can_.size() };
     input.attitude = cycle_data_.attitude;
@@ -178,9 +196,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
 
     if (cycle_data_.pi3hat_output) { *cycle_data_.pi3hat_output = output; }
     cycle_data_.replies->clear();
-    for (size_t i = 0;
-         i < output.rx_can_size;
-         i++) {
+    for (size_t i = 0; i < output.rx_can_size; i++) {
       const auto& can = rx_can_[i];
 
       cycle_data_.replies->push_back({});
@@ -197,7 +213,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   }
 
   int CHILD_FindBus(int id, int supplied_bus) const {
-    if (supplied_bus > 0) { return supplied_bus; }
+    if (supplied_bus > 1) { return supplied_bus; }
 
     auto it = options_.servo_map.find(id);
     if (it != options_.servo_map.end()) { return it->second; }
@@ -220,6 +236,7 @@ class Pi3HatMoteusTransport : public moteus::Transport {
     std::vector<CanFdFrame>* replies = nullptr;
     pi3hat::Attitude* attitude = nullptr;
     pi3hat::Pi3Hat::Output* pi3hat_output = nullptr;
+    pi3hat::Pi3Hat::Input* input_override = nullptr;
     moteus::CompletionCallback completed_callback;
   };
   CycleData cycle_data_;

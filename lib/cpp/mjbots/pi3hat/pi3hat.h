@@ -64,6 +64,10 @@ struct CanFrame {
   /// If true, then a reply will be expected for this frame on the
   /// same bus.
   bool expect_reply = false;
+
+  /// If set, this is used as a hint to increase delays.  If unset,
+  /// then the minimum delay may need to be increased.
+  uint8_t expected_reply_size = 0;
 };
 
 struct Quaternion {
@@ -209,8 +213,21 @@ class Pi3Hat {
     /// over SPI (not necessarily over the CAN bus).
     uint32_t min_tx_wait_ns = 200000;
 
+    /// In addition to the absolute min_tx_wait_ns, there is a
+    /// parallel calculation that attempts to estimate the total delay
+    /// path for command-response pairs to set a minimum delay.  This
+    /// value controls the non-calculated part of that estimate.  It
+    /// should be the worst case response latency for a single device.
+    ///
+    /// Note, by default this is much longer than a device should
+    /// actually take, so as to handle a wide range of possible host
+    /// configurations.  i.e. including non-isolcpus or non-chrt
+    /// operation.  If you have a properly configured system running
+    /// on an isolcpu, this can potentially be as small as 200us.
+    uint32_t rx_baseline_wait_ns = 1000000;
+
     /// After each successful receipt, wait this much longer for more.
-    uint32_t rx_extra_wait_ns = 40000;
+    uint32_t rx_extra_wait_ns = 0;
 
     bool request_attitude = false;
 

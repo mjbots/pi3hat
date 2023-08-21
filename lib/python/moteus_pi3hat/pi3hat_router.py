@@ -126,6 +126,8 @@ class Pi3HatRouter:
                 result.arbitration_id = result.arbitration_id | (command.can_prefix << 16)
         result.data = command.data
         result.expect_reply = command.reply_required
+        if hasattr(command, 'expected_reply_size'):
+            result.expected_reply_size = command.expected_reply_size
         return result
 
     async def _cycle(self, input):
@@ -150,8 +152,9 @@ class Pi3HatRouter:
                     force_can_check=0,
                     max_rx=-1,
                     timeout_ns=1000000,
-                    min_tx_wait_ns=1000000,
-                    rx_extra_wait_ns=40000,
+                    min_tx_wait_ns=200000,
+                    rx_baseline_wait_ns=1000000,
+                    rx_extra_wait_ns=0,
                     request_attitude=False):
         '''Operate one CAN cycle of the pi3hat
 

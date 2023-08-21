@@ -1,4 +1,4 @@
-// Copyright 2019-2020 Josh Pieper, jjp@pobox.com.
+// Copyright 2019-2023 Josh Pieper, jjp@pobox.com.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1292,31 +1292,80 @@ class Pi3Hat::Impl {
 
   struct ExpectedReply {
     std::array<int, 6> count = { {} };
+
+    // How long we expect each bus to take to send the frames.
+    std::array<int64_t, 6> send_ns = { {} };
+
+    // How long we expect each bus to take to receive any responses.
+    std::array<int64_t, 6> receive_ns = { {} };
   };
 
-  ExpectedReply SendCan(const Input& input) {
+  ExpectedReply CalculateExpectedReply(const Input& input) {
     ExpectedReply result;
 
-    // We try to send packets on alternating buses if possible, so we
-    // can reduce the average latency before the first data goes out
-    // on any bus.  Always send data on the low speed bus out last.
-    for (auto& bus_packets : can_packets_) {
-      bus_packets.resize(0);
-    }
     for (size_t i = 0; i < input.tx_can.size(); i++) {
       const auto bus = input.tx_can[i].bus;
-      can_packets_[bus].push_back(i);
+
+      const int64_t arbitration_bitrate =
+          config_.can[bus - 1].slow_bitrate;
+      const int64_t data_bitrate =
+          config_.can[bus - 1].bitrate_switch ?
+          config_.can[bus - 1].fast_bitrate :
+          config_.can[bus - 1].slow_bitrate;
+
+      const int64_t can_header_size_bits =
+          (input.tx_can[i].id >= 2048 ? 32 : 16) + 8;
+      const int64_t can_data_size_bits =
+          input.tx_can[i].size * 8 + 28;
+      const int64_t tx_spi_bits =
+          (input.tx_can[i].size + 5) * 8;
+      const int64_t can_send_ns =
+          1000000000 * can_header_size_bits / arbitration_bitrate +
+          1000000000 * can_data_size_bits / data_bitrate +
+          1000000000 * tx_spi_bits / config_.spi_speed_hz;
+
+      result.send_ns[bus] += can_send_ns;
+
+      if (input.tx_can[i].expect_reply) {
+        const int64_t rx_header_size_bits = 32;
+        const int64_t rx_data_size_bits =
+            input.tx_can[i].expected_reply_size * 8 + 28;
+        const int64_t rx_spi_bits =
+            (input.tx_can[i].expected_reply_size + 5) * 8;
+        const int64_t rx_ns =
+            1000000000 * rx_header_size_bits / arbitration_bitrate +
+            1000000000 * rx_data_size_bits / data_bitrate +
+            1000000000 * rx_spi_bits / config_.spi_speed_hz;
+
+        result.receive_ns[bus] += rx_ns;
+      }
+
       if (input.tx_can[i].expect_reply) {
         result.count[bus]++;
       }
     }
+    return result;
+  }
 
-    int bus_offset[5] = {};
+  void SendCan(const Input& input) {
+    // We try to send packets on alternating buses if possible, so we
+    // can reduce the average latency before the first data goes out
+    // on any bus.
+    for (auto& bus_packets : can_packets_) {
+      bus_packets.resize(0);
+    }
+
+    for (size_t i = 0; i < input.tx_can.size(); i++) {
+      const auto bus = input.tx_can[i].bus;
+      can_packets_[bus].push_back(i);
+    }
+
+    int bus_offset[6] = {};
     while (true) {
       // We try to send out packets to buses in this order to minimize
       // latency.
       bool any_sent = false;
-      for (const int bus : { 1, 3, 2, 4 }) {
+      for (const int bus : { 1, 3, 5, 2, 4}) {
         auto& offset = bus_offset[bus];
         if (offset >= static_cast<int>(can_packets_[bus].size())) {
           continue;
@@ -1330,13 +1379,6 @@ class Pi3Hat::Impl {
 
       if (!any_sent) { break; }
     }
-
-    // Now send out all the low speed packets.
-    for (const auto index : can_packets_[5]) {
-      SendCanPacket(input.tx_can[index]);
-    }
-
-    return result;
   }
 
   void SendRf(const Span<RfSlot>& slots) {
@@ -1458,6 +1500,31 @@ class Pi3Hat::Impl {
     return count;
   }
 
+  void FlushReadCan(const Input& input, const ExpectedReply& expected_replies,
+                    Output* output) {
+    const auto can1_expected =
+        (expected_replies.count[1] + expected_replies.count[2]) ||
+        input.force_can_check & 0x06;
+
+    if (can1_expected) {
+      ReadCanFrames(aux_spi_, 0, 1, &input.rx_can, output);
+    }
+
+    const auto can2_expected =
+        (expected_replies.count[3] + expected_replies.count[4]) ||
+        input.force_can_check & 0x18;
+    if (can2_expected) {
+      ReadCanFrames(aux_spi_, 1, 3, &input.rx_can, output);
+    }
+
+    const auto aux_expected =
+        ((expected_replies.count[5]) || input.force_can_check & 0x20) &&
+        config_.enable_aux;
+    if (aux_expected) {
+      ReadCanFrames(primary_spi_, 0, 5, &input.rx_can, output);
+    }
+  }
+
   void ReadCan(const Input& input, const ExpectedReply& expected_replies,
                Output* output) {
     int bus_replies[] = {
@@ -1465,6 +1532,17 @@ class Pi3Hat::Impl {
       expected_replies.count[3] + expected_replies.count[4],
       expected_replies.count[5],
     };
+
+    const int64_t min_rx_timeout_ns = [&]() {
+      int64_t biggest = 0;
+      for (int bus = 1; bus <= 5; bus++) {
+        const int64_t this_ns =
+            expected_replies.count[bus] ?
+            (expected_replies.send_ns[bus] + expected_replies.receive_ns[bus]) : 0;
+        if (this_ns > biggest) { biggest = this_ns; }
+      }
+      return biggest + input.rx_baseline_wait_ns;
+    }();
 
     const bool to_check[] = {
       bus_replies[0] || input.force_can_check & 0x06,
@@ -1523,25 +1601,32 @@ class Pi3Hat::Impl {
         return;
       }
 
-      if (delta_ns > input.timeout_ns && !
-          (delta_ns < input.min_tx_wait_ns ||
-           since_last_ns < input.rx_extra_wait_ns)) {
+      if (delta_ns > input.timeout_ns &&
+          !(delta_ns < input.min_tx_wait_ns ||
+            delta_ns < min_rx_timeout_ns ||
+            since_last_ns < input.rx_extra_wait_ns)) {
         // The timeout has expired.
         return;
       }
 
       if (!any_found) {
         // Give the controllers a chance to rest.
-        BusyWaitUs(20);
+        BusyWaitUs(10);
       }
     }
   }
 
   Output Cycle(const Input& input) {
-    // Send off all our CAN data to all buses.
-    auto expected_replies = SendCan(input);
-
     Output result;
+
+    auto expected_replies = CalculateExpectedReply(input);
+
+    // First, ensure there aren't any receive frames sitting around
+    // before we start for CAN busses we expect to have a reply for.
+    FlushReadCan(input, expected_replies, &result);
+
+    // Send off all our CAN data to all buses.
+    SendCan(input);
 
     // While those are sending, do our other work.
     if (input.tx_rf.size()) {

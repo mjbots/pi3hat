@@ -40,6 +40,7 @@ struct SingleCan {
 
   int bus = 0;
   bool expect_reply = false;
+  int expected_reply_size = 0;
 };
 
 struct Input {
@@ -49,7 +50,8 @@ struct Input {
   bool request_attitude = false;
   uint32_t timeout_ns = 0;
   uint32_t min_tx_wait_ns = 200000;
-  uint32_t rx_extra_wait_ns = 40000;
+  uint32_t rx_baseline_wait_ns = 1000000;
+  uint32_t rx_extra_wait_ns = 0;
 };
 
 using Euler = pi3hat::Euler;
@@ -144,11 +146,13 @@ class Pi3HatRouter {
       std::memcpy(&out.data[0], in.data.data(), out.size);
       out.bus = in.bus;
       out.expect_reply = in.expect_reply;
+      out.expected_reply_size = in.expected_reply_size;
     }
     force_can_check_ = input.force_can_check;
     request_attitude_ = input.request_attitude;
     timeout_ns_ = input.timeout_ns;
     min_tx_wait_ns_ = input.min_tx_wait_ns;
+    rx_baseline_wait_ns_ = input.rx_baseline_wait_ns;
     rx_extra_wait_ns_ = input.rx_extra_wait_ns;
     if (input.max_rx >= 0) {
       rx_can_.resize(input.max_rx);
@@ -206,6 +210,7 @@ class Pi3HatRouter {
 
     input.timeout_ns = timeout_ns_;
     input.min_tx_wait_ns = min_tx_wait_ns_;
+    input.rx_baseline_wait_ns = rx_baseline_wait_ns_;
     input.rx_extra_wait_ns = rx_extra_wait_ns_;
 
     Output result;
@@ -256,6 +261,7 @@ class Pi3HatRouter {
   bool request_attitude_ = false;
   uint32_t timeout_ns_ = 0;
   uint32_t min_tx_wait_ns_ = 0;
+  uint32_t rx_baseline_wait_ns_ = 0;
   uint32_t rx_extra_wait_ns_ = 0;
   std::vector<pi3hat::CanFrame> rx_can_;
   Attitude attitude_;
@@ -328,6 +334,7 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("request_attitude", &Input::request_attitude)
       .def_readwrite("timeout_ns", &Input::timeout_ns)
       .def_readwrite("min_tx_wait_ns", &Input::min_tx_wait_ns)
+      .def_readwrite("rx_baseline_wait_ns", &Input::rx_baseline_wait_ns)
       .def_readwrite("rx_extra_wait_ns", &Input::rx_extra_wait_ns)
       ;
 
