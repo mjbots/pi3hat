@@ -195,20 +195,24 @@ class Pi3HatMoteusTransport : public moteus::Transport {
     const auto output = pi3hat_->Cycle(input);
 
     if (cycle_data_.pi3hat_output) { *cycle_data_.pi3hat_output = output; }
-    cycle_data_.replies->clear();
+    if (cycle_data_.replies) {
+      cycle_data_.replies->clear();
+    }
     for (size_t i = 0; i < output.rx_can_size; i++) {
       const auto& can = rx_can_[i];
 
-      cycle_data_.replies->push_back({});
-      auto& reply = cycle_data_.replies->back();
+      if (cycle_data_.replies) {
+        cycle_data_.replies->push_back({});
+        auto& reply = cycle_data_.replies->back();
 
-      reply.arbitration_id = can.id;
-      reply.destination = can.id & 0x7f;
-      reply.source = (can.id >> 8) & 0x7f;
-      reply.can_prefix = can.id >> 16;
-      reply.size = can.size;
-      std::memcpy(reply.data, can.data, can.size);
-      reply.bus = can.bus;
+        reply.arbitration_id = can.id;
+        reply.destination = can.id & 0x7f;
+        reply.source = (can.id >> 8) & 0x7f;
+        reply.can_prefix = can.id >> 16;
+        reply.size = can.size;
+        std::memcpy(reply.data, can.data, can.size);
+        reply.bus = can.bus;
+      }
     }
   }
 
