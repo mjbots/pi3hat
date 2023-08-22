@@ -20,27 +20,12 @@ negative.
 
 ## JC1/JC2/JC3/JC4/JC5 ##
 
-These are JST PH-3, 5Mbps CAN-FD connectors with 12V common mode
-range.  Each has a physical 100 ohm terminator permanently installed.
+These are JST PH-3, 5Mbps CAN-FD connectors.  Each has a physical
+termination resistor permanently installed.
 
 * Pin 1: CANH
 * Pin 2: CANL
 * Pin 3: Ground
-
-## J3 ##
-
-This 8 pin connector allows a nrf24l01 module to be connected.
-
-Pin 1 is closest to the J3 label.
-
-* Pin 1: IRQ
-* Pin 2: CIPO
-* Pin 3: COPI
-* Pin 4: SCK
-* Pin 5: CS
-* Pin 6: CE
-* Pin 7: 3.3V
-* Pin 8: GND
 
 # Orientation #
 
