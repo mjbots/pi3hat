@@ -64,7 +64,7 @@ def main():
             run(f'cp bazel-bin/pi3hat_tools.tar.bz2 {outdir}/{datestr}-pi3hat_tools-cp{pyver.replace(".","")}-{pyarch}-{git_hash}.tar.bz2')
 
             wheel_name = subprocess.check_output("tar --list -f bazel-bin/pi3hat_tools.tar.bz2 | grep \.whl$", shell=True).decode('utf8').strip()
-            run(f'tar -C {outdir} --strip-components 2 --extract -f bazel-bin/pi3hat_tools.tar.bz2 {wheel_name}')
+            run(f'tar -C {outdir} --strip-components 1 --extract -f bazel-bin/pi3hat_tools.tar.bz2 {wheel_name}')
 
 
     print()
