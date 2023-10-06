@@ -324,6 +324,7 @@ PYBIND11_MODULE(_pi3hat_router, m) {
 
       .def_readwrite("bus", &SingleCan::bus)
       .def_readwrite("expect_reply", &SingleCan::expect_reply)
+      .def_readwrite("expected_reply_size", &SingleCan::expected_reply_size)
       ;
 
   py::class_<Input>(m, "Input")
