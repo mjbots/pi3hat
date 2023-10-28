@@ -1,15 +1,18 @@
 # mjbots pi3 hat #
 
-This is the reference documentation for the mjbots pi3 hat r4.4b.
+This is the reference documentation for the mjbots pi3hat r4.5.
 What is it?
 
-The mjbots pi3hat is a daughterboard for a Raspberry Pi (tm), which
-provides the following:
+The mjbots pi3hat is a daughterboard for a Raspberry Pi (tm) 3 or
+Raspberry Pi 4 [1], which provides the following:
 
- * Power input from 8-44V, provides 5V for Raspberry Pi
+ * Power input from 8-54V [2], provides 5V for Raspberry Pi
  * 5x independent 5Mbps CAN-FD buses
  * A 1kHz IMU and attitude reference system
  * A spread spectrum nrf24l01 interface
+
+1. The pi3hat is not compatible with the Raspberry Pi 1, 2, or 5.
+2. The pi3hat r4.4 and earlier support 8-44V DC input.
 
 # Pinouts #
 
