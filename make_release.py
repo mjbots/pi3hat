@@ -54,13 +54,13 @@ def main():
 
     run(f'cp bazel-bin/fw/pi3_hat.elf {outdir}/{datestr}-pi3hat-{git_hash}.elf')
 
-    for pyver in ['3.7', '3.9', '3.10']:
+    for pyver in ['3.7', '3.9', '3.10', '3.11']:
         for arch in ['pi', 'pi64']:
             pyarch = {
                 'pi' : 'armv7l',
                 'pi64' : 'aarch64',
             }[arch]
-            run(f'tools/bazel build --config={arch} --define PYTHON={pyver} -c opt //:pi3hat_tools')
+            run(f'tools/bazel build --verbose_failures --config={arch} --define PYTHON={pyver} -c opt //:pi3hat_tools')
             run(f'cp bazel-bin/pi3hat_tools.tar.bz2 {outdir}/{datestr}-pi3hat_tools-cp{pyver.replace(".","")}-{pyarch}-{git_hash}.tar.bz2')
 
             wheel_name = subprocess.check_output("tar --list -f bazel-bin/pi3hat_tools.tar.bz2 | grep \.whl$", shell=True).decode('utf8').strip()
