@@ -59,7 +59,12 @@ offset.
 First, install the python library:
 
 ```
-sudo pip3 install moteus-pi3hat
+sudo apt install libraspberrypi-dev
+
+python -m venv --system-site-packages moteus-venv
+source moteus-venv/bin/activate
+
+pip3 install moteus moteus-pi3hat
 ```
 
 Then both `moteus_tool` and `tview` will be aware of the pi3hat, and
@@ -77,7 +82,10 @@ So, an example where servo ID 1 and 6 are present on port JC1 (bus 1),
 and 3 and 7 are present on port JC2 (bus 2), would look like:
 
 ```
-sudo python3 -m moteus_gui.tview --pi3hat-cfg '1=1,6;2=3,7' -t 1,3,6,7
+sudo bash
+source moteus-venv/bin/activate
+
+tview --pi3hat-cfg '1=1,6;2=3,7' -t 1,3,6,7
 ```
 
 The same `--pi3hat-cfg` works for `moteus_tool` as for `tview`.
@@ -87,11 +95,17 @@ The same `--pi3hat-cfg` works for `moteus_tool` as for `tview`.
 Simply perform:
 
 ```
-sudo pip3 install moteus-pi3hat
+sudo apt install libraspberrypi-dev
+
+# If not already created
+# python -m venv --system-site-packages moteus-venv
+
+source moteus-venv/bin/activate
+pip3 install moteus-pi3hat
 ```
 
 Then use the same API documented at:
-https://github.com/mjbots/moteus/tree/main/lib/python
+https://github.com/mjbots/moteus/tree/main/lib/python with the caveat that all scripts must be executed as root.
 
 Alternately, the pi3hat transport can be constructed directly using:
 
