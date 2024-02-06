@@ -179,12 +179,27 @@ to a SPI bus on the Raspberry Pi:
 
 # Debugging connectors #
 
-## JP5 ##
+## JP6 ##
 
-This connector directly breaks out 3 pins from the Raspberry Pi:
+ * 1: 5V
+ * 2: 3.3V
+ * 3: Ground
 
- * 1: Pin 32 (BCM 12)
- * 2: Pin 33 (BCM 13)
+## I2C ##
+
+This connector directly breaks out I2C pins from the Raspberry Pi:
+
+ * 1: 3.3V
+ * 2: SDA / RPI Pin 3
+ * 3: SCL / RPI Pin 5
+ * 4: Ground
+
+## UT ##
+
+This connector directly breaks out UART pins from the Raspberry Pi:
+
+ * 1: TX / RPI 32
+ * 2: RX / RPI 33
  * 3: Ground
 
 ## JP4 ##
