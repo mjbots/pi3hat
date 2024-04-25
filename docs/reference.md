@@ -417,29 +417,20 @@ Or to flash a specific .elf file
 
 Each of the three processors needs to be flashed with the same image.
 
-# Optional Raspberry Pi SD card image #
+# pi3hat_tool #
 
-The optional Raspberry Pi with SD card comes with a non-GUI image
-flashed on it from Raspberry Pi.  Additionally, it is configured to
-present as a 5GHz wifi access point.  The SSID is mjbots-xxxxxx, and
-the password is "WalkingRobots".  The user name and password are the
-default for the rpi, pi/raspberry
+Compiled versions of pi3hat_tool can be found in each github release: https://github.com/mjbots/pi3hat/releases
 
-The wifi IP address is 192.168.16.47, you can ssh to it from linux:
+You want the YYYYMMDD-pi3hat_tools-*.bz2, selecting the appropriate
+file for your architecture.
 
-```
-ssh pi@192.168.16.47
-```
-
-The ethernet address is 192.168.17.47.
-
-In the home directory is a copy of the compiled `pi3hat_tool`, you can
-run it:
+pi3hat_tool can be used perform various diagnostic functions,
+including reading attitude:
 
 ```
 pi@realtimepi:~ $  sudo bash
 
-root@realtimepi:/home/pi# ./pi3hat_tools/pi3hat_tool --read-att
+root@raspberrypi:/home/pi# ./pi3hat_tools/pi3hat_tool --read-att
 ```
 
 Which will then display the current attitude information.
