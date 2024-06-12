@@ -119,6 +119,8 @@ void BusyWaitUs(int64_t us) {
   asm volatile("dsb");
 #elif __ARM_ARCH_8A__
   asm volatile("dsb");
+#elif __ARM_ARCH_6__
+# error "RPI 1/2 are unsupported.  Perhaps you need '-march=native -mcpu=native -mtune=native'?"
 #else
 # error "Unknown architecture"
 #endif
@@ -133,6 +135,8 @@ void BusyWaitUs(int64_t us) {
   asm volatile("dsb");
 #elif __ARM_ARCH_8A__
   asm volatile("dsb");
+#elif __ARM_ARCH_6__
+# error "RPI 1/2 are unsupported.  Perhaps you need '-march=native -mcpu=native -mtune=native'?"
 #else
 # error "Unknown architecture"
 #endif

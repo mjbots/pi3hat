@@ -12,6 +12,7 @@
 #   GIT_TAG        00112233445566778899aabbccddeeff00112233
 # )
 #
+# set(CMAKE_CXX_FLAGS "-march=native -mcpu=native -mtune=native")
 # FetchContent_MakeAvailable(pi3hat)
 #
 # add_executable(myproject myproject.cc)
