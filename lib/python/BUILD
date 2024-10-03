@@ -22,13 +22,14 @@ load("//tools/workspace:template_file.bzl", "template_file")
 
 VERSION="0.3.29"
 
-PYTHON_SHORT_VERSIONS = ['37', '39', '310', '311']
+PYTHON_SHORT_VERSIONS = ['37', '39', '310', '311', '312']
 ARCHITECTURES = ['armv7l', 'aarch64']
 ABITAG = {
     '37': 'abi3',
     '39': 'cp39',
     '310': 'cp310',
     '311': 'cp311',
+    '312': 'cp312',
 }
 PTAG = {
     '37_armv7l': 'linux',
@@ -39,6 +40,8 @@ PTAG = {
     '310_aarch64': 'manylinux_2_17',
     '311_armv7l': 'manylinux_2_17',
     '311_aarch64': 'manylinux_2_17',
+    '312_armv7l': 'manylinux_2_17',
+    '312_aarch64': 'manylinux_2_17',
 }
 
 
@@ -124,5 +127,7 @@ filegroup(
         "//:python310_aarch64" : [":bdist_wheel_310_aarch64"],
         "//:python311_armeabihf" : [":bdist_wheel_311_armv7l"],
         "//:python311_aarch64" : [":bdist_wheel_311_aarch64"],
+        "//:python312_armeabihf" : [":bdist_wheel_312_armv7l"],
+        "//:python312_aarch64" : [":bdist_wheel_312_aarch64"],
     }),
 )
