@@ -30,6 +30,7 @@ filegroup(
     srcs = [
         "Makefile",
         "pi3hat_moteus_transport_register.cc",
+        "imu_transport.cc",
     ]
 )
 
@@ -50,3 +51,13 @@ filegroup(
 )
  for x in EXAMPLES
 ]
+
+cc_binary(
+    name='imu_transport',
+    srcs = ['imu_transport.cc'],
+    copts = ["-Iexternal/moteus/lib/cpp/mjbots/moteus"],
+    deps = [
+        "//lib/cpp/mjbots/pi3hat:transport",
+        "@org_llvm_libcxx//:libcxx",
+    ],
+)

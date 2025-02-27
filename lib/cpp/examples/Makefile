@@ -25,7 +25,8 @@ EXAMPLES = \
 	multiple_cycle \
 	simple_teleop \
 	nlateral_teleop \
-	timeout_debug
+	timeout_debug \
+	imu_transport
 
 AUX_SOURCES = pi3hat.cc pi3hat_moteus_transport_register.cc
 

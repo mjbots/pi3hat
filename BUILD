@@ -28,6 +28,7 @@ filegroup(
     name = "pi_target",
     srcs = [
         "//lib/cpp/mjbots/pi3hat",
+        "examples",
     ],
 )
 
@@ -38,6 +39,7 @@ EXAMPLES = [
     "simple_teleop",
     "nlateral_teleop",
     "timeout_debug",
+    "imu_transport",
 ]
 
 pkg_files(
