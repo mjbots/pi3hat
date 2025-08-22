@@ -40,7 +40,6 @@ AUX_SOURCES = pi3hat.cc pi3hat_moteus_transport_register.cc
 		pi3hat.cc \
 		pi3hat_moteus_transport_register.cc \
 		$< \
-		-lbcm_host \
 		-lpthread
 
 

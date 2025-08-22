@@ -34,8 +34,6 @@
 #include <string>
 #include <vector>
 
-#include <bcm_host.h>
-
 char g_data_block[4096] = {};
 
 void copy_data(void* ptr) {
@@ -153,6 +151,43 @@ bool StartsWith(const std::string& value, const std::string& maybe_prefix) {
   return value.substr(0, maybe_prefix.size()) == maybe_prefix;
 }
 
+uint64_t host_get_peripheral_address() {
+  FILE *fp = nullptr;
+  char buf[1024] = {};
+
+  fp = fopen("/proc/device-tree/model", "r");
+  if (!fp) {
+    throw Error("Unable to open /proc/device-tree/model");
+  }
+
+  if (fgets(buf, sizeof(buf), fp) == NULL) {
+    fclose(fp);
+    throw Error("Unable to read /proc/device-tree/model");
+  }
+  fclose(fp);
+
+  const int model = [&]() {
+    int version = -1;
+    if (sscanf(buf, "Raspberry Pi %d ", &version) == 1) {
+      return version;
+    }
+    if (sscanf(buf, "Raspberry Pi Compute Module %d ", &version) == 1) {
+      return version;
+    }
+    throw Error(std::string("Unable to parse rpi version: ") + buf);
+  }();
+
+  // Return hard-coded values for known versions.
+  if (model == 4) {
+    return 0xfe000000UL;
+  } else if (model < 4) {
+    // Pi 3, 2, 1, Zero, Model A/B
+    return 0x3f000000UL;
+  }
+
+  throw Error(std::string("Unsupported Raspberry Pi: ") + buf);
+}
+
 ///////////////////////////////////////////////
 /// Random utility classes
 
@@ -252,7 +287,7 @@ class Rpi3Gpio {
   // static constexpr uint32_t ALT_5 = 2;
 
   Rpi3Gpio(int dev_mem_fd)
-      : mmap_(dev_mem_fd, 4096, bcm_host_get_peripheral_address() + GPIO_BASE),
+      : mmap_(dev_mem_fd, 4096, host_get_peripheral_address() + GPIO_BASE),
         gpio_(reinterpret_cast<volatile uint32_t*>(mmap_.ptr())) {}
 
   void SetGpioMode(uint32_t gpio, uint32_t function) {
@@ -332,7 +367,7 @@ class PrimarySpi {
     ThrowIfErrno(fd_ < 0, "pi3hat: could not open /dev/mem");
 
     spi_mmap_ = SystemMmap(
-        fd_, 4096, bcm_host_get_peripheral_address() + SPI_BASE);
+        fd_, 4096, host_get_peripheral_address() + SPI_BASE);
     spi_ = reinterpret_cast<volatile Bcm2835Spi*>(
         static_cast<char*>(spi_mmap_.ptr()));
 
@@ -517,7 +552,7 @@ class AuxSpi {
     ThrowIfErrno(fd_ < 0, "rpi3_aux_spi: could not open /dev/mem");
 
     spi_mmap_ = SystemMmap(
-        fd_, 4096, bcm_host_get_peripheral_address() + AUX_BASE);
+        fd_, 4096, host_get_peripheral_address() + AUX_BASE);
     auxenb_ = reinterpret_cast<volatile uint32_t*>(
         static_cast<char*>(spi_mmap_.ptr()) + 0x04);
     spi_ = reinterpret_cast<volatile Bcm2835AuxSpi*>(

@@ -36,7 +36,7 @@ cc_library(
     name = "libpi3hat",
     hdrs = ["pi3hat.h"],
     srcs = ["pi3hat.cc"],
-    deps = [":headers", "@raspberrypi-firmware//:bcm_host"],
+    deps = [":headers"],
 )
 
 cc_binary(
