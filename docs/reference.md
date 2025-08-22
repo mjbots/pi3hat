@@ -59,8 +59,6 @@ offset.
 First, install the python library:
 
 ```
-sudo apt install libraspberrypi-dev
-
 python -m venv --system-site-packages moteus-venv
 source moteus-venv/bin/activate
 
