@@ -324,8 +324,11 @@ class CanBridge {
         // Let's send this out.
         const auto send_result = SendCan(&spi_buf);
         if (send_result == fw::FDCan::kNoSpace) {
-          // Just finish this poll and try again later.
-          return;
+          // We could try again later, but odds are this won't do any
+          // good and we'll instead end up just busy looping.
+
+          // So, pretend like we were able to send this and discard it
+          // instead.
         }
 
         spi_buf.ready_to_send = false;
