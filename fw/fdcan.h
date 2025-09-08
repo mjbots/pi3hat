@@ -126,6 +126,9 @@ class FDCan {
                   std::string_view data,
                   const SendOptions& = SendOptions());
 
+  /// Cancel all queued packets.
+  void CancelAll();
+
   /// @return true if a packet was available.
   bool Poll(FDCAN_RxHeaderTypeDef* header, mjlib::base::string_span);
 

@@ -62,6 +62,7 @@ class CanApplication {
   void PollMillisecond() {
     cpu_meter_.PollMillisecond();
     spi_.PollMillisecond();
+    bridge_.PollMillisecond();
   }
 
   fw::MillisecondTimer* const timer_;
@@ -150,6 +151,7 @@ class AuxApplication {
 
   void PollMillisecond() {
     cpu_meter_.PollMillisecond();
+    bridge_.PollMillisecond();
     spi_.PollMillisecond();
     imu_.PollMillisecond();
     rf_.PollMillisecond();

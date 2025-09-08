@@ -351,6 +351,19 @@ FDCan::SendResult FDCan::Send(uint32_t dest_id,
   return kSuccess;
 }
 
+void FDCan::CancelAll() {
+  // The STM32G4 only has 3 fifo positions and they are specified by
+  // individual bits.  This is guaranteed to cancel everything.
+#if defined(TARGET_STM32G4)
+  hfdcan1_.Instance->TXBCR =
+      (1 << 0) |
+      (1 << 1) |
+      (1 << 2);
+#else
+  #error "Unsupported target"
+#endif
+}
+
 bool FDCan::Poll(FDCAN_RxHeaderTypeDef* header,
                  mjlib::base::string_span data) {
   if (HAL_FDCAN_GetRxMessage(

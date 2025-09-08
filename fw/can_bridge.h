@@ -31,7 +31,7 @@ namespace fw {
 /// cannot be read or written piecemeal.
 ///
 /// 0: Protocol version
-///    byte 0: the constant value 3
+///    byte 0: the constant value 4
 /// 1: Interface type
 ///    byte 0: the constant value 1
 /// 2: Receive status
@@ -98,6 +98,7 @@ namespace fw {
 // Protocol history:
 //
 // Version 3: Added register 7-10 for configuration.
+// Version 4: Stop getting borked if no-one acks our packets.
 
 class CanBridge {
  public:
@@ -324,11 +325,9 @@ class CanBridge {
         // Let's send this out.
         const auto send_result = SendCan(&spi_buf);
         if (send_result == fw::FDCan::kNoSpace) {
-          // We could try again later, but odds are this won't do any
-          // good and we'll instead end up just busy looping.
-
-          // So, pretend like we were able to send this and discard it
-          // instead.
+          // Just discard this.  Something is probably going wrong if
+          // the hardware FIFO is full, so no need to compound it by
+          // storing this around.
         }
 
         spi_buf.ready_to_send = false;
@@ -338,6 +337,22 @@ class CanBridge {
   }
 
   void PollMillisecond() {
+    can1_cancel_all_count_++;
+    can2_cancel_all_count_++;
+
+    // 50ms after the last thing was added to the TQ queue, just
+    // cancel everything in it.  This is relatively simple, and
+    // ensures we make at least some forward progress even when frames
+    // are accidentally sent that nothing acknowledges while automatic
+    // retransmission is enabled.
+    if (can1_ && can1_cancel_all_count_ > 50) {
+      can1_->CancelAll();
+      can1_cancel_all_count_ = 0;
+    }
+    if (can2_ && can2_cancel_all_count_ > 50) {
+      can2_->CancelAll();
+      can2_cancel_all_count_ = 0;
+    }
   }
 
   uint8_t queue_size() const {
@@ -351,7 +366,7 @@ class CanBridge {
   RegisterSPISlave::Buffer ISR_Start(uint16_t address) {
     if (address == 0) {
       return {
-        std::string_view("\x03", 1),
+        std::string_view("\x04", 1),
         {},
       };
     }
@@ -536,7 +551,20 @@ class CanBridge {
         can2_;
 
     if (can) {
-      return can->Send(id, std::string_view(&spi->data[min_size], size));
+      const auto result =
+          can->Send(id, std::string_view(&spi->data[min_size], size));
+      if (result == fw::FDCan::kSuccess) {
+        // Reset our "cancel everything" counters, because we
+        // successfully enqueued something.
+        if (can == can1_) {
+          can1_cancel_all_count_ = 0;
+        } else if (can == can2_) {
+          can2_cancel_all_count_ = 0;
+        } else {
+          mbed_die();
+        }
+      }
+      return result;
     } else {
       return fw::FDCan::kSuccess;
     }
@@ -573,6 +601,9 @@ class CanBridge {
 
   fw::FDCan* can1_ = nullptr;
   fw::FDCan* can2_ = nullptr;
+
+  uint32_t can1_cancel_all_count_ = 0;
+  uint32_t can2_cancel_all_count_ = 0;
 
   DigitalOut irq_;
 
