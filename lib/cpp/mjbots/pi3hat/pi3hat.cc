@@ -1192,6 +1192,19 @@ class Pi3Hat::Impl {
     if (config_.enable_aux) {
       result.aux = GetProcessorInfo(&primary_spi_, 0);
     }
+
+    // Verify all the CAN protocols for "unknown address safety".
+    const auto can1_can_protocol = ReadByte(&aux_spi_, 0, 0);
+    const auto can2_can_protocol = ReadByte(&aux_spi_, 1, 0);
+    const auto aux_can_protocol =
+        config_.enable_aux ?
+        ReadByte(&primary_spi_, 0, 0) : can1_can_protocol;
+
+    result.can_unknown_address_safe =
+        (can1_can_protocol > 3) &&
+        (can2_can_protocol > 3) &&
+        (aux_can_protocol > 3);
+
     return result;
   }
 

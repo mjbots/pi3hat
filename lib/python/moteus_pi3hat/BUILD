@@ -17,9 +17,9 @@
 package(default_visibility = ["//visibility:public"])
 
 cc_binary(
-    name = "_pi3hat_router.so",
+    name = "_pi3hat_device.so",
     srcs = [
-        "_pi3hat_router.cc",
+        "_pi3hat_device.cc",
     ],
     deps = [
         "//lib/cpp/mjbots/pi3hat:libpi3hat",
@@ -41,6 +41,6 @@ py_library(
     name = "moteus_pi3hat",
     srcs = [
         "__init__.py",
-        "pi3hat_router.py",
+        "pi3hat_device.py",
     ],
 )

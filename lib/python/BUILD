@@ -53,7 +53,7 @@ pkg_tar(
     extension = "tar",
     package_dir = "moteus_pi3hat",
     srcs = [
-        "//lib/python/moteus_pi3hat:_pi3hat_router.so",
+        "//lib/python/moteus_pi3hat:_pi3hat_device.so",
         "//lib/python/moteus_pi3hat",
     ],
 )

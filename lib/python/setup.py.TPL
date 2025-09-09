@@ -29,7 +29,7 @@ class BinaryDistribution(setuptools.dist.Distribution):
 
 
 setuptools.setup(
-    name = 'moteus-pi3hat',
+    name = 'moteus_pi3hat',
     version = {{VERSION}},
     description = 'moteus brushless controller library and tools',
     long_description = long_description,
@@ -48,15 +48,15 @@ setuptools.setup(
         'moteus_pi3hat',
     ],
     entry_points = {
-        'moteus.transports': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
+        'moteus.transports2': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
     },
     python_requires = ">=3.7",
     install_requires = [
-        'moteus>=0.3.22',
+        'moteus>=0.3.91',
     ],
     include_package_data = True,
     package_data = {
-        'moteus_pi3hat' : ['_pi3hat_router.so'],
+        'moteus_pi3hat' : ['_pi3hat_device.so'],
     },
     distclass = BinaryDistribution,
 )

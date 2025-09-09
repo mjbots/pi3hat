@@ -17,8 +17,8 @@ controller."""
 
 import argparse
 
-from moteus_pi3hat.pi3hat_router import (
-    Pi3HatRouter, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
+from moteus_pi3hat.pi3hat_device import (
+    Pi3HatDevice, Pi3HatChildDevice, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
 
 class Pi3HatFactory():
     PRIORITY = 5
@@ -63,11 +63,15 @@ class Pi3HatFactory():
                 kwargs['enable_aux'] = False
             if args.can_disable_brs:
                 kwargs['disable_brs'] = True
+            if args.can_debug:
+                kwargs['debug_log'] = args.can_debug
 
-        return Pi3HatRouter(**kwargs)
+        parent = Pi3HatDevice(**kwargs)
+        return [Pi3HatChildDevice(parent, bus) for bus in [1, 2, 3, 4, 5]]
 
 __all__ = [
-    'Pi3HatRouter',
+    'Pi3HatDevice',
+    'Pi3HatChildDevice',
     'Pi3HatFactory',
     'CanAttitudeWrapper',
     'CanConfiguration',

@@ -1,4 +1,4 @@
-// Copyright 2023 mjbots Robotic Systems, LLC.  info@mjbots.com
+// Copyright 2025 mjbots Robotic Systems, LLC.  info@mjbots.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -93,15 +93,15 @@ Euler ConvertEulerRad(const pi3hat::Quaternion& q) {
   return result_rad;
 }
 
-class Pi3HatRouter {
+class Pi3HatDevice {
  public:
   struct Options : pi3hat::Pi3Hat::Configuration {
     int cpu = 3;
   };
 
-  Pi3HatRouter(const Options& options)
+  Pi3HatDevice(const Options& options)
       : options_(options),
-        thread_(std::bind(&Pi3HatRouter::CHILD_Run, this)) {
+        thread_(std::bind(&Pi3HatDevice::CHILD_Run, this)) {
     auto future = init_promise_.get_future();
     auto ep = future.get();
     if (ep) {
@@ -110,7 +110,7 @@ class Pi3HatRouter {
     }
   }
 
-  ~Pi3HatRouter() {
+  ~Pi3HatDevice() {
     {
       std::unique_lock<std::mutex> lock(mutex_);
       done_ = true;
@@ -268,7 +268,7 @@ class Pi3HatRouter {
 };
 }
 
-PYBIND11_MODULE(_pi3hat_router, m) {
+PYBIND11_MODULE(_pi3hat_device, m) {
   m.doc() = "implementation of pi3hat specific moteus functionality";
   using PH = pi3hat::Pi3Hat;
 
@@ -297,18 +297,18 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("fd_rate", &PH::CanConfiguration::fd_rate)
       ;
 
-  py::class_<Pi3HatRouter::Options>(m, "Options")
+  py::class_<Pi3HatDevice::Options>(m, "Options")
       .def(py::init<>())
-      .def_readwrite("cpu", &Pi3HatRouter::Options::cpu)
-      .def_readwrite("spi_speed_hz", &Pi3HatRouter::Options::spi_speed_hz)
-      .def_readwrite("mounting_deg", &Pi3HatRouter::Options::mounting_deg)
-      .def_readwrite("attitude_rate_hz", &Pi3HatRouter::Options::attitude_rate_hz)
-      .def_readwrite("enable_aux", &Pi3HatRouter::Options::enable_aux)
+      .def_readwrite("cpu", &Pi3HatDevice::Options::cpu)
+      .def_readwrite("spi_speed_hz", &Pi3HatDevice::Options::spi_speed_hz)
+      .def_readwrite("mounting_deg", &Pi3HatDevice::Options::mounting_deg)
+      .def_readwrite("attitude_rate_hz", &Pi3HatDevice::Options::attitude_rate_hz)
+      .def_readwrite("enable_aux", &Pi3HatDevice::Options::enable_aux)
       // We rely on the fact that std::array has the same in-memory
       // layout as a C style array.
       .def_readwrite("can", reinterpret_cast<
                      std::array<PH::CanConfiguration, 5>
-                     Pi3HatRouter::Options::*>(&Pi3HatRouter::Options::can))
+                     Pi3HatDevice::Options::*>(&Pi3HatDevice::Options::can))
       ;
 
   py::class_<SingleCan>(m, "SingleCan")
@@ -376,8 +376,8 @@ PYBIND11_MODULE(_pi3hat_router, m) {
       .def_readwrite("z", &pi3hat::Point3D::z)
       ;
 
-  py::class_<Pi3HatRouter>(m, "Pi3HatRouter")
-      .def(py::init<Pi3HatRouter::Options>())
-      .def("cycle", &Pi3HatRouter::Cycle)
+  py::class_<Pi3HatDevice>(m, "Pi3HatDevice")
+      .def(py::init<Pi3HatDevice::Options>())
+      .def("cycle", &Pi3HatDevice::Cycle)
       ;
 }
