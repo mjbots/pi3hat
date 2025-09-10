@@ -1146,10 +1146,10 @@ class Pi3Hat::Impl {
   template <typename Spi>
   void TestCan(Spi* spi, int cs, const char* name) {
     const auto version = ReadByte(spi, cs, 0);
-    if (version != 2 && version != 3) {
+    if (version != 2 && version != 3 && version != 4) {
       throw std::runtime_error(
           Format(
-              "Processor '%s' has incorrect CAN SPI version %d != [2,3]",
+              "Processor '%s' has incorrect CAN SPI version %d != [2,3,4]",
               name, version));
     }
   }
