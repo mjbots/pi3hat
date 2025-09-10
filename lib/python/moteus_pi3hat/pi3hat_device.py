@@ -137,6 +137,24 @@ class Pi3HatDevice(TransportDevice):
     def __repr__(self):
         return 'pi3hat()'
 
+    async def receive_frame(self) -> Frame:
+        '''Read one frame from any port.'''
+        while True:
+            # Until we have something in the receive queue, keep waiting.
+            if len(self._receive_queue):
+                return self._receive_queue.pop(0)
+
+            # We have nothing.  Attempt to read something
+            # for it and try again.
+            request = TransportDevice.Request(
+                frame=None,
+                frame_filter=None)
+
+            await self.transaction(
+                [request],
+                force_can_check=62, # 2 | 4 | 8 | 16 | 32
+                max_rx=16)
+
     async def send_frame(self, frame: Frame):
         raise NotImplementedError()
 
@@ -272,7 +290,7 @@ class Pi3HatDevice(TransportDevice):
 
                 # On subsequent attempts, always try to read
                 # something.
-                input.max_rx = 2
+                input.max_rx = 16
         finally:
             for x in subscriptions:
                 x[0].cancel()
@@ -330,7 +348,7 @@ class Pi3HatChildDevice(TransportDevice):
             await self._parent.transaction(
                 [request],
                 force_can_check=(1 << self._bus),
-                max_rx=1)
+                max_rx=2)
 
     async def transaction(
             self,
