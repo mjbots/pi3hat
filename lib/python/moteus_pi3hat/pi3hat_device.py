@@ -158,11 +158,6 @@ class Pi3HatDevice(TransportDevice):
     async def send_frame(self, frame: Frame):
         raise NotImplementedError()
 
-    # This we can inherit from TransportDevice.
-    #
-    # async def receive_frame(self) -> Frame:
-    #     raise NotImplementedError()
-
     def _make_pi3hat_from_request(self, request):
         assert request.child_device is not None
 
