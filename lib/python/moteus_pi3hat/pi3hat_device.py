@@ -306,6 +306,10 @@ class Pi3HatDevice(TransportDevice):
                     frame = self._make_frame_from_pi3hat(single_rx)
                     await self._handle_received_frame(frame)
 
+                # Give everything else a chance to run and potentially
+                # mark themselves as done.
+                await asyncio.sleep(0)
+
                 # Need to iterate until we are either cancelled, or until
                 # all the requests that need replies have them.
 
