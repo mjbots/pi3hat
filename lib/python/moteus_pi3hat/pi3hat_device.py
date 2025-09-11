@@ -280,7 +280,7 @@ class Pi3HatDevice(TransportDevice):
                          request.frame_filter and
                          len(request.responses) == 0)])
                 input.force_can_check = (
-                    force_can_check + sum(
+                    (force_can_check or 0) + sum(
                         [1 << x for x in remaining_busses_to_check]))
 
                 output = await self._async_cycle(input)
