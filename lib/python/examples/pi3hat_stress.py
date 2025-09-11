@@ -34,7 +34,7 @@ async def main():
 
     args = parser.parse_args()
 
-    transport = moteus_pi3hat.Pi3HatFactory()(args)
+    transport = moteus_pi3hat.Pi3HatRouter()
 
     test_count = 0
 
