@@ -174,6 +174,8 @@ class Pi3HatDevice(TransportDevice):
         return result
 
     def _make_frame_from_pi3hat(self, message):
+        if isinstance(message, CanAttitudeWrapper):
+            return message
         return Frame(
             arbitration_id=message.arbitration_id,
             data=message.data,
@@ -208,7 +210,8 @@ class Pi3HatDevice(TransportDevice):
             self,
             requests: typing.List[TransportDevice.Request],
             force_can_check=0,
-            max_rx=-1):
+            max_rx=-1,
+            request_attitude=False):
         async with self._lock:
             # We know the transaction itself will not take long.  Thus
             # we don't want to let it be cancelled, and potentially
@@ -216,7 +219,8 @@ class Pi3HatDevice(TransportDevice):
             await asyncio.shield(self._transaction(
                 requests,
                 force_can_check=force_can_check,
-                max_rx=max_rx))
+                max_rx=max_rx,
+                request_attitude=request_attitude))
 
             # It doesn't matter so much we are cancelled ourselves, as
             # we don't return anything via 'return' anyway.
@@ -225,7 +229,8 @@ class Pi3HatDevice(TransportDevice):
             self,
             requests: typing.List[TransportDevice.Request],
             force_can_check,
-            max_rx):
+            max_rx,
+            request_attitude):
         input = _pi3hat_device.Input()
 
         input.tx_can = [
@@ -235,6 +240,7 @@ class Pi3HatDevice(TransportDevice):
         ]
 
         input.max_rx = max_rx
+        input.request_attitude = request_attitude
 
         def make_subscription(request):
             future = asyncio.Future()
@@ -253,7 +259,8 @@ class Pi3HatDevice(TransportDevice):
                 future.set_result(None)
 
             filter_wrapper = (
-                lambda frame: frame.channel == request.child_device
+                lambda frame: (request.child_device is None
+                               or request.child_device == frame.channel)
                 and request.frame_filter(frame))
 
             return self._subscribe(filter_wrapper, handler), future
@@ -268,7 +275,8 @@ class Pi3HatDevice(TransportDevice):
             while True:
                 remaining_busses_to_check = set(
                     [request.child_device.bus() for request in requests
-                     if (request.frame_filter and
+                     if (request.child_device and
+                         request.frame_filter and
                          len(request.responses) == 0)])
                 input.force_can_check = (
                     force_can_check + sum(
@@ -276,9 +284,24 @@ class Pi3HatDevice(TransportDevice):
 
                 output = await self._async_cycle(input)
 
+                output_frames = output.rx_can
+
+                if output.attitude_present:
+                    attitude_frame = CanAttitudeWrapper(output.attitude)
+                    # Give it to any request that has no frame, but
+                    # has a frame_filter.
+                    for request in requests:
+                        if (not request.frame
+                            and request.frame_filter and
+                            request.frame_filter(attitude_frame)):
+
+
+                            output_frames.append(attitude_frame)
+
+
                 # Associate the replies we have received so far with
                 # requests.
-                for single_rx in output.rx_can:
+                for single_rx in output_frames:
                     frame = self._make_frame_from_pi3hat(single_rx)
                     await self._handle_received_frame(frame)
 
@@ -290,8 +313,10 @@ class Pi3HatDevice(TransportDevice):
                 if all([x[1].done() for x in subscriptions]):
                     return
 
-                # Remove all tx messages for subsequent iterations.
+                # Remove all tx messages and attitude requests for
+                # subsequent iterations.
                 input.tx_can = []
+                input.request_attitude = False
 
                 # On subsequent attempts, always try to read
                 # something.
@@ -299,6 +324,14 @@ class Pi3HatDevice(TransportDevice):
         finally:
             for x in subscriptions:
                 x[0].cancel()
+
+    async def attitude(self):
+        input = _pi3hat_device.Input()
+        input.request_attitude = True
+
+        output = await self._async_cycle(input)
+
+        return output.attitude if output.attitude_present else None
 
     def close(self):
         self._impl = None

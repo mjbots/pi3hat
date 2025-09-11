@@ -16,27 +16,50 @@
 
 '''Demonstrates using the IMU API of the pi3hat.'''
 
+import argparse
 import asyncio
 import moteus
 import moteus_pi3hat
 
 
 async def main():
+    parser = argparse.ArgumentParser()
+
+    # There are two ways to get the attitude from the pi3hat python
+    # interface.  The simplest is to call '.attitude' on the
+    # Pi3HatRouter/Pi3HatDevice object.
+    #
+    # If other CAN messages are being simultaneously sent, it is
+    # possible to get the attitude in parallel with those CAN messages
+    # using the '.cycle' method.
+    parser.add_argument('--mode',
+                        choices=['attitude', 'cycle'],
+                        default='attitude',
+                        help='Which API to use')
+
+    args = parser.parse_args()
+
     transport = moteus_pi3hat.Pi3HatRouter()
 
     while True:
-        # When request_attitude=True, the attitude is returned as a
-        # response from a "special" servo with ID -1 and the type
-        # moteus_pi3hat.CanAttitudeWrapper.
-        result = await transport.cycle([], request_attitude=True)
-        imu_result = [
-            x for x in result
-            if x.id == -1 and isinstance(x, moteus_pi3hat.CanAttitudeWrapper)][0]
+        if args.mode == 'attitude':
+            imu_result = await transport.attitude()
+        elif args.mode == 'cycle':
 
-        # It has fields for the attitude quaternion, the angular rate
-        # in dps, and the acceleration in mps2.  Additionally, for
-        # convenience, the quaternion is converted into euler angles
-        # following the quad A1 convention.
+            # When request_attitude=True, the attitude is returned as a
+            # response from a "special" servo with ID -1 and the type
+            # moteus_pi3hat.CanAttitudeWrapper.
+            result = await transport.cycle([], request_attitude=True)
+            imu_result = [
+                x for x in result
+                if x.id == -1 and isinstance(x, moteus_pi3hat.CanAttitudeWrapper)][0]
+        else:
+            raise RuntimeError('No mode selected')
+
+        # The result has fields for the attitude quaternion, the
+        # angular rate in dps, and the acceleration in mps2.
+        # Additionally, for convenience, the quaternion is converted
+        # into euler angles following the quad A1 convention.
 
         att = imu_result.attitude
         print(f"attitude={att.w:.4f},{att.x:.4f},{att.y:.4f},{att.z:.4f}")

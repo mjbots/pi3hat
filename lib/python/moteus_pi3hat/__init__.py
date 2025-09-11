@@ -20,6 +20,8 @@ import argparse
 from moteus_pi3hat.pi3hat_device import (
     Pi3HatDevice, Pi3HatChildDevice, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
 
+from moteus import TransportWrapper
+
 class Pi3HatFactory():
     PRIORITY = 5
 
@@ -69,10 +71,21 @@ class Pi3HatFactory():
         parent = Pi3HatDevice(**kwargs)
         return [Pi3HatChildDevice(parent, bus) for bus in [1, 2, 3, 4, 5]]
 
+
+class Pi3HatRouter(TransportWrapper):
+    def __init__(self, *args, **kwargs):
+        self._device = Pi3HatDevice(*args, **kwargs)
+        super().__init__(self._device)
+
+    async def attitude(self):
+        return await self._device.attitude()
+
+
 __all__ = [
     'Pi3HatDevice',
     'Pi3HatChildDevice',
     'Pi3HatFactory',
+    'Pi3HatRouter',
     'CanAttitudeWrapper',
     'CanConfiguration',
     'CanRateOverride',
