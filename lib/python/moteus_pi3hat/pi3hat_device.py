@@ -216,11 +216,11 @@ class Pi3HatDevice(TransportDevice):
             # We know the transaction itself will not take long.  Thus
             # we don't want to let it be cancelled, and potentially
             # lose frames.
-            await asyncio.shield(self._transaction(
+            await self._transaction(
                 requests,
                 force_can_check=force_can_check,
                 max_rx=max_rx,
-                request_attitude=request_attitude))
+                request_attitude=request_attitude)
 
             # It doesn't matter so much we are cancelled ourselves, as
             # we don't return anything via 'return' anyway.
@@ -326,12 +326,13 @@ class Pi3HatDevice(TransportDevice):
                 x[0].cancel()
 
     async def attitude(self):
-        input = _pi3hat_device.Input()
-        input.request_attitude = True
+        async with self._lock:
+            input = _pi3hat_device.Input()
+            input.request_attitude = True
 
-        output = await self._async_cycle(input)
+            output = await self._async_cycle(input)
 
-        return output.attitude if output.attitude_present else None
+            return output.attitude if output.attitude_present else None
 
     def close(self):
         self._impl = None
