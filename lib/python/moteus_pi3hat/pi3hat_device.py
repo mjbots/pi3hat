@@ -211,7 +211,8 @@ class Pi3HatDevice(TransportDevice):
             requests: typing.List[TransportDevice.Request],
             force_can_check=0,
             max_rx=-1,
-            request_attitude=False):
+            request_attitude=False,
+            **kwargs):
         async with self._lock:
             # We know the transaction itself will not take long.  Thus
             # we don't want to let it be cancelled, and potentially
