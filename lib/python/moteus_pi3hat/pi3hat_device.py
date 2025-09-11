@@ -210,10 +210,16 @@ class Pi3HatDevice(TransportDevice):
             force_can_check=0,
             max_rx=-1):
         async with self._lock:
-            await self._transaction(
+            # We know the transaction itself will not take long.  Thus
+            # we don't want to let it be cancelled, and potentially
+            # lose frames.
+            await asyncio.shield(self._transaction(
                 requests,
                 force_can_check=force_can_check,
-                max_rx=max_rx)
+                max_rx=max_rx))
+
+            # It doesn't matter so much we are cancelled ourselves, as
+            # we don't return anything via 'return' anyway.
 
     async def _transaction(
             self,
@@ -235,6 +241,10 @@ class Pi3HatDevice(TransportDevice):
 
             async def handler(frame, request=request, future=future):
                 if future.done():
+                    # Stick it in our receive queue so that it
+                    # isn't lost.
+                    self._receive_queue.append(frame)
+
                     return
 
                 request.responses.append(frame)
