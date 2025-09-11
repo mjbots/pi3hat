@@ -141,7 +141,7 @@ class Pi3HatDevice(TransportDevice):
         '''Read one frame from any port.'''
         while True:
             # Until we have something in the receive queue, keep waiting.
-            if len(self._receive_queue):
+            if self._receive_queue:
                 return self._receive_queue.pop(0)
 
             # We have nothing.  Attempt to read something
