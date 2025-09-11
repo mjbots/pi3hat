@@ -20,7 +20,7 @@ import argparse
 from moteus_pi3hat.pi3hat_device import (
     Pi3HatDevice, Pi3HatChildDevice, CanAttitudeWrapper, CanConfiguration, CanRateOverride)
 
-from moteus import TransportWrapper
+from moteus import DeviceAddress, TransportWrapper
 
 class Pi3HatFactory():
     PRIORITY = 5
@@ -74,11 +74,26 @@ class Pi3HatFactory():
 
 class Pi3HatRouter(TransportWrapper):
     def __init__(self, *args, **kwargs):
-        self._device = Pi3HatDevice(*args, **kwargs)
-        super().__init__(self._device)
+        # The new "transport" mechanism automatically detects which
+        # devices are on which bus in most cases and uses the
+        # 'routing_table' argument when we don't want that to be the
+        # case.  Map the legacy 'servo_bus_map' onto that mechanism.
+        servo_bus_map = kwargs.pop('servo_bus_map', {})
+
+        self._parent = Pi3HatDevice(**kwargs)
+        children = { bus: Pi3HatChildDevice(self._parent, bus)
+                     for bus in [1, 2, 3, 4, 5] }
+        self._devices = list(children.values())
+
+        routing_table = {}
+        for bus, id_list in servo_bus_map.items():
+            for id in id_list:
+                routing_table[DeviceAddress(can_id=id)] = children[bus]
+
+        super().__init__(self._devices, routing_table=routing_table)
 
     async def attitude(self):
-        return await self._device.attitude()
+        return await self._parent.attitude()
 
 
 __all__ = [
