@@ -134,8 +134,14 @@ class Pi3HatDevice(TransportDevice):
 
         self._impl = _pi3hat_device.Pi3HatDevice(options)
 
+        device_info = self._impl.device_info()
+        self._empty_bus_tx_safe = device_info.can_unknown_address_safe
+
     def __repr__(self):
         return 'pi3hat()'
+
+    def empty_bus_tx_safe(self):
+        return self._empty_bus_tx_safe
 
     async def receive_frame(self) -> Frame:
         '''Read one frame from any port.'''
@@ -358,6 +364,13 @@ class Pi3HatChildDevice(TransportDevice):
 
     def parent(self):
         return self._parent
+
+    def empty_bus_tx_safe(self):
+        # Legacy pi3hat's treated JC1 as special and always assumed
+        # there was something there.
+        if self._bus == 1:
+            return True
+        return self._parent._empty_bus_tx_safe
 
     def bus(self):
         return self._bus

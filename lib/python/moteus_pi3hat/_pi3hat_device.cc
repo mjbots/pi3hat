@@ -134,6 +134,10 @@ class Pi3HatDevice {
     condition_.notify_all();
   }
 
+  pi3hat::Pi3Hat::DeviceInfo device_info() {
+    return pi3hat_->device_info();
+  };
+
  private:
   void PARENT_PopulateInput(const Input& input) {
     tx_can_.resize(input.tx_can.size());
@@ -376,8 +380,14 @@ PYBIND11_MODULE(_pi3hat_device, m) {
       .def_readwrite("z", &pi3hat::Point3D::z)
       ;
 
+  py::class_<pi3hat::Pi3Hat::DeviceInfo>(m, "DeviceInfo")
+      .def(py::init<>())
+      .def_readwrite("can_unknown_address_safe", &pi3hat::Pi3Hat::DeviceInfo::can_unknown_address_safe)
+      ;
+
   py::class_<Pi3HatDevice>(m, "Pi3HatDevice")
       .def(py::init<Pi3HatDevice::Options>())
       .def("cycle", &Pi3HatDevice::Cycle)
+      .def("device_info", &Pi3HatDevice::device_info)
       ;
 }
