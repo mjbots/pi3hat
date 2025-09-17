@@ -280,7 +280,7 @@ int main(void) {
 
   fw::SetupClock();
 
-  mjlib::micro::SizedPool<16384> pool;
+  mjlib::micro::SizedPool<20000> pool;
   fw::MillisecondTimer timer;
 
   auto run = [&](auto& app) {

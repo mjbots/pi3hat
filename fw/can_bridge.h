@@ -104,7 +104,8 @@ namespace fw {
 class CanBridge {
  public:
   static constexpr int kMaxSpiFrameSize = 70;
-  static constexpr int kBufferItems = 6;
+  static constexpr int kBufferItems = 32;
+  static constexpr int kReceiveStatusCount = 6;
 
   struct Pins {
     PinName irq_name = NC;
@@ -285,7 +286,10 @@ class CanBridge {
       auto* const this_buf = rx_buf_.prepare_push();
 
       if (this_buf == nullptr) {
-        // Record an error.
+        // This shouldn't be possible, as we checked for fullness
+        // before trying to Poll and nothing else should have been
+        // able to add to the queue in the meantime.
+        mbed_die();
         return;
       }
 
@@ -371,13 +375,13 @@ class CanBridge {
       };
     }
     if (address == 2) {
-      address16_buf_[kBufferItems] = 0;
-      for (size_t i = 0; i < kBufferItems; i++) {
+      address16_buf_[kReceiveStatusCount] = 0;
+      for (size_t i = 0; i < kReceiveStatusCount; i++) {
         const auto item = rx_buf_(i);
         address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 5);
-        address16_buf_[kBufferItems] += address16_buf_[i];
+        address16_buf_[kReceiveStatusCount] += address16_buf_[i];
       }
-      address16_buf_[kBufferItems] ^= 0xff;
+      address16_buf_[kReceiveStatusCount] ^= 0xff;
 
       return {
         std::string_view(reinterpret_cast<const char*>(&address16_buf_[0]),
@@ -469,7 +473,9 @@ class CanBridge {
 
     if (current_can_buf_) {
       current_can_buf_ = nullptr;
-      rx_buf_.get();
+      if (!rx_buf_.empty()) {
+        rx_buf_.get();
+      }
       if (rx_buf_.empty()) {
         irq_.write(0);
       }
@@ -480,7 +486,9 @@ class CanBridge {
       current_spi_buf_ = nullptr;
 
       // Mark this as ready to go out over CAN.
-      tx_buf_.push();
+      if (!tx_buf_.full()) {
+        tx_buf_.push();
+      }
     }
   }
 
@@ -595,7 +603,8 @@ class CanBridge {
   uint8_t can1_reset_count_ = 0;
   uint8_t can2_reset_count_ = 0;
 
-  uint8_t address16_buf_[kBufferItems + 1] = {};
+
+  uint8_t address16_buf_[kReceiveStatusCount + 1] = {};
   uint8_t status_buf_[12] = {};
 
   Configuration can_config1_;
