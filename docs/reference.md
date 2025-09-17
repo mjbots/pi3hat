@@ -238,7 +238,7 @@ read).
 
 These addresses are present on processor 1, 2, and 3.
 
-* *0* Protocol version: A constant byte 0x02
+* *0* Protocol version: A constant byte 0x04
 * *1* Interface type: A constant byte 0x01
 * *2* Receive status
   * byte 0-5: Size of up to 6 received frames.  0 means no frame is

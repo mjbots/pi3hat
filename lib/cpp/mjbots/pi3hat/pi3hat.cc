@@ -911,6 +911,19 @@ struct DeviceCanConfiguration {
   }
 } __attribute__((packed));
 
+struct DeviceCanConfigurationV4 : DeviceCanConfiguration {
+  uint32_t cancel_all_ms = 50;
+
+  bool operator==(const DeviceCanConfigurationV4& rhs) const {
+    return DeviceCanConfiguration::operator==(rhs) &&
+        cancel_all_ms == rhs.cancel_all_ms;
+  }
+
+  bool operator!=(const DeviceCanConfigurationV4& rhs) const {
+    return !(*this == rhs);
+  }
+} __attribute__((packed));
+
 template <typename Spi>
 Pi3Hat::ProcessorInfo GetProcessorInfo(Spi* spi, int cs) {
   DeviceDeviceInfo di;
@@ -1066,7 +1079,7 @@ class Pi3Hat::Impl {
     if (version < 3) { return; }
 
     // Populate what we want our config to look like.
-    DeviceCanConfiguration out;
+    DeviceCanConfigurationV4 out;
     out.slow_bitrate = can_config.slow_bitrate;
     out.fast_bitrate = can_config.fast_bitrate;
     out.fdcan_frame = can_config.fdcan_frame ? 1 : 0;
@@ -1084,11 +1097,15 @@ class Pi3Hat::Impl {
     out.fd_rate.time_seg1 = can_config.fd_rate.time_seg1;
     out.fd_rate.time_seg2 = can_config.fd_rate.time_seg2;
 
+    out.cancel_all_ms = can_config.cancel_all_ms;
+
     // Check to see if this is what is already there.
-    DeviceCanConfiguration original_config;
+    DeviceCanConfigurationV4 original_config;
+    const auto spi_size = version <= 3 ?
+        sizeof(DeviceCanConfiguration) :
+        sizeof(DeviceCanConfigurationV4);
     spi->Read(cs, canbus ? 8 : 7,
-              reinterpret_cast<char*>(&original_config),
-              sizeof(original_config));
+              reinterpret_cast<char*>(&original_config), spi_size);
     if (original_config == out) {
       // We have nothing to do, so just bail early.
       return;
@@ -1096,13 +1113,13 @@ class Pi3Hat::Impl {
 
     // Update the configuration on the device.
     spi->Write(cs, canbus ? 10 : 9,
-               reinterpret_cast<const char*>(&out), sizeof(out));
+               reinterpret_cast<const char*>(&out), spi_size);
 
     // Give it some time to work.
     ::usleep(100);
     DeviceCanConfiguration verify;
     spi->Read(cs, canbus ? 8 : 7,
-              reinterpret_cast<char*>(&verify), sizeof(verify));
+              reinterpret_cast<char*>(&verify), spi_size);
     ThrowIf(
         out != verify,
         [&]() {

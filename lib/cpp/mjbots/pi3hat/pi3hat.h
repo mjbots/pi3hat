@@ -158,6 +158,8 @@ class Pi3Hat {
 
     CanRateOverride std_rate;
     CanRateOverride fd_rate;
+
+    uint32_t cancel_all_ms = 50;
   };
 
   struct Configuration {

@@ -142,6 +142,12 @@ class CanBridge {
     Rate std_rate;
     Rate fd_rate;
 
+    // If no progress has been made sending frames in the last N ms,
+    // cancel the entire hardware CAN queue.  This can keep the
+    // hardware from getting stuck if a frame is sent that nothing
+    // will ever acknowledge.  If zero, then never cancel frames.
+    uint32_t cancel_all_ms = 50;
+
     bool operator==(const Configuration& rhs) const {
       return slow_bitrate == rhs.slow_bitrate &&
           fast_bitrate == rhs.fast_bitrate &&
@@ -151,7 +157,8 @@ class CanBridge {
           restricted_mode == rhs.restricted_mode &&
           bus_monitor == rhs.bus_monitor &&
           std_rate == rhs.std_rate &&
-          fd_rate == rhs.fd_rate;
+          fd_rate == rhs.fd_rate &&
+          cancel_all_ms == rhs.cancel_all_ms;
     }
 
     bool operator!=(const Configuration& rhs) const {
@@ -345,11 +352,15 @@ class CanBridge {
     // ensures we make at least some forward progress even when frames
     // are accidentally sent that nothing acknowledges while automatic
     // retransmission is enabled.
-    if (can1_ && can1_cancel_all_count_ > 50) {
+    if (can1_ &&
+        can1_cancel_all_count_ > can_config1_.cancel_all_ms &&
+        can_config1_.cancel_all_ms > 0) {
       can1_->CancelAll();
       can1_cancel_all_count_ = 0;
     }
-    if (can2_ && can2_cancel_all_count_ > 50) {
+    if (can2_ &&
+        can2_cancel_all_count_ > can_config2_.cancel_all_ms &&
+        can_config2_.cancel_all_ms > 0) {
       can2_->CancelAll();
       can2_cancel_all_count_ = 0;
     }
