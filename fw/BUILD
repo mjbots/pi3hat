@@ -46,6 +46,7 @@ mbed_binary(
         "euler.h",
         "fdcan.cc",
         "fdcan.h",
+        "fifo.h",
         "icm42688.cc",
         "icm42688.h",
         "imu_data.h",

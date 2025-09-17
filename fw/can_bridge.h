@@ -18,6 +18,7 @@
 #include "mbed.h"
 
 #include "fw/fdcan.h"
+#include "fw/fifo.h"
 #include "fw/millisecond_timer.h"
 #include "fw/register_spi_slave.h"
 
@@ -273,24 +274,20 @@ class CanBridge {
         can->RecoverBusOff();
       }
 
+      // If our queue is full, don't even bother polling.
+      if (rx_buf_.full()) { return; }
+
       const bool rx = can->Poll(&can_header_, rx_buffer_);
       if (!rx) {
         return;
       }
 
-      auto* this_buf = [&]() -> CanReceiveBuf* {
-        for (auto& buf : can_buf_) {
-          if (!buf.active) { return &buf; }
-        }
-        return nullptr;
-      }();
+      auto* const this_buf = rx_buf_.prepare_push();
 
       if (this_buf == nullptr) {
         // Record an error.
         return;
       }
-
-      this_buf->active = true;
 
       const int size = ParseDlc(can_header_.DataLength);
 
@@ -303,20 +300,9 @@ class CanBridge {
       this_buf->size = size;
       std::memcpy(&this_buf->data[5], rx_buffer_, size);
 
-      // Insert this item into the receive queue.
-      __disable_irq();
-      [&]() {
-        for (auto& item : can_rx_queue_) {
-          if (item == nullptr) {
-            item = this_buf;
-            return;
-          }
-        }
-        // Hmm, we couldn't.  Just throw it away.
-        this_buf->active = false;
-      }();
+      // Finalize this, now that all the data is in place.
+      rx_buf_.push();
       irq_.write(1);
-      __enable_irq();
     };
 
     if (can1_) {
@@ -327,18 +313,15 @@ class CanBridge {
     }
 
     // Look to see if we have anything to send.
-    for (auto& spi_buf : spi_buf_) {
-      if (spi_buf.ready_to_send) {
-        // Let's send this out.
-        const auto send_result = SendCan(&spi_buf);
-        if (send_result == fw::FDCan::kNoSpace) {
-          // Just discard this.  Something is probably going wrong if
-          // the hardware FIFO is full, so no need to compound it by
-          // storing this around.
-        }
-
-        spi_buf.ready_to_send = false;
-        spi_buf.active = false;
+    if (!tx_buf_.empty()) {
+      // Let's send this out.
+      const auto* to_send = tx_buf_.prepare_get();
+      const auto send_result = SendCan(to_send);
+      if (send_result == fw::FDCan::kNoSpace) {
+        // The CAN interface is busy.  Just keep waiting around.
+      } else {
+        // We successfully handed this off to the CAN layer.
+        tx_buf_.get();
       }
     }
   }
@@ -367,7 +350,7 @@ class CanBridge {
   }
 
   uint8_t queue_size() const {
-    return can_rx_queue_[0] ? 1 : 0;
+    return rx_buf_.empty() ? 0 : 1;
   }
 
   static bool IsSpiAddress(uint16_t address) {
@@ -390,7 +373,7 @@ class CanBridge {
     if (address == 2) {
       address16_buf_[kBufferItems] = 0;
       for (size_t i = 0; i < kBufferItems; i++) {
-        const auto item = can_rx_queue_[i];
+        const auto item = rx_buf_(i);
         address16_buf_[i] = (item == nullptr) ? 0 : (item->size + 5);
         address16_buf_[kBufferItems] += address16_buf_[i];
       }
@@ -403,20 +386,12 @@ class CanBridge {
       };
     }
     if (address == 3) {
-      if (!can_rx_queue_[0]) {
+      if (rx_buf_.empty()) {
         current_can_buf_ = nullptr;
         return { {}, {} };
       }
-      current_can_buf_ = can_rx_queue_[0];
 
-      // Shift everything over.
-      for (size_t i = 1; i < kBufferItems; i++) {
-        can_rx_queue_[i - 1] = can_rx_queue_[i];
-      }
-      can_rx_queue_[kBufferItems - 1] = nullptr;
-      if (can_rx_queue_[0] == nullptr) {
-        irq_.write(0);
-      }
+      current_can_buf_ = rx_buf_.prepare_get();
 
       return {
         std::string_view(current_can_buf_->data, current_can_buf_->size + 5),
@@ -424,29 +399,17 @@ class CanBridge {
       };
     }
     if (address == 4 || address == 5) {
-      current_spi_buf_ = [&]() -> SpiReceiveBuf* {
-        for (auto& buf : spi_buf_) {
-          if (!buf.active) {
-            buf.address = address;
-            return &buf;
-          }
-        }
-        // All our buffers are full.  There must be something wrong on the CAN bus.
-        //
-        // TODO: Log an error.
-        return nullptr;
-      }();
-
-      if (!current_spi_buf_) {
+      if (tx_buf_.full()) {
         return { {}, {} };
-      } else {
-        current_spi_buf_->active = true;
-
-        return {
-          {},
-          mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
-        };
       }
+
+      current_spi_buf_ = tx_buf_.prepare_push();
+      current_spi_buf_->address = address;
+
+      return {
+        {},
+        mjlib::base::string_span(current_spi_buf_->data, kMaxSpiFrameSize),
+      };
     }
     if (address == 6) {
       return {
@@ -505,14 +468,19 @@ class CanBridge {
     }
 
     if (current_can_buf_) {
-      current_can_buf_->active = false;
       current_can_buf_ = nullptr;
+      rx_buf_.get();
+      if (rx_buf_.empty()) {
+        irq_.write(0);
+      }
     }
 
     if (current_spi_buf_) {
       current_spi_buf_->size = bytes;
-      current_spi_buf_->ready_to_send = true;
       current_spi_buf_ = nullptr;
+
+      // Mark this as ready to go out over CAN.
+      tx_buf_.push();
     }
   }
 
@@ -521,14 +489,11 @@ class CanBridge {
     char data[kMaxSpiFrameSize] = {};
     int size = 0;
     int address = 0;
-    std::atomic<bool> active{false};
-    std::atomic<bool> ready_to_send{false};
   };
 
   struct CanReceiveBuf {
     char data[kMaxSpiFrameSize] = {};
     int size = 0;
-    std::atomic<bool> active{false};
   };
 
   fw::FDCan::SendResult SendCan(const SpiReceiveBuf* spi) {
@@ -618,11 +583,10 @@ class CanBridge {
 
   DigitalOut irq_;
 
-  SpiReceiveBuf spi_buf_[kBufferItems] = {};
+  AtomicFifo<SpiReceiveBuf, kBufferItems> tx_buf_;
   SpiReceiveBuf* current_spi_buf_ = nullptr;
 
-  CanReceiveBuf can_buf_[kBufferItems] = {};
-  CanReceiveBuf* can_rx_queue_[kBufferItems] = {};
+  AtomicFifo<CanReceiveBuf, kBufferItems> rx_buf_;
   CanReceiveBuf* current_can_buf_ = nullptr;
 
   FDCAN_RxHeaderTypeDef can_header_ = {};
