@@ -26,6 +26,7 @@ EXAMPLES = \
 	simple_teleop \
 	nlateral_teleop \
 	timeout_debug \
+	bandwidth_test \
 	imu_transport
 
 AUX_SOURCES = pi3hat.cc pi3hat_moteus_transport_register.cc
