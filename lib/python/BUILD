@@ -20,7 +20,7 @@ package(default_visibility = ["//visibility:public"])
 load("@rules_pkg//:pkg.bzl", "pkg_tar")
 load("//tools/workspace:template_file.bzl", "template_file")
 
-VERSION="0.3.32"
+VERSION="0.3.33"
 
 PYTHON_SHORT_VERSIONS = ['37', '39', '310', '311', '312']
 ARCHITECTURES = ['armv7l', 'aarch64']
