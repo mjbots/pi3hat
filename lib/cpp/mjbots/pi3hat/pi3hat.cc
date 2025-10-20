@@ -1121,7 +1121,7 @@ class Pi3Hat::Impl {
     spi->Read(cs, canbus ? 8 : 7,
               reinterpret_cast<char*>(&verify), spi_size);
     ThrowIf(
-        out != verify,
+        static_cast<DeviceCanConfiguration>(out) != verify,
         [&]() {
           return "Could not set CAN configuration properly";
         });
