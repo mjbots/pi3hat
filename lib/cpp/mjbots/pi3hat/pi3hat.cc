@@ -1117,14 +1117,26 @@ class Pi3Hat::Impl {
 
     // Give it some time to work.
     ::usleep(100);
-    DeviceCanConfiguration verify;
-    spi->Read(cs, canbus ? 8 : 7,
-              reinterpret_cast<char*>(&verify), spi_size);
-    ThrowIf(
-        out != verify,
-        [&]() {
-          return "Could not set CAN configuration properly";
-        });
+
+    if (version <= 3) {
+      DeviceCanConfiguration verify;
+      spi->Read(cs, canbus ? 8 : 7,
+                reinterpret_cast<char*>(&verify), spi_size);
+      ThrowIf(
+          static_cast<DeviceCanConfiguration>(out) != verify,
+          [&]() {
+            return "Could not set CAN configuration properly";
+          });
+    } else {
+      DeviceCanConfigurationV4 verify;
+      spi->Read(cs, canbus ? 8 : 7,
+                reinterpret_cast<char*>(&verify), spi_size);
+      ThrowIf(
+          out != verify,
+          [&]() {
+            return "Could not set CAN configuration properly";
+          });
+    }
   }
 
   void ConfigureCan() {
