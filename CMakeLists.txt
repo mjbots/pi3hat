@@ -49,7 +49,6 @@ add_library(pi3hat::pi3hat ALIAS pi3hat)
 
 target_include_directories(pi3hat_internal PUBLIC lib/cpp/mjbots/pi3hat)
 target_link_libraries(pi3hat_internal PUBLIC moteus::cpp)
-target_link_libraries(pi3hat_internal PUBLIC -lbcm_host)
 
 if (${CMAKE_VERSION} VERSION_GREATER "3.24.0")
   # We wrap our "internal" library in an external one so that we can
