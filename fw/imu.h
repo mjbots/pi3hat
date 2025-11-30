@@ -16,6 +16,7 @@
 
 #include <atomic>
 #include <cstdint>
+#include <optional>
 #include <string_view>
 
 #include "mjlib/micro/pool_ptr.h"

@@ -308,7 +308,7 @@ class SlotRfProtocol::Impl {
     FindEnabledSlots(uint8_t current_priority) const {
       micro::StaticVector<uint8_t, kNumSlots> result;
       uint32_t mask = 1 << current_priority;
-      for (int i = 0; i < kNumSlots; i++) {
+      for (std::ptrdiff_t i = 0; i < result.size(); i++) {
         if (tx_slots_[i].priority & mask) { result.push_back(i); }
       }
       return result;
