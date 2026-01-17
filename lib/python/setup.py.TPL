@@ -17,6 +17,21 @@
 import setuptools
 import pathlib
 
+# Hacky monkeypatch to allow building cp313 wheels from Python 3.12.
+# The wheel package validates tags against sys_tags(), which only
+# includes tags for the running interpreter. This adds cp313 tags to
+# allow cross-version builds.  Note: wheel uses its own vendored copy
+# of packaging, so we must patch that.
+from wheel.vendored.packaging import tags as _wheel_tags
+_original_sys_tags = _wheel_tags.sys_tags
+def _patched_sys_tags():
+    for tag in _original_sys_tags():
+        yield tag
+    # Add cp313 abi3 tags for building 3.13 wheels from 3.12
+    for plat in ['manylinux_2_17_aarch64', 'manylinux_2_17_armv7l', 'linux_armv7l']:
+        yield _wheel_tags.Tag('cp313', 'abi3', plat)
+_wheel_tags.sys_tags = _patched_sys_tags
+
 here = pathlib.Path(__file__).parent.resolve()
 
 # Get the long description from the README file

@@ -32,6 +32,7 @@ cc_binary(
         "//:python310" : ["@com_github_pybind_pybind11//:pybind11_310"],
         "//:python311" : ["@com_github_pybind_pybind11//:pybind11_311"],
         "//:python312" : ["@com_github_pybind_pybind11//:pybind11_312"],
+        "//:python313" : ["@com_github_pybind_pybind11//:pybind11_313"],
     }),
     linkshared = True,
     copts = ["-Ilib/cpp"],

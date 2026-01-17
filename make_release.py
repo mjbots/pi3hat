@@ -54,7 +54,7 @@ def main():
 
     run(f'cp bazel-bin/fw/pi3_hat.elf {outdir}/{datestr}-pi3hat-{git_hash}.elf')
 
-    for pyver in ['3.7', '3.9', '3.10', '3.11', '3.12']:
+    for pyver in ['3.7', '3.9', '3.10', '3.11', '3.12', '3.13']:
         for arch in ['pi', 'pi64']:
             pyarch = {
                 'pi' : 'armv7l',

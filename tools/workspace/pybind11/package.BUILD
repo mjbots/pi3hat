@@ -60,3 +60,12 @@ cc_library(
         "@python312//:headers",
     ],
 )
+
+cc_library(
+    name = "pybind11_313",
+    hdrs = glob(["include/**"]),
+    includes = ["include"],
+    deps = [
+        "@python313//:headers",
+    ],
+)
