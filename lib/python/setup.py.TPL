@@ -67,7 +67,7 @@ setuptools.setup(
     },
     python_requires = ">=3.7",
     install_requires = [
-        'moteus>=0.3.91',
+        'moteus>=1.0.0rc1',
     ],
     include_package_data = True,
     package_data = {
