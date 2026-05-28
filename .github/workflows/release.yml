@@ -1,0 +1,39 @@
+name: Release
+
+# Manual trigger to bump the unified version, commit the change, and
+# create the `vX.Y.Z` tag.  After the tag is pushed, build-release.yml
+# produces the firmware, Python, and C++ artifacts.
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Bump type or explicit version (patch | minor | major | rc | 1.0.0rc1)'
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  cut:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install dependencies
+        run: python3 -m pip install packaging
+      - name: Configure git
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+      - name: Cut release
+        run: python3 utils/release.py '${{ inputs.bump }}'
+      - name: Push branch and tag
+        run: |
+          git push origin "HEAD:${{ github.ref_name }}"
+          git push origin --tags

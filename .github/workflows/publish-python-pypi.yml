@@ -1,0 +1,38 @@
+name: Publish python release to PyPI
+
+# Triggered when a vX.Y.Z draft release is promoted to public.  The
+# wheels attached to that release are downloaded and uploaded to PyPI
+# via OIDC trusted publishing.
+#
+# Trusted publishing must be configured at PyPI for this repo + this
+# workflow + the `pypi` environment.  See RELEASING.md for the
+# one-time setup.
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  pypi:
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-24.04
+    environment:
+      name: pypi
+      url: https://pypi.org/project/moteus_pi3hat/
+    permissions:
+      contents: read
+      id-token: write   # OIDC for trusted publishing
+    steps:
+      - name: Download release wheels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p dist
+          gh release download "${{ github.event.release.tag_name }}" \
+              --repo "${{ github.repository }}" \
+              --pattern '*.whl' \
+              --dir dist
+          ls -la dist
+      - uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          packages-dir: dist/

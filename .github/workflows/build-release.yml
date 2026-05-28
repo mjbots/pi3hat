@@ -1,0 +1,114 @@
+name: Build release
+
+# pi3hat ships firmware, the Python client (moteus_pi3hat), and the C++
+# client together under one version.  This workflow fires on a `vX.Y.Z`
+# tag, builds all three artifact kinds, and attaches them to a single
+# draft GitHub Release.  Promoting that draft fires publish-python-pypi.yml,
+# which uploads the wheels to PyPI.
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        run: |
+          sudo apt update
+          sudo apt install -y python3-setuptools python3-wheel python3-build
+          wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
+          sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
+
+      - name: Resolve version
+        id: stage
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "sha=${GITHUB_SHA:0:10}" >> "$GITHUB_OUTPUT"
+          # PEP 440 pre-release suffixes: aN, bN, rcN, .devN.
+          if [[ "$version" =~ (a|b|rc|\.dev)[0-9]+$ ]]; then
+              echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          else
+              echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          fi
+          # The wheel filenames come from VERSION in lib/python/BUILD;
+          # refuse to build if the tag and that file disagree (they are
+          # kept in sync by utils/release.py).
+          file_ver="$(sed -n 's/^VERSION="\([^"]*\)"/\1/p' lib/python/BUILD)"
+          if [[ "$file_ver" != "$version" ]]; then
+              echo "::error::tag v${version} does not match lib/python/BUILD VERSION=${file_ver}"
+              exit 1
+          fi
+
+      - name: Build firmware
+        run: |
+          mkdir -p release
+          tools/bazel build --cpu stm32g4 -c opt //:target
+          # Copy now, while bazel-bin still points at the stm32g4 output
+          # tree.  The cross-compiled wheel builds below repoint bazel-bin
+          # to the armv7l/aarch64 trees.  +g<sha> is semver build metadata
+          # (the 10-char git short SHA), ignored for version ordering.
+          version="${{ steps.stage.outputs.version }}"
+          sha="${{ steps.stage.outputs.sha }}"
+          cp bazel-bin/fw/pi3_hat.elf "release/pi3hat-fw-${version}+g${sha}.elf"
+          cp bazel-bin/fw/pi3_hat.bin "release/pi3hat-fw-${version}+g${sha}.bin"
+
+      - name: Build Python wheels and tool bundles
+        run: |
+          # One cross-compiled bundle per (python version, architecture).
+          # Loop architecture on the outside so the architecture-specific
+          # C++ deps stay cached across the python versions.
+          for arch in pi pi64; do
+            case "$arch" in
+              pi)   pyarch=armv7l ;;
+              pi64) pyarch=aarch64 ;;
+            esac
+            for pyver in 3.7 3.9 3.10 3.11 3.12 3.13; do
+              pyshort="${pyver//./}"
+              tools/bazel build --verbose_failures --config=${arch} \
+                  --define PYTHON=${pyver} -c opt //:pi3hat_tools
+              cp bazel-bin/pi3hat_tools.tar.bz2 \
+                 "release/pi3hat_tools-${{ steps.stage.outputs.version }}-cp${pyshort}-${pyarch}.tar.bz2"
+              # Pull the wheel out of the bundle for PyPI / direct download.
+              wheel_name="$(tar --list -f bazel-bin/pi3hat_tools.tar.bz2 | grep '\.whl$')"
+              tar -C release --strip-components 1 --extract \
+                  -f bazel-bin/pi3hat_tools.tar.bz2 "$wheel_name"
+            done
+          done
+
+      - name: Stage C++ artifact and checksums
+        run: |
+          version="${{ steps.stage.outputs.version }}"
+          # C++ client source archive (consumed via CMake FetchContent at
+          # the tag; this is just a convenience download).
+          tar czf "release/pi3hat-cpp-${version}.tar.gz" \
+              CMakeLists.txt LICENSE \
+              lib/cpp/mjbots/pi3hat lib/cpp/examples
+          (cd release && sha256sum * > SHA256SUMS)
+          ls -la release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release/*
+          name: 'v${{ steps.stage.outputs.version }}'
+          prerelease: ${{ steps.stage.outputs.prerelease == 'true' }}
+          make_latest: ${{ steps.stage.outputs.prerelease == 'false' }}
+          # Released as a draft so a maintainer can flash the firmware and
+          # pip-install a wheel before it goes public.  Publish via the
+          # GitHub UI or:
+          #   gh release edit vX.Y.Z --draft=false
+          # Promoting the draft fires publish-python-pypi.yml, which
+          # uploads the wheels to PyPI via OIDC trusted publishing.
+          draft: true
+          generate_release_notes: true
