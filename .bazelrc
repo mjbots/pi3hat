@@ -16,23 +16,27 @@ test --nostart_end_lib
 build -c opt
 test -c opt
 
+# The Raspberry Pi builds now select the rpi_bazel CC toolchain through
+# Bazel's platform-based toolchain resolution (--platforms) instead of
+# the legacy --crosstool_top/--compiler.  This lets the rpi_bazel CC
+# toolchain coexist with other platform-based toolchains (notably
+# rules_rust) in a single build.  --cpu is retained only so the
+# //:python*_{armeabihf,aarch64} config_settings (which pick the Python
+# wheel ABI per architecture) keep matching and so the bazel-out
+# directory stays distinct from the firmware and host builds.
+build:pi --incompatible_enable_cc_toolchain_resolution
+test:pi --incompatible_enable_cc_toolchain_resolution
+build:pi --platforms=@rpi_bazel//:armeabihf
+test:pi --platforms=@rpi_bazel//:armeabihf
 build:pi --cpu=armeabihf
 test:pi --cpu=armeabihf
 
-build:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
-test:pi --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
-
-build:pi --compiler=clang
-test:pi --compiler=clang
-
+build:pi64 --incompatible_enable_cc_toolchain_resolution
+test:pi64 --incompatible_enable_cc_toolchain_resolution
+build:pi64 --platforms=@rpi_bazel//:aarch64
+test:pi64 --platforms=@rpi_bazel//:aarch64
 build:pi64 --cpu=aarch64
 test:pi64 --cpu=aarch64
-
-build:pi64 --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
-test:pi64 --crosstool_top=@rpi_bazel//tools/cc_toolchain:toolchain
-
-build:pi64 --compiler=clang
-test:pi64 --compiler=clang
 
 build:host --compiler=compiler
 build:host --cpu=k8

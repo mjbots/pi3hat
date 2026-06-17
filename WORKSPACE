@@ -24,8 +24,14 @@ load("//tools/workspace:default.bzl", "add_default_repositories")
 add_default_repositories()
 
 load("@rpi_bazel//tools/workspace:default.bzl",
-     rpi_bazel_add = "add_default_repositories")
+     rpi_bazel_add = "add_default_repositories",
+     rpi_bazel_register = "add_default_toolchains")
 rpi_bazel_add()
+
+# Register rpi_bazel's Raspberry Pi cross-compilation toolchains so they
+# participate in Bazel's platform-based toolchain resolution (selected
+# via --config=pi / --config=pi64, i.e. --platforms=@rpi_bazel//:...).
+rpi_bazel_register()
 
 load("@com_github_mjbots_rules_mbed//:rules.bzl", mbed_register = "mbed_register")
 
