@@ -246,8 +246,6 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   CycleData cycle_data_;
   std::deque<std::function<void()>> event_queue_;
 
-  std::thread thread_;
-
   ////////////////////////////////////////////////////////////////////
   // All further variables are only used from within the child thread.
 
@@ -257,6 +255,14 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   // required in steady state.
   std::vector<pi3hat::CanFrame> tx_can_;
   std::vector<pi3hat::CanFrame> rx_can_;
+
+  // The worker thread must be the LAST member: constructing it (in the
+  // constructor's initializer list) starts CHILD_Run, which immediately
+  // touches pi3hat_/tx_can_/rx_can_.  Declaring it last guarantees those
+  // members are fully constructed before the thread starts; otherwise
+  // CHILD_Run races their construction and pi3hat_ can be left null
+  // (intermittent segfault).
+  std::thread thread_;
 };
 
 class Pi3HatMoteusFactory : public moteus::TransportFactory {
