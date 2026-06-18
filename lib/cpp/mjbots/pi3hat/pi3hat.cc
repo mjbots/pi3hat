@@ -1562,6 +1562,15 @@ class Pi3Hat::Impl {
           continue;
         }
 
+        if (size < 5) {
+          // A real frame always carries the 5-byte header (flags byte
+          // plus 4-byte id), so anything shorter is malformed.  It has
+          // already been drained from the device queue by the read
+          // above; drop it rather than passing a negative length
+          // (a huge size_t) to the memcpy below.
+          continue;
+        }
+
         auto& output_frame = (*rx_can)[output->rx_can_size++];
         count++;
 

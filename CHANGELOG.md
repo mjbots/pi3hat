@@ -8,7 +8,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
-(no entries yet)
+- C++: guard against malformed short CAN frames in `ReadCanFrames`
 
 ## 1.0.0
 
