@@ -153,6 +153,9 @@ class Pi3Hat {
     bool fdcan_frame = true;
     bool bitrate_switch = true;
     bool automatic_retransmission = true;
+    // NOTE: This field is currently ignored.  UpdateCanConfig does not
+    // transmit restricted_mode to the device, so setting it has no
+    // effect.
     bool restricted_mode = false;
     bool bus_monitor = false;
 

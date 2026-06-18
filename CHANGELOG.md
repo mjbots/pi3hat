@@ -9,6 +9,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 ## Unreleased
 
 - C++: guard against malformed short CAN frames in `ReadCanFrames`
+- C++: document that `CanConfiguration::restricted_mode` is ignored.
 
 ## 1.0.0
 
