@@ -8,6 +8,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+- C++: `--pi3hat-cpu` now defaults to the highest isolated CPU when the
+  system has any (`isolcpus`), pinning the SPI worker there at realtime
+  priority; previously the worker stayed unpinned unless a CPU was
+  given. Pass `-1` to never pin.
 - C++: guard against malformed short CAN frames in `ReadCanFrames`
 - C++: fix a race on `Pi3HatMoteusTransport` construction where the
   worker thread could start before its members were constructed

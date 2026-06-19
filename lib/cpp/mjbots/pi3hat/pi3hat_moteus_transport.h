@@ -45,7 +45,12 @@ class Pi3HatMoteusTransport : public moteus::Transport {
   using CanFdFrame = moteus::CanFdFrame;
 
   struct Options : public pi3hat::Pi3Hat::Configuration {
-    int cpu = -1;
+    // CPU for the SPI worker thread.  kCpuAuto (the default) pins it to
+    // an isolated CPU if the system has any (see DetectIsolatedCpu),
+    // otherwise leaves it unpinned; a value >=0 pins to that CPU; -1
+    // never pins.
+    static constexpr int kCpuAuto = -2;
+    int cpu = kCpuAuto;
 
     // If the bus for a command is left at 0, and the servo ID is
     // present here, assume it is attached to the given bus.
@@ -121,8 +126,12 @@ class Pi3HatMoteusTransport : public moteus::Transport {
 
  private:
   void CHILD_Run() {
-    if (options_.cpu >= 0) {
-      ConfigureRealtime(options_.cpu);
+    int cpu = options_.cpu;
+    if (cpu == Options::kCpuAuto) {
+      cpu = DetectIsolatedCpu();
+    }
+    if (cpu >= 0) {
+      ConfigureRealtime(cpu);
     }
 
     pi3hat_.reset(new pi3hat::Pi3Hat(options_));
