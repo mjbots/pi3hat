@@ -1727,11 +1727,6 @@ class Pi3Hat::Impl {
 
     ReadCan(input, expected_replies, &result);
 
-    primary_spi_.gpio()->SetGpioMode(13, Rpi3Gpio::OUTPUT);
-    static bool debug_toggle = false;
-    primary_spi_.gpio()->SetGpioOutput(13, debug_toggle);
-    debug_toggle = !debug_toggle;
-
     return result;
   }
 
