@@ -12,7 +12,7 @@ jobs:
       run: |
         sudo apt update
         sudo apt install -y python3-setuptools python3-wheel python3-build
-        wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2ubuntu0.1_amd64.deb
-        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.1_amd64.deb
+        wget https://launchpad.net/ubuntu/+archive/primary/+files/libtinfo5_6.3-2ubuntu0.2_amd64.deb
+        sudo apt install -y ./libtinfo5_6.3-2ubuntu0.2_amd64.deb
     - name: test
       run: ./travis-ci.sh
