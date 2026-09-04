@@ -1,0 +1,44 @@
+[package]
+name = "moteus-pi3hat"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Raspberry Pi client library and moteus transport for the mjbots pi3hat"
+keywords = ["moteus", "pi3hat", "robotics", "can-fd", "raspberry-pi"]
+categories = ["science::robotics", "hardware-support"]
+
+# docs.rs builds with default features only unless told otherwise;
+# without this the entire `tokio`-gated async API would be missing
+# from the rendered documentation.
+[package.metadata.docs.rs]
+all-features = true
+
+[features]
+default = []
+tokio = ["moteus/tokio", "dep:tokio"]
+
+[dependencies]
+libc = "0.2"
+# 0.5.4 is the first crates.io release that builds on the MSRV this
+# crate declares (1.75); it also brings public ArgSpec construction
+# (0.5.3, needed by the factories' arg_specs() overrides) and the
+# underlying transport features -- parent-only devices, known_can_ids
+# (0.5.2).
+moteus = { version = "0.5.4", default-features = false }
+
+tokio = { version = "1.0", features = ["sync", "time", "rt"], optional = true }
+
+[dev-dependencies]
+tokio = { version = "1.0", features = ["rt-multi-thread", "macros", "time", "sync"] }
+
+[[example]]
+name = "imu"
+
+[[example]]
+name = "simple"
+
+[[example]]
+name = "simple_async"
+required-features = ["tokio"]

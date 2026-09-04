@@ -8,10 +8,13 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
-- C++: `--pi3hat-cpu` now defaults to the highest isolated CPU when the
-  system has any (`isolcpus`), pinning the SPI worker there at realtime
-  priority; previously the worker stayed unpinned unless a CPU was
-  given. Pass `-1` to never pin.
+- New Rust client library and moteus transport, `moteus-pi3hat`
+  (`lib/rust`), a direct translation of the C++ library.
+- The tools bundle also ships the Rust examples under `examples/rust/`
+- `--pi3hat-cpu` (C++ and Rust) now defaults to the highest isolated
+  CPU when the system has any (`isolcpus`), pinning the SPI worker
+  there at realtime priority; previously the worker stayed unpinned
+  unless a CPU was given. Pass `-1` to never pin.
 - C++: `--pi3hat-cfg` rejects out-of-range buses and a servo id mapped
   to more than one bus instead of silently misrouting.
 - C++: guard against malformed short CAN frames in `ReadCanFrames`
@@ -21,6 +24,8 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 - C++: document that `CanConfiguration::restricted_mode` is ignored.
 - Documentation: the JC1-4 high speed vs JC5 low speed distinction
   only applied to boards older than r4.5; modern boards make none.
+- CI also compiles the Rust crate in its published configuration
+  (crates.io `moteus`, locked).
 
 ## 1.0.0
 

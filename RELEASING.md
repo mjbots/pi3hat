@@ -176,3 +176,18 @@ so no API token is stored in this repo.
 directory (naming them by date + git hash rather than by version). It is
 handy for ad-hoc builds, but the tag-driven `build-release.yml` is the
 canonical release path.
+
+## Rust dependency lockfiles
+
+`lib/rust` carries two committed lockfiles: `Cargo.lock` (cargo's own)
+and `Cargo.bazel.lock` (the rules_rust crate_universe resolution built
+from it). After changing any dependency specification (a crate's
+`Cargo.toml`, or the crate list in `WORKSPACE`), regenerate both:
+
+```bash
+cd lib/rust && cargo update --workspace   # refreshes Cargo.lock minimally
+CARGO_BAZEL_REPIN=1 ./tools/bazel sync --only=crate_index
+```
+
+A stale `Cargo.bazel.lock` fails the bazel build with a message that
+names `CARGO_BAZEL_REPIN`, so drift is caught rather than silent.
