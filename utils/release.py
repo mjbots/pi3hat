@@ -58,6 +58,7 @@ tag and the Python version).
 """
 
 import argparse
+import datetime
 import pathlib
 import re
 import subprocess
@@ -77,6 +78,61 @@ CMAKE_VERSION_RE = r'^(project\(moteus VERSION )[^)]+\)'
 # only line that starts with `version = "`.
 RUST_VERSION_FILE = 'lib/rust/Cargo.toml'
 RUST_VERSION_RE = r'^version = "([^"]+)"'
+
+CHANGELOG_FILE = 'CHANGELOG.md'
+
+
+def changelog_blocks(text, min_level):
+    """Split the changelog into (title, entry_count) blocks.
+
+    A block starts at a heading of `min_level` (e.g. `##`) whose title
+    is a version or "Unreleased"; deeper headings and their bullets
+    belong to the enclosing block.
+    """
+    blocks = []
+    for line in text.splitlines():
+        m = re.match(r'^(#+) (.*?)\s*$', line)
+        if m and len(m.group(1)) >= min_level:
+            title = m.group(2)
+            if len(m.group(1)) == min_level or re.match(r'\d', title):
+                blocks.append([title, 0])
+                continue
+        if blocks and re.match(r'\s*[-*] ', line):
+            blocks[-1][1] += 1
+    return blocks
+
+
+def check_changelog(version, text=None):
+    """Refuse to release when the changelog was not written.
+
+    CHANGELOG.md must have a "## X.Y.Z" section (optionally
+    "- YYYY-MM-DD") with entries for the unified version.  Entries
+    still under "## Unreleased" mean the heading was not renamed; an
+    empty or placeholder Unreleased section means nothing was written.
+    Both are reported rather than discovered after the tag is pushed.
+    """
+    if text is None:
+        text = (REPO_ROOT / CHANGELOG_FILE).read_text()
+    blocks = changelog_blocks(text, 2)
+    for title, entries in blocks:
+        if title.split(' - ', 1)[0].strip() == version:
+            if entries:
+                return
+            sys.exit(f'\nERROR: the "## {title}" section of {CHANGELOG_FILE} '
+                     f'has no entries.\n')
+
+    unreleased = [e for t, e in blocks if t == 'Unreleased']
+    today = datetime.date.today().isoformat()
+    hint = (f'The "## Unreleased" section has {unreleased[0]} entries; if '
+            f'they are this release,\nrename that heading to '
+            f'"## {version} - {today}".'
+            if unreleased and unreleased[0] else
+            'The "## Unreleased" section is empty, so nothing has been '
+            'written for\nthis release.')
+    sys.exit(f'\nERROR: {CHANGELOG_FILE} has no entries for {version}.\n\n'
+             f'It needs a "## {version}" heading (optionally '
+             f'"## {version} - YYYY-MM-DD")\nwith this release\'s entries.  '
+             f'{hint}\n')
 
 
 def git(*args, capture=False, check=True):
@@ -202,6 +258,8 @@ def main():
         rust_new = compute_new_version(rust_current, args.rust)
         print(f'New     rust version: {rust_new}')
         validate_rust_version(rust_new)
+
+    check_changelog(new)
 
     tag = f'v{new}'
     if git('rev-parse', '-q', '--verify', f'refs/tags/{tag}',

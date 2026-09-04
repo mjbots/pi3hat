@@ -6,6 +6,10 @@ for the process.
 
 The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 
+Entries are added under `## Unreleased` by the change that introduces
+them; cutting a release only renames that heading to the version and
+date.
+
 ## Unreleased
 
 - New Rust client library and moteus transport, `moteus-pi3hat`

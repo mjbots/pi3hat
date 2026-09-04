@@ -73,6 +73,11 @@ The script:
 4. Commits (if a file changed) and creates the annotated tag `vX.Y.Z`.
 5. Prints the `git push` commands.
 
+Before any of that it checks that `CHANGELOG.md` has a `## X.Y.Z`
+section with entries for the new version and refuses to tag otherwise
+-- rename `## Unreleased` first.  (Entries themselves are added with
+the change that introduces them, not at release time.)
+
 Inspect the diff and tag before pushing.
 
 ```bash
