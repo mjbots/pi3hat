@@ -57,8 +57,9 @@ struct CanFrame {
   uint8_t data[64] = {};
   uint8_t size = 0;
 
-  /// Bus 1, 2, 3, 4 are the high speed buses labeled JC1, JC2, JC3,
-  /// JC4.  Bus 5 is the low speed bus labeled JC5.
+  /// Bus 1, 2, 3, 4, 5 are the buses labeled JC1 through JC5.  On
+  /// boards older than r4.5, JC1-JC4 were high speed buses and JC5 a
+  /// low speed bus; r4.5 and newer make no distinction.
   int bus = 0;
 
   /// If true, then a reply will be expected for this frame on the
@@ -125,7 +126,7 @@ class Error : public std::runtime_error {
 };
 
 /// This class provides the top level interface to an application
-/// which wants to use all the features of the mjbots pi3 hat in an
+/// which wants to use all the features of the mjbots pi3hat in an
 /// integrated fashion at high rate.
 ///
 /// The primary operations are blocking and busy-loop the CPU.  For

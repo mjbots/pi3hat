@@ -13,6 +13,8 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
   worker thread could start before its members were constructed
   (intermittent segfault).
 - C++: document that `CanConfiguration::restricted_mode` is ignored.
+- Documentation: the JC1-4 high speed vs JC5 low speed distinction
+  only applied to boards older than r4.5; modern boards make none.
 
 ## 1.0.0
 
