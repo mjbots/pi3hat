@@ -28,7 +28,7 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 - Documentation: the JC1-4 high speed vs JC5 low speed distinction
   only applied to boards older than r4.5; modern boards make none.
 - CI also compiles the Rust crate in its published configuration
-  (crates.io `moteus`, locked).
+  (crates.io `moteus`, locked) and on its declared MSRV (1.75).
 
 ## 1.0.0
 

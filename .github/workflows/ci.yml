@@ -16,3 +16,15 @@ jobs:
         sudo apt install -y ./libtinfo5_6.3-2ubuntu0.2_amd64.deb
     - name: test
       run: ./travis-ci.sh
+
+  rust-msrv:
+    # The crate declares rust-version = "1.75" (lib/rust/Cargo.toml);
+    # prove it by compiling the published configuration -- moteus from
+    # crates.io, locked -- with exactly that toolchain.
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v5
+    - uses: dtolnay/rust-toolchain@1.75.0
+    - name: cargo check on the MSRV
+      working-directory: lib/rust
+      run: cargo check -p moteus-pi3hat --all-features --all-targets --locked
