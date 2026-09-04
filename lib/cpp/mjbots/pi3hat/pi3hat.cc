@@ -351,12 +351,6 @@ class PrimarySpi {
  public:
   struct Options {
     int speed_hz = 10000000;
-    // We actually only need hold times of around 3us.  However, the
-    // linux aarch64 kernel sometimes returns up to 8us of difference
-    // in consecutive calls to clock_gettime when in a tight busy loop
-    // (and <1 us of wall clock time has actually passed as measured
-    // by an oscilloscope).  This doesn't seem to be a problem on the
-    // armv7l kernel.
     int cs_hold_us = 3;
     int address_hold_us = 3;
 
@@ -538,8 +532,6 @@ class AuxSpi {
  public:
   struct Options {
     int speed_hz = 10000000;
-    // We actually only need hold times of around 3us, these are
-    // larger for the same reasons as in PrimarySpi.
     int cs_hold_us = 3;
     int address_hold_us = 3;
 
