@@ -12,6 +12,8 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
   system has any (`isolcpus`), pinning the SPI worker there at realtime
   priority; previously the worker stayed unpinned unless a CPU was
   given. Pass `-1` to never pin.
+- C++: `--pi3hat-cfg` rejects out-of-range buses and a servo id mapped
+  to more than one bus instead of silently misrouting.
 - C++: guard against malformed short CAN frames in `ReadCanFrames`
 - C++: fix a race on `Pi3HatMoteusTransport` construction where the
   worker thread could start before its members were constructed

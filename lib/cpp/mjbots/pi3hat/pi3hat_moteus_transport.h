@@ -396,10 +396,20 @@ class Pi3HatMoteusFactory : public moteus::TransportFactory {
         throw std::runtime_error("Invalid bus specifier: " + bus);
       }
       const auto bus_id = std::stol(busid_servoids.at(0));
+      if (bus_id < 1 || bus_id > 5) {
+        throw std::runtime_error(
+            "Bus out of range 1-5: " + busid_servoids.at(0));
+      }
       const auto servoids = Split(busid_servoids.at(1), ',');
       for (const auto& servoid : servoids) {
         const auto int_servo_id = std::stol(servoid);
-        result.insert({int_servo_id, bus_id});
+        const auto result_pair = result.insert({int_servo_id, bus_id});
+        if (!result_pair.second && result_pair.first->second != bus_id) {
+          throw std::runtime_error(
+              "Servo " + servoid + " mapped to both bus " +
+              std::to_string(result_pair.first->second) + " and bus " +
+              std::to_string(bus_id));
+        }
       }
     }
 
