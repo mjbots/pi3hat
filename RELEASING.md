@@ -44,18 +44,32 @@ utils/release.py rc
 
 # graduate a pre-release to its final release (1.1.0rc2 -> 1.1.0)
 utils/release.py patch
+
+# also bump the Rust crate (on its own pre-stable 0.x line)
+utils/release.py patch --rust patch
 ```
 
 The `patch` bump is overloaded: when current is already a pre-release it
 strips the suffix instead of incrementing the patch number (matches
 npm/cargo conventions). `minor` and `major` always advance `M.m.p`.
 
+The Rust crate (`lib/rust/moteus-pi3hat`) is versioned separately while
+it is pre-stable: it stays on its own `0.x` line rather than the unified
+`1.x` number, and is bumped — and later published to crates.io — only
+when you pass `--rust`. Omit `--rust` and the crate version is left
+untouched, so a release that does not change the crate does not
+republish it. `--rust` takes the same `major`/`minor`/`patch` bumps or
+an explicit semver version (e.g. `--rust 0.2.0`). When the crate is
+declared stable, bump it onto the unified number once with `--rust <that
+version>` and pass `--rust` on every release thereafter.
+
 The script:
 
 1. Reads the current version from `lib/python/BUILD`.
 2. Computes the new version (or accepts an explicit one) and validates it
    is normalized PEP 440.
-3. Writes the new version to `lib/python/BUILD` and `CMakeLists.txt`.
+3. Writes the new version to `lib/python/BUILD` and `CMakeLists.txt`
+   (and, with `--rust`, the crate version to `lib/rust/Cargo.toml`).
 4. Commits (if a file changed) and creates the annotated tag `vX.Y.Z`.
 5. Prints the `git push` commands.
 
@@ -156,6 +170,30 @@ so no API token is stored in this repo.
    something to bind to; no required reviewers are needed because the
    "Publish release" action on the draft is the gate.
 
+## Publishing to crates.io — one-time setup
+
+The Rust crate publishes the same way, via crates.io
+[trusted publishing](https://crates.io/docs/trusted-publishing) over
+OIDC, so no token is stored in the repo.
+
+crates.io trusted publishing is configured under an existing crate's
+settings, so the crate must exist first. For the initial `0.x` publish,
+run `cargo publish` once manually with a personal API token to create
+the crate; then:
+
+1. Sign in to crates.io as an owner of the `moteus-pi3hat` crate.
+2. Crate settings → Trusted Publishing → Add a GitHub publisher:
+   - Owner: `mjbots`
+   - Repository name: `pi3hat`
+   - Workflow filename: `publish-rust-crates.yml`
+   - Environment name: `crates-io`
+3. In this GitHub repo: Settings → Environments → New environment named
+   `crates-io` (same role as `pypi`).
+
+Prefer a stored token instead of OIDC? Drop the auth step in
+`publish-rust-crates.yml` and add a `CARGO_REGISTRY_TOKEN` secret to the
+`crates-io` environment.
+
 ## What each workflow does
 
 - [`release.yml`](.github/workflows/release.yml) — manual
@@ -167,6 +205,10 @@ so no API token is stored in this repo.
 - [`publish-python-pypi.yml`](.github/workflows/publish-python-pypi.yml)
   — fires when a `v*` Release is promoted out of draft. Downloads the
   attached wheels and uploads them to PyPI via OIDC trusted publishing.
+- [`publish-rust-crates.yml`](.github/workflows/publish-rust-crates.yml)
+  — fires when a `v*` Release is promoted out of draft. Builds the
+  tagged `moteus-pi3hat` crate and publishes it to crates.io via OIDC
+  trusted publishing, skipping if that version is already published.
 - [`ci.yml`](.github/workflows/ci.yml) — runs `travis-ci.sh` on every
   push and pull request.
 

@@ -1,0 +1,70 @@
+name: Publish rust crate to crates.io
+
+# Triggered when a vX.Y.Z draft release is promoted to public.  The
+# moteus-pi3hat crate is built from the tagged source and published to
+# crates.io via OIDC trusted publishing.
+#
+# The crate is versioned independently of the unified vX.Y.Z tag (it
+# stays on its own 0.x line while pre-stable; utils/release.py only
+# bumps it when --rust is given).  A release that did not change the
+# crate leaves its version untouched, so this workflow finds that
+# version already on crates.io and skips it rather than failing.
+#
+# Trusted publishing must be configured at crates.io for this repo +
+# this workflow + the `crates-io` environment.  See RELEASING.md for the
+# one-time setup.  (Alternatively, drop the auth step and instead set a
+# CARGO_REGISTRY_TOKEN secret on the `crates-io` environment.)
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  crates:
+    if: startsWith(github.event.release.tag_name, 'v')
+    runs-on: ubuntu-24.04
+    environment:
+      name: crates-io
+      url: https://crates.io/crates/moteus-pi3hat
+    permissions:
+      contents: read
+      id-token: write   # OIDC for trusted publishing
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Read crate version
+        id: crate
+        run: |
+          version="$(sed -n 's/^version = "\([^"]*\)"/\1/p' lib/rust/Cargo.toml | head -1)"
+          if [[ -z "$version" ]]; then
+              echo "::error::could not read version from lib/rust/Cargo.toml"
+              exit 1
+          fi
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+          echo "moteus-pi3hat crate version: ${version}"
+
+      - name: Skip if this version is already on crates.io
+        id: check
+        run: |
+          version="${{ steps.crate.outputs.version }}"
+          # crates.io sparse index path: <first 2>/<next 2>/<name>
+          if curl -sf "https://index.crates.io/mo/te/moteus-pi3hat" \
+               | grep -q "\"vers\":\"${version}\""; then
+              echo "moteus-pi3hat ${version} is already published; nothing to do."
+              echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+              echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Authenticate to crates.io (OIDC trusted publishing)
+        if: steps.check.outputs.skip != 'true'
+        uses: rust-lang/crates-io-auth-action@v1
+        id: auth
+
+      - name: Publish moteus-pi3hat
+        if: steps.check.outputs.skip != 'true'
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ steps.auth.outputs.token }}
+        run: cargo publish -p moteus-pi3hat --manifest-path lib/rust/Cargo.toml

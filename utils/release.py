@@ -29,10 +29,23 @@ Version sources kept in sync:
     lib/python/BUILD   VERSION="X.Y.Z"        (full PEP 440 string)
     CMakeLists.txt     project(... VERSION X.Y.Z)  (M.m.p only)
 
-Bump types:
+The Rust crate (lib/rust/Cargo.toml) is versioned separately: while it
+is pre-stable it stays on its own 0.x line rather than the unified 1.x
+number.  It is only bumped -- and later published to crates.io by
+publish-rust-crates.yml -- when `--rust` is given; omit it and the
+crate version is left untouched (so a release that does not change the
+crate does not try to republish it).  When the crate is declared
+stable, bump it onto the unified number with `--rust <that version>`
+and pass `--rust` on every release from then on.
+
+Bump types (apply to the unified version and, with the same spelling,
+to --rust):
     major | minor | patch
     rc              iterate a pre-release suffix (1.0.0rc1 -> 1.0.0rc2)
     <explicit>      e.g. 1.0.0rc1, 1.1.0
+
+--rust takes major | minor | patch | <explicit semver> (e.g. 0.2.0 or
+1.0.0-rc.1); it does not accept the PEP 440 `rc` spelling.
 
 When current is a pre-release, `patch` graduates it (1.0.0rc1 -> 1.0.0).
 
@@ -57,6 +70,13 @@ PYTHON_VERSION_RE = r'^VERSION="([^"]+)"'
 
 CMAKE_VERSION_FILE = 'CMakeLists.txt'
 CMAKE_VERSION_RE = r'^(project\(moteus VERSION )[^)]+\)'
+
+# The Rust crate is versioned independently (its own 0.x line while
+# pre-stable) and is only bumped/published when --rust is given.  The
+# workspace `version` field lives under [workspace.package]; it is the
+# only line that starts with `version = "`.
+RUST_VERSION_FILE = 'lib/rust/Cargo.toml'
+RUST_VERSION_RE = r'^version = "([^"]+)"'
 
 
 def git(*args, capture=False, check=True):
@@ -137,12 +157,35 @@ def validate_python_version(version):
             f'    utils/release.py {normalized}\n')
 
 
+def validate_rust_version(version):
+    """Reject values that are not valid Cargo (semver) versions.
+
+    crates.io requires M.m.p with optional -prerelease / +build metadata.
+    In particular this rejects PEP 440 spellings such as '1.0.0rc1' (the
+    semver form is '1.0.0-rc.1'), which `compute_new_version` would emit
+    for a `--rust rc` bump.
+    """
+    if not re.match(r'^\d+\.\d+\.\d+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$',
+                    version):
+        sys.exit(
+            f'\nERROR: rust version {version!r} is not a valid semver version.'
+            f'\n\nCargo/crates.io want M.m.p with an optional -prerelease or '
+            f'+build suffix\n(e.g. 0.2.0 or 1.0.0-rc.1).  PEP 440 spellings '
+            f'like 1.0.0rc1 are not valid;\npass an explicit semver string to '
+            f'--rust.\n')
+
+
 def main():
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('bump',
                         help='major | minor | patch | rc | <explicit version>')
+    parser.add_argument(
+        '--rust', metavar='BUMP', default=None,
+        help='also bump the Rust crate version in lib/rust/Cargo.toml '
+             '(major | minor | patch | <explicit semver>); omit to leave the '
+             'crate version unchanged')
     args = parser.parse_args()
 
     current = read_version(PYTHON_VERSION_FILE, PYTHON_VERSION_RE)
@@ -151,6 +194,14 @@ def main():
     print(f'New     version: {new}')
 
     validate_python_version(new)
+
+    rust_new = None
+    if args.rust is not None:
+        rust_current = read_version(RUST_VERSION_FILE, RUST_VERSION_RE)
+        print(f'Current rust version: {rust_current}')
+        rust_new = compute_new_version(rust_current, args.rust)
+        print(f'New     rust version: {rust_new}')
+        validate_rust_version(rust_new)
 
     tag = f'v{new}'
     if git('rev-parse', '-q', '--verify', f'refs/tags/{tag}',
@@ -166,11 +217,20 @@ def main():
     write_version(CMAKE_VERSION_FILE, CMAKE_VERSION_RE,
                   rf'\g<1>{cmake_value})')
 
-    changed = [f for f in (PYTHON_VERSION_FILE, CMAKE_VERSION_FILE)
+    version_files = [PYTHON_VERSION_FILE, CMAKE_VERSION_FILE]
+    if rust_new is not None:
+        write_version(RUST_VERSION_FILE, r'^version = "[^"]+"',
+                      f'version = "{rust_new}"')
+        version_files.append(RUST_VERSION_FILE)
+
+    changed = [f for f in version_files
                if git('diff', '--quiet', '--', f, check=False).returncode != 0]
     if changed:
         git('add', *changed)
-        git('commit', '-m', f'Release {new}')
+        message = f'Release {new}'
+        if rust_new is not None:
+            message += f' (rust {rust_new})'
+        git('commit', '-m', message)
     else:
         print('(no version-file change to commit; tagging current HEAD)')
 

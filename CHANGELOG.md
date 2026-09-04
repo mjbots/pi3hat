@@ -9,7 +9,10 @@ The format is loosely based on [Keep a Changelog](https://keepachangelog.com/).
 ## Unreleased
 
 - New Rust client library and moteus transport, `moteus-pi3hat`
-  (`lib/rust`), a direct translation of the C++ library.
+  (`lib/rust`), a direct translation of the C++ library. It is
+  published to crates.io from the release workflow on its own `0.x`
+  version line (`utils/release.py --rust`); the first release is
+  0.1.0.
 - The tools bundle also ships the Rust examples under `examples/rust/`
 - `--pi3hat-cpu` (C++ and Rust) now defaults to the highest isolated
   CPU when the system has any (`isolcpus`), pinning the SPI worker
