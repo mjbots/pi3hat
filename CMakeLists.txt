@@ -20,7 +20,7 @@
 
 
 cmake_minimum_required(VERSION 3.10)
-project(moteus VERSION 1.0.0)
+project(moteus VERSION 1.1.0)
 
 set(MAIN_PROJECT OFF)
 
