@@ -94,7 +94,7 @@ toolchain.
 
 Pushing the tag fires
 [`build-release.yml`](.github/workflows/build-release.yml), which builds
-on `ubuntu-24.04` and attaches all of the following to one **draft**
+on `ubuntu-26.04` and attaches all of the following to one **draft**
 GitHub Release:
 
 - **Firmware**: `pi3hat-fw-<version>+g<sha>.elf` and `.bin`, built with
