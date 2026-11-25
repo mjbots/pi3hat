@@ -22,30 +22,9 @@ load("//tools/workspace:template_file.bzl", "template_file")
 
 VERSION="1.1.0"
 
-PYTHON_SHORT_VERSIONS = ['37', '39', '310', '311', '312', '313']
+PYTHON_SHORT_VERSIONS = ['39', '310', '311', '312', '313']
 ARCHITECTURES = ['armv7l', 'aarch64']
-ABITAG = {
-    '37': 'abi3',
-    '39': 'cp39',
-    '310': 'cp310',
-    '311': 'cp311',
-    '312': 'cp312',
-    '313': 'cp313',
-}
-PTAG = {
-    '37_armv7l': 'linux',
-    '37_aarch64': 'manylinux_2_17',
-    '39_armv7l': 'manylinux_2_17',
-    '39_aarch64': 'manylinux_2_17',
-    '310_armv7l': 'manylinux_2_17',
-    '310_aarch64': 'manylinux_2_17',
-    '311_armv7l': 'manylinux_2_17',
-    '311_aarch64': 'manylinux_2_17',
-    '312_armv7l': 'manylinux_2_17',
-    '312_aarch64': 'manylinux_2_17',
-    '313_armv7l': 'manylinux_2_17',
-    '313_aarch64': 'manylinux_2_17',
-}
+PTAG = 'manylinux_2_17'
 
 
 # It would be nice to pull this from the python source.  As it is, the
@@ -82,15 +61,14 @@ pkg_tar(
     srcs = ["setup_{pyshortver}.py".format(pyshortver=pyshortver),
             ":wheel_tar", "README.md"],
     outs = [
-        "moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl".format(
+        "moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-{ptag}_{architecture}.whl".format(
             ver=VERSION,
             pyshortver=pyshortver,
-            abitag=ABITAG[pyshortver],
-            ptag=PTAG[pyshortver + '_' + architecture],
+            ptag=PTAG,
             architecture=architecture),
     ],
     cmd = (
-        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl)) && " +
+        "OUTDIR=$$(dirname $(location moteus_pi3hat-{ver}-cp{pyshortver}-cp{pyshortver}-{ptag}_{architecture}.whl)) && " +
         "BUILDDIR=$$OUTDIR/build && " +
         "mkdir -p $$BUILDDIR && " +
         "tar xf $(location wheel_tar) -C $$BUILDDIR && " +
@@ -98,20 +76,12 @@ pkg_tar(
         "cd $$BUILDDIR && " +
         "python3 setup_{pyshortver}.py bdist_wheel " +
         "        --plat-name {ptag}_{architecture} " +
-        "        --py-limited-api cp{pyshortver} " +
         "        --dist-dir .. " +
-        "        1>/dev/null &&" +
-
-        # In case the file doesn't change, we rename to a different
-        # temporary name.
-
-        "mv ../moteus_pi3hat-{ver}-cp{pyshortver}-abi3-{ptag}_{architecture}.whl ../a.whl && " +
-        "mv ../a.whl ../moteus_pi3hat-{ver}-cp{pyshortver}-{abitag}-{ptag}_{architecture}.whl " +
+        "        1>/dev/null " +
         ""
     ).format(ver=VERSION,
              pyshortver=pyshortver,
-             abitag=ABITAG[pyshortver],
-             ptag=PTAG[pyshortver + '_' + architecture],
+             ptag=PTAG,
              architecture=architecture,
     ),
  )
@@ -122,8 +92,6 @@ pkg_tar(
 filegroup(
     name="bdist_wheel",
     srcs = select({
-        "//:python37_armeabihf" : [":bdist_wheel_37_armv7l"],
-        "//:python37_aarch64" : [":bdist_wheel_37_aarch64"],
         "//:python39_armeabihf" : [":bdist_wheel_39_armv7l"],
         "//:python39_aarch64" : [":bdist_wheel_39_aarch64"],
         "//:python310_armeabihf" : [":bdist_wheel_310_armv7l"],

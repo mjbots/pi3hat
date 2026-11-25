@@ -17,20 +17,25 @@
 import setuptools
 import pathlib
 
-# Hacky monkeypatch to allow building cp313 wheels from Python 3.12.
-# The wheel package validates tags against sys_tags(), which only
-# includes tags for the running interpreter. This adds cp313 tags to
-# allow cross-version builds.  Note: wheel uses its own vendored copy
-# of packaging, so we must patch that.
-from wheel.vendored.packaging import tags as _wheel_tags
-_original_sys_tags = _wheel_tags.sys_tags
-def _patched_sys_tags():
-    for tag in _original_sys_tags():
-        yield tag
-    # Add cp313 abi3 tags for building 3.13 wheels from 3.12
-    for plat in ['manylinux_2_17_aarch64', 'manylinux_2_17_armv7l', 'linux_armv7l']:
-        yield _wheel_tags.Tag('cp313', 'abi3', plat)
-_wheel_tags.sys_tags = _patched_sys_tags
+try:
+    from setuptools.command.bdist_wheel import bdist_wheel
+except ImportError:
+    # setuptools older than 70.1 relies on the wheel package for this.
+    from wheel.bdist_wheel import bdist_wheel
+
+PYTHON_SHORT_VERSION = {{PYTHON_SHORT_VERSION}}
+
+
+class ExactVersionWheel(bdist_wheel):
+    """The extension module is cross compiled for a specific python
+    version which is typically not the one running this script, so
+    the tags are forced rather than being derived from the running
+    interpreter.
+    """
+    def get_tag(self):
+        python_tag = 'cp' + PYTHON_SHORT_VERSION
+        return (python_tag, python_tag, self.plat_name)
+
 
 here = pathlib.Path(__file__).parent.resolve()
 
@@ -52,10 +57,10 @@ setuptools.setup(
     url = 'https://github.com/mjbots/pi3hat',
     author = 'mjbots Robotic Systems',
     author_email = 'info@mjbots.com',
+    license = 'Apache-2.0',
     classifiers = [
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python :: 3',
     ],
     keywords='moteus, pi3hat',
@@ -65,7 +70,7 @@ setuptools.setup(
     entry_points = {
         'moteus.transports2': [ 'pi3hat=moteus_pi3hat:Pi3HatFactory' ],
     },
-    python_requires = ">=3.7",
+    python_requires = ">=3.9",
     install_requires = [
         'moteus>=1.0.0rc1',
     ],
@@ -74,4 +79,5 @@ setuptools.setup(
         'moteus_pi3hat' : ['_pi3hat_device.so'],
     },
     distclass = BinaryDistribution,
+    cmdclass = {'bdist_wheel': ExactVersionWheel},
 )

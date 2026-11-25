@@ -11,6 +11,13 @@ date.
 
 ## Unreleased
 
+- Python: the minimum supported version is now 3.9, and wheels are no
+  longer published for 3.7.  The `cp37-abi3` wheel that pip previously
+  selected for 3.8, and for versions newer than the newest published
+  wheel, could be installed but not imported there.
+- Python: wheels are now tagged for exactly the python version they
+  were built for, both in the filename and in the wheel metadata.
+
 - The Raspberry Pi binaries are now built with clang and libc++
   20.1.8 (was 10.0.0).  Building no longer requires `libtinfo5` on the
   host.
