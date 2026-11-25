@@ -11,6 +11,10 @@ date.
 
 ## Unreleased
 
+- The Raspberry Pi binaries are now built with clang and libc++
+  20.1.8 (was 10.0.0).  Building no longer requires `libtinfo5` on the
+  host.
+
 ## 1.1.0 - 2026-09-09 (rust 0.1.0)
 
 - New Rust client library and moteus transport, `moteus-pi3hat`

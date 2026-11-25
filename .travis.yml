@@ -5,7 +5,6 @@ addons:
   apt:
     packages:
     - python3-setuptools
-    - libtinfo5
 cache:
    directories:
     - $HOME/.cache/bazel/

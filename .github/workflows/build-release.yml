@@ -26,8 +26,6 @@ jobs:
         run: |
           sudo apt update
           sudo apt install -y python3-setuptools python3-wheel python3-build
-          wget https://launchpad.net/ubuntu/+archive/primary/+files/libtinfo5_6.3-2ubuntu0.2_amd64.deb
-          sudo apt install -y ./libtinfo5_6.3-2ubuntu0.2_amd64.deb
 
       - name: Resolve version
         id: stage
