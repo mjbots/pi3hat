@@ -71,7 +71,7 @@ jobs:
               pi)   pyarch=armv7l ;;
               pi64) pyarch=aarch64 ;;
             esac
-            for pyver in 3.9 3.10 3.11 3.12 3.13; do
+            for pyver in 3.9 3.10 3.11 3.12 3.13 3.14 3.15; do
               pyshort="${pyver//./}"
               tools/bazel build --verbose_failures --config=${arch} \
                   --define PYTHON=${pyver} -c opt //:pi3hat_tools

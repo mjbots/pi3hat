@@ -142,7 +142,7 @@ test_suite(
         "cpu": arch,
     },
  )
- for pyver in ['3.9', '3.10', '3.11', '3.12', '3.13']
+ for pyver in ['3.9', '3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
  for arch in ['armeabihf', 'aarch64']
 ]
 
@@ -178,5 +178,19 @@ config_setting(
     name = "python313",
     values = {
         "define": "PYTHON=3.13",
+    },
+)
+
+config_setting(
+    name = "python314",
+    values = {
+        "define": "PYTHON=3.14",
+    },
+)
+
+config_setting(
+    name = "python315",
+    values = {
+        "define": "PYTHON=3.15",
     },
 )

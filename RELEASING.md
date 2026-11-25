@@ -101,7 +101,7 @@ GitHub Release:
   `tools/bazel build --cpu stm32g4 -c opt //:target`. The `+g<sha>`
   portion is semver build metadata (the 10-char git short SHA of the
   tagged commit), ignored for version precedence.
-- **Python**: for each Python version (3.9–3.13) × Pi architecture
+- **Python**: for each Python version (3.9–3.15) × Pi architecture
   (`armv7l`, `aarch64`), it cross-compiles `//:pi3hat_tools` and attaches
   both:
   - `moteus_pi3hat-<version>-cp<py>-<abi>-<plat>.whl` — the wheel that

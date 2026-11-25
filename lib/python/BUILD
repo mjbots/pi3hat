@@ -22,7 +22,7 @@ load("//tools/workspace:template_file.bzl", "template_file")
 
 VERSION="1.1.0"
 
-PYTHON_SHORT_VERSIONS = ['39', '310', '311', '312', '313']
+PYTHON_SHORT_VERSIONS = ['39', '310', '311', '312', '313', '314', '315']
 ARCHITECTURES = ['armv7l', 'aarch64']
 PTAG = 'manylinux_2_17'
 
@@ -102,5 +102,9 @@ filegroup(
         "//:python312_aarch64" : [":bdist_wheel_312_aarch64"],
         "//:python313_armeabihf" : [":bdist_wheel_313_armv7l"],
         "//:python313_aarch64" : [":bdist_wheel_313_aarch64"],
+        "//:python314_armeabihf" : [":bdist_wheel_314_armv7l"],
+        "//:python314_aarch64" : [":bdist_wheel_314_aarch64"],
+        "//:python315_armeabihf" : [":bdist_wheel_315_armv7l"],
+        "//:python315_aarch64" : [":bdist_wheel_315_aarch64"],
     }),
 )
